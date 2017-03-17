@@ -65,13 +65,11 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 						   	 		 {
 						   	 		 	mk.show(); //显示  
 										Ext.Ajax.request({
-										        url: ctx+'/RofhhljOssInfAction/newWorkSheet.do',
+										        url: ctx+'/webServiceAction/syncHangingResult.do',
 										        method: 'POST',
 										        params: {
-										        	type:Ext.getCmp("sheetType").getValue(),
-										            commonality: JSON.stringify(Ext.getCmp("conform").getForm().getValues()),
-										            installCustomInfo: JSON.stringify(Ext.getCmp("insetallform").getForm().getValues()),
-										            moveCustomInfo: JSON.stringify(Ext.getCmp("moveform").getForm().getValues())
+										        	parentPrjCode:JSON.stringify(Ext.getCmp("customPanel").getForm().getValues()).PARENT_PRJ_CODE,
+										        	prjCode: JSON.stringify(Ext.getCmp("customPanel").getForm().getValues()).PRJ_CODE
 										        },
 										        success: function(response) {
 										            var result = JSON.parse(response.responseText);
