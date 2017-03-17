@@ -2,7 +2,6 @@
 package com.boco.workflow.webservice.upload.servlet;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,10 +58,7 @@ public class ImportServlet extends HttpServlet {
 				
 				
 				new ImportResService().resolveExcel(file);
-				/*	ImportBusinessAction importBusinessAction = new ImportBusinessAction();
-					FileInputStream fileInputStream = new FileInputStream(file);
-					tempFile = TimeFormatHelper.getFormatDate(new Date(), TimeFormatHelper.TIME_FORMAT_B) + ".xls";
-					map = importBusinessAction.importBusiness(request.getSession().getServletContext().getRealPath("/") + "upload" + File.separator+tempFile ,fileInputStream);*/
+			
 				
 				Iterator<Entry<String, ImportResultDO>> iterator = map.entrySet().iterator();
 				StringBuilder showMessage = new StringBuilder();

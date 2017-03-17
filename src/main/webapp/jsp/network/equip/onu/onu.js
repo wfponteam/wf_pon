@@ -1,7 +1,7 @@
 Ext.namespace("NETWORK");
 $importjs(ctx + "/jsp/network/equip/onu/onu_query.js");
-$importjs(ctx + "/jsp/network/equip/plugins/tbar/onu_tbar.js");
-$importjs(ctx + "/jsp/network/equip/plugins/renderer/equip_renderer.js");
+$importjs(ctx + "/jsp/network/equip/onu/onu_tbar.js");
+$importjs(ctx + "/jsp/network/equip/equip_renderer.js");
 
 NETWORK.onu= Ext.extend(Ext.Panel,{
 	id 			: 'NETWORK.onu',

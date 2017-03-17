@@ -2,7 +2,7 @@ $importjs(ctx + "/jsp/network/equip/ptp/ptp_onu.js");
 $importjs(ctx + "/jsp/network/equip/ptp/ptp_pos.js");
 $importcss(ctx + "/jsp/common/style/customize.css");
 $importjs(ctx + "/dwr/interface/PtpManageAction.js");
-$importjs(ctx + "/jsp/network/equip/plugins/renderer/equip_renderer.js");
+$importjs(ctx + "/jsp/network/equip/equip_renderer.js");
 
 NETWORK.ptp = Ext.extend(Ext.Panel, {
 	id 			: 'NETWORK.ptp' ,
