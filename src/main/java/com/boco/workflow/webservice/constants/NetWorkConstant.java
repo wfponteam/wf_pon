@@ -20,4 +20,10 @@ public class NetWorkConstant {
 	 * 批量操作数量
 	 */
 	public static final int COMMIT_COUNT = 500;
+
+	public static final String BUSINESSCOMMUNITY_SQL_MAP = "BUSINESSCOMMUNITY";
+
+	public static final String FULLADDRESS_SQL_MAP = "FULLADDRESS";
+
+	public static final String GPONCOVER_SQL_MAP = "GPONCOVER";
 }

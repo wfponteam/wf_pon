@@ -112,6 +112,27 @@ public class BoUtil {
     }
     
     /**
+     * 批量插入
+     * @param statementName
+     * @param list
+     * @throws SQLException
+     */
+    public static void batchInsert(SqlMapClient client,final String statementName, final List<?> list) throws SQLException {
+    	
+    	if(list == null || list.size() == 0){
+    		
+    		return;
+    	}
+    	for (int i = 0, n = list.size(); i < n; i++) {
+       	  if(i != 0 && i%NetWorkConstant.COMMIT_COUNT == 0 ){
+       		client.executeBatch();
+       	  }
+       	  client.insert(statementName, list.get(i));
+         }
+    	client.executeBatch();
+    }
+    
+    /**
      * 将查询结果转化为页面显示的结果
      * @param list
      * @return

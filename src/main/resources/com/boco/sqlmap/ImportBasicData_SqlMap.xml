@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="IMPROTBASEDATA">
+    <select id="queryPtpByLabelcnNeCuid"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">	
+	  SELECT * FROM PTP WHERE LABEL_CN=#LABEL_CN# AND RELATED_NE_CUID=#RELATED_NE_CUID#
+    </select>
+	<!--查询到所有机盘类型的CARDKIND_NAME和厂商的LABEL_CN-->
+    <select id="queryCardKind" resultClass="com.boco.core.ibatis.vo.ResultMap">	
+	  SELECT C.CARDTYPE_NAME,D.LABEL_CN 
+	  FROM CARD_KIND C,DEVICE_VENDOR D WHERE C.RELATED_VENDOR_CUID=D.CUID 
+    </select>
+
+    <!-- 根据厂家名称,网元型号名称,网元类型查询网元型号CUID -->
+    <select id="queryNeModelCuid" parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">	
+	  SELECT A.CUID 
+	  	FROM NE_MODEL_CFG_TYPE A , DEVICE_VENDOR B 
+	  WHERE A.VENDOR_NAME = B.CUID 
+		  AND B.LABEL_CN = #VENDOR_NAME#
+		  AND A.PRODUCT_MODEL = #PRODUCT_MODEL# 
+		  AND A.SIGNAL_TYPE = #SIGNAL_TYPE# 
+		  AND A.CFG_TYPE = #CFG_TYPE#
+    </select>
+    <select id="queryCardCuid" parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">	
+	  SELECT CUID,LABEL_CN FROM CARD WHERE RELATED_DEVICE_CUID = #CUID#
+    </select>
+    <!--查询到所有网元的PRODUCT_MODEL和厂商的LABEL_CN-->
+    <select id="queryNeModel" resultClass="com.boco.core.ibatis.vo.ResultMap">	
+	  SELECT N.PRODUCT_MODEL,D.LABEL_CN 
+	  FROM NE_MODEL_CFG_TYPE N,DEVICE_VENDOR D WHERE N.VENDOR_NAME=D.CUID
+    </select>
+    
+    <!--添加网元型号信息-->
+    <insert id="insertNeModel" parameterClass="java.util.HashMap">
+       INSERT INTO 
+       NE_MODEL_CFG_TYPE 
+       (OBJECTID,GT_VERSION,VENDOR_NAME,
+       CFG_TYPE,PRODUCT_MODEL,MAX_RATE,SIGNAL_TYPE,CUID,
+       ISDELETE,CREATE_TIME,LAST_MODIFY_TIME) 
+       VALUES(
+       #OBJECTID#,
+       #GT_VERSION#,
+       (SELECT LABEL_CN FROM DEVICE_VENDOR WHERE LABEL_CN = #VENDOR_NAME#),       
+       #CFG_TYPE#,
+       #PRODUCT_MODEL#,
+       #MAX_RATE#,
+       #SIGNAL_TYPE#,
+       #CUID#,
+       #ISDELETE#,
+       #CREATE_TIME#,
+       #LAST_MODIFY_TIME#
+       )
+    </insert>
+    
+	<!--添加网元型号信息-->
+    <insert id="insertNeModelInfo" parameterClass="java.util.HashMap">
+       INSERT INTO 
+       NE_MODEL_CFG_TYPE 
+       (OBJECTID,GT_VERSION,VENDOR_NAME,
+       CFG_TYPE,PRODUCT_MODEL,MAX_RATE,SIGNAL_TYPE,CUID,
+       ISDELETE,CREATE_TIME,LAST_MODIFY_TIME) 
+       VALUES(
+       #OBJECTID#,
+       #GT_VERSION#,
+       #VENDOR_NAME#,       
+       #CFG_TYPE#,
+       #PRODUCT_MODEL#,
+       #MAX_RATE#,
+       #SIGNAL_TYPE#,
+       #CUID#,
+       #ISDELETE#,
+       #CREATE_TIME#,
+       #LAST_MODIFY_TIME#
+       )
+    </insert>
+	<select id="queryCoverageByNeCuid" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT * FROM GPON_COVER WHERE  RELATED_NE_CUID IN 
+          <iterate  conjunction="," open="(" close=")">
+				#related_ne_cuid[]#
+		</iterate>			
+	</select>
+	<select id="queryCustomerByName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT * FROM T_ROFH_CUSTOMER WHERE  LABEL_CN IN 
+          <iterate  conjunction="," open="(" close=")">
+				#label_cn[]#
+		</iterate>			
+	</select>
+	<select id="queryOltName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT * FROM TRANS_ELEMENT WHERE  LABEL_CN IN 
+          <iterate  conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>			
+	</select>
+	<select id="queryOltPosName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT CUID,LABEL_CN,FDN,RELATED_EMS_CUID,'1' AS DEV_TYPE FROM TRANS_ELEMENT WHERE  LABEL_CN IN 
+          <iterate  conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>
+		UNION 
+		SELECT P.CUID,P.LABEL_CN,T.FDN,P.RELATED_EMS_CUID,'3' AS DEV_TYPE FROM AN_POS P,TRANS_ELEMENT T WHERE T.CUID=P.RELATED_OLT_CUID AND P.LABEL_CN IN 
+        <iterate  conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>			
+	</select>
+	<select id="queryRelatedOltPortName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT CUID,LABEL_CN FROM PTP WHERE  LABEL_CN IN 
+          <iterate  conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>
+	</select>
+	<select id="queryPosName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT A.CUID,A.LABEL_CN,Z.RELATED_OLT_CUID,A.FDN,A.DEV_CUID,A.RELATED_VENDOR_CUID,A.OWNERSHIP,'2' AS POSTYPE 
+	    FROM AN_POS A,AN_POS Z WHERE A.RELATED_OLT_CUID=Z.CUID AND 	A.LABEL_CN IN  
+          <iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>
+		UNION 
+		SELECT CUID,LABEL_CN,RELATED_OLT_CUID,FDN,DEV_CUID,RELATED_VENDOR_CUID,OWNERSHIP,'1' AS POSTYPE 
+		FROM AN_POS 
+		WHERE  LABEL_CN IN  
+        <iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>
+	</select>	
+	<select id="queryOnuName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT *   
+		FROM AN_ONU 
+		WHERE  LABEL_CN IN 
+          <iterate conjunction="," open="(" close=")">            
+				#name[]#
+		</iterate>			
+	</select>
+	<select id="queryTopoName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT LABEL_CN,CUID,NATIVE_NAME,USER_LABEL,RELATED_EMS_CUID,LAYER_RATE,DIRECTION,ORIG_NE_CUID,
+				ORIG_PTP_CUID,DEST_NE_CUID,	DEST_PTP_CUID, REMARK 
+		FROM PON_TOPO_LINK WHERE  LABEL_CN IN 
+          <iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>			
+	</select>
+	
+	<select id="queryCardName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT LABEL_CN,CUID ,FDN ,RELATED_DEVICE_CUID,MODEL,RELATED_UPPER_COMPONENT_CUID FROM CARD WHERE  LABEL_CN IN 
+          <iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>			
+	</select>
+	<select id="queryPtpName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT LABEL_CN,CUID ,FDN ,PORT_NO   ,PORT_RATE,PORT_TYPE,VLAN, REMARK FROM PTP WHERE  LABEL_CN IN 
+          <iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>			
+	</select>
+	<select id="queryNeByName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT  
+	    	LABEL_CN,CUID,FDN,'AN_OLT-' AS DEV_CUID FROM  TRANS_ELEMENT T WHERE T.LABEL_CN	IN
+	    	 <iterate conjunction="," open="(" close=")">
+				#name[]#
+			</iterate>
+		UNION SELECT 
+		    LABEL_CN,CUID,FDN,DEV_CUID FROM  AN_ONU A WHERE A.LABEL_CN IN
+		     <iterate conjunction="," open="(" close=")">
+				#name[]#
+			</iterate>
+		UNION SELECT 
+	    	LABEL_CN , CUID,  FDN,DEV_CUID FROM AN_POS S WHERE S.LABEL_CN IN		
+          <iterate conjunction="," open="(" close=")">
+				#name[]#
+		  </iterate>			
+	</select>
+	<select id="queryPortByName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">	
+		SELECT LABEL_CN,CUID,FDN,RELATED_NE_CUID FROM PTP WHERE LABEL_CN in 
+		<iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>	
+	</select>
+	<select id="queryAccesspointName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT LABEL_CN,CUID,DISTRICT_CUID ,SITE_CUID ,LOCATION ,LONGITUDE , LATITUDE ,VP_CONTACT ,
+			VP_PHONE  ,MAINTAIN_MAN    ,MAINTAIN_PHONE  
+		FROM ACCESSPOINT WHERE LABEL_CN IN 
+		<iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>	
+	</select>
+	<select id="getProducterAndModelRelated" parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		 SELECT CUID
+		   FROM NE_MODEL_CFG_TYPE
+		  WHERE SIGNAL_TYPE = 9
+		    AND CFG_TYPE = #CFG_TYPE#
+		    AND VENDOR_NAME in (SELECT CUID FROM DEVICE_VENDOR D WHERE D.LABEL_CN = #producter#)
+		    AND PRODUCT_MODEL = #model#
+	</select>
+	<select id="queryDistrictForSite" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	
+		SELECT LABEL_CN,RELATED_SPACE_CUID FROM SITE WHERE RELATED_SPACE_CUID IN 
+		<iterate conjunction="," open="(" close=")">
+				#name[]#
+		</iterate>	
+	</select>	
+		<!-- 根据EMS姓名查询Ems的fdn,Cuid等等-->
+	<select id="queryEmsName" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT LABEL_CN,FDN,CUID FROM NMS_SYSTEM  WHERE LABEL_CN = #LABEL_CN#
+	</select>
+	<!--根据room的name查询机房CUID-->
+	<select id="getRelatedRoom" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT CUID FROM ROOM R WHERE R.LABEL_CN = #LABEL_CN#
+	</select>
+	<!--根据rack的name查询CUID-->
+	<select id="getRelatedRack" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT CUID FROM T_PHY_SHELFRACK_UNIT R WHERE R.LABEL_CN = #LABEL_CN#
+	</select>
+	<!--根据site的name查询站点CUID-->
+	<select id="quertySiteCuidByName" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT CUID FROM SITE S WHERE S.LABEL_CN = #LABEL_CN#
+	</select>
+	<!--根据Room的cuid查询站点CUID-->
+	<select id="quertySiteCuidByRoom" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT RELATED_SITE_CUID FROM ROOM S WHERE S.CUID = #CUID#
+	</select>
+	<!--根据district的name查询区域CUID-->
+	<select id="quertyDistrictCuidByName" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT CUID FROM DISTRICT D WHERE D.LABEL_CN = #LABEL_CN#
+	</select>
+	<!--根据vendor的name查询厂商CUID-->
+	<select id="quertyVendorCuidByName" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT CUID FROM DEVICE_VENDOR D WHERE D.LABEL_CN = #LABEL_CN#
+	</select>
+	<!--导入修改sql-->
+	<update id="updateImportAccesspoint" parameterClass="java.util.HashMap" >
+		UPDATE
+			ACCESSPOINT
+		SET
+			LABEL_CN=#LABEL_CN#,			
+			DISTRICT_CUID=#DISTRICT_CUID#,
+			SITE_CUID=#SITE_CUID#,
+			LOCATION=#LOCATION#,
+			VP_CONTACT=#VP_CONTACT#,
+			VP_PHONE=#VP_PHONE#,
+			MAINTAIN_MAN=#MAINTAIN_MAN#,
+			MAINTAIN_PHONE=#MAINTAIN_PHONE#,
+			LAST_MODIFY_TIME=#LAST_MODIFY_TIME#,
+			LONGITUDE=#LONGITUDE#,
+			LATITUDE=#LATITUDE#
+		WHERE
+		CUID = #CUID#
+	</update>
+	<update id="updateImportOltInfo" parameterClass="java.util.HashMap">
+		UPDATE
+		TRANS_ELEMENT
+		SET
+		LABEL_CN=#LABEL_CN#,
+		STANDARD_NAME=#STANDARD_NAME#,
+		RELATED_DISTRICT_CUID=#RELATED_DISTRICT_CUID#,
+		RELATED_ROOM_CUID=#RELATED_ROOM_CUID#,
+		RELATED_SITE_CUID=#RELATED_SITE_CUID#,
+		RELATED_EMS_CUID=#RELATED_EMS_CUID#,
+		LOCATION=#LOCATION#,
+		FDN=#FDN#,
+		MODEL=#MODEL#,
+		DEV_IP=#DEV_IP#,
+		RELATED_VENDOR_CUID=#RELATED_VENDOR_CUID#,
+		SEQNO=#SEQNO#,
+		SOFT_VERSION=#SOFT_VERSION#,
+		REAL_LONGITUDE=#REAL_LONGITUDE#,
+		REAL_LATITUDE=#REAL_LATITUDE#,
+		RELATED_PROJECT_CUID=#RELATED_PROJECT_CUID#,
+		LIVE_CYCLE=#LIVE_CYCLE#,
+		SETUP_TIME=#SETUP_TIME#,
+		BACK_NETWORK_TIME=#BACK_NETWORK_TIME#,
+		CHECK_LABEL_NUMBER=#CHECK_LABEL_NUMBER#,
+		OWNERSHIP=#OWNERSHIP#,
+		OWNERSHIP_MAN=#OWNERSHIP_MAN#,
+		ONU_TYPE=#ACCESS_TYPE#,
+		CREATOR=#CREATOR#,
+		CREATTIME=#CREATTIME#,
+		MAINT_MODE=#MAINT_MODE#,
+		PRESERVER=#PRESERVER#,
+		PRESERVER_ADDR=#PRESERVER_ADDR#,
+		PRESERVER_PHONE=#PRESERVER_PHONE#,
+		REPAIR_TIME=#REPAIR_TIME#,
+		CONTINUE_REPAIR_TIME=#CONTINUE_REPAIR_TIME#,
+		EQUIPMENTCODE=#EQUIPMENTCODE#,
+		EQUIPMENT_GROUP_CODE=#EQUIPMENT_GROUP_CODE#,
+		RELATED_RACK_CUID =#RELATED_RACK_CUID#,
+		IS_PRIORITY=#IS_PRIORITY#,
+		COVER=#COVER#,
+		MAINT_PERSON = #MAINT_PERSON#,
+		DATA_QUALITY_PERSON=#DATA_QUALITY_PERSON#
+		WHERE
+		CUID = #CUID#
+	</update>  
+	<update id="updateImportCardInfo" parameterClass="java.util.HashMap">
+		UPDATE CARD SET 
+		LABEL_CN=#LABEL_CN#,
+		RELATED_DEVICE_CUID=#RELATED_DEVICE_CUID#,
+		MODEL=#MODEL#,
+		FDN=#FDN#,
+		RELATED_UPPER_COMPONENT_CUID=#RELATED_UPPER_COMPONENT_CUID#,
+		LAST_MODIFY_TIME=#LAST_MODIFY_TIME#,
+		DEV_TYPE = #DEV_TYPE#
+		WHERE 
+		CUID = #CUID#
+	</update>
+	<update id="updateImportPtpInfo" parameterClass="java.util.HashMap">
+		UPDATE PTP SET 
+		LABEL_CN=#LABEL_CN#,
+		PORT_NO=#PORT_NO#,
+		PORT_RATE=#PORT_RATE#,
+		PORT_TYPE=#PORT_TYPE#,
+		PORT_SUB_TYPE=#PORT_SUB_TYPE#,
+		PORT_STATE=#PORT_STATE#,
+		VLAN=#VLAN#,
+		REMARK=#REMARK#,
+		FDN=#FDN#,
+		DEV_TYPE = #DEV_TYPE#,
+		RELATED_DISTRICT_CUID = #RELATED_DISTRICT_CUID#,
+		RELATED_CARD_CUID=#RELATED_CARD_CUID#,
+		RELATED_EMS_CUID=#RELATED_EMS_CUID#,
+		RELATED_NE_CUID=#RELATED_NE_CUID#,
+		LAST_MODIFY_TIME=#LAST_MODIFY_TIME#
+		WHERE 
+		CUID = #CUID#
+	</update>
+	<update id="updateImportPosInfo" parameterClass="java.util.HashMap">
+		UPDATE 
+		AN_POS 
+		SET 
+		LABEL_CN=#LABEL_CN#,
+		STANDARD_NAME=#STANDARD_NAME#,
+		RELATED_ROOM_CUID=#RELATED_ROOM_CUID#,
+		RELATED_EMS_CUID=#RELATED_EMS_CUID#,
+		RELATED_PORT_CUID=#RELATED_PORT_CUID#,
+		SEC_RELATED_PORT_CUID=#SEC_RELATED_PORT_CUID#,
+		CAN_ALLOCATE_TO_USER=#CAN_ALLOCATE_TO_USER#,
+		LOCATION=#LOCATION#,
+		RELATED_ACCESS_POINT=#RELATED_ACCESS_POINT#,
+		RELATED_OLT_CUID=#RELATED_OLT_CUID#,
+		MODEL=#MODEL#,
+		RELATED_VENDOR_CUID=#RELATED_VENDOR_CUID#,
+		OWNERSHIP=#OWNERSHIP#,
+		OWNERSHIP_MAN=#OWNERSHIP_MAN#,
+		MAINT_PERSON = #MAINT_PERSON#,
+		DATA_QUALITY_PERSON=#DATA_QUALITY_PERSON#,
+		SEQNO=#SEQNO#,
+		REAL_LONGITUDE=#REAL_LONGITUDE#,
+		REAL_LATITUDE=#REAL_LATITUDE#,
+		RELATED_PROJECT_CUID=#RELATED_PROJECT_CUID#,
+		LIVE_CYCLE=#LIVE_CYCLE#,
+		SETUP_TIME=#SETUP_TIME#,
+		BACK_NETWORK_TIME=#BACK_NETWORK_TIME#,
+		RATION=#RATION#,
+		RELATED_CAB_CUID=#RELATED_CAB_CUID#,
+		PRESERVER=#PRESERVER#,
+		MAINT_MODE=#MAINT_MODE#,
+		CREATTIME=#CREATTIME#,
+		REPAIR_TIME=#REPAIR_TIME#,
+		FDN=#FDN#
+		WHERE 
+		CUID = #CUID#
+	</update>
+	<update id="updateImportOnuInfo" parameterClass="java.util.HashMap">
+		UPDATE 
+		AN_ONU 
+		SET 
+		LABEL_CN=#LABEL_CN#,
+		STANDARD_NAME=#STANDARD_NAME#,
+		RELATED_ROOM_CUID=#RELATED_ROOM_CUID#,
+		RELATED_EMS_CUID=#RELATED_EMS_CUID#,
+		LOCATION=#LOCATION#,
+		RELATED_ACCESS_POINT=#RELATED_ACCESS_POINT#,
+		RELATED_OLT_CUID=#RELATED_OLT_CUID#,
+		RELATED_POS_CUID=#RELATED_POS_CUID#,
+		MODEL=#MODEL#,
+		DEV_IP=#DEV_IP#,
+		LIVE_CYCLE=#LIVE_CYCLE#,
+		SOFT_VERSION=#SOFT_VERSION#,
+		RELATED_VENDOR_CUID=#RELATED_VENDOR_CUID#,
+		OWNERSHIP=#OWNERSHIP#,
+		OWNERSHIP_MAN=#OWNERSHIP_MAN#,
+		REAL_LONGITUDE=#REAL_LONGITUDE#,
+		REAL_LATITUDE=#REAL_LATITUDE#,
+		RELATED_PROJECT_CUID=#RELATED_PROJECT_CUID#,
+		SETUP_TIME=#SETUP_TIME#,
+		BACK_NETWORK_TIME=#BACK_NETWORK_TIME#,
+		FTTX=#FTTX#,
+		ONU_TYPE=#ONU_TYPE#,
+		ONU_ID=#ONU_ID#,
+		AUTH_TYPE=#AUTH_TYPE#,
+		PASSWORD=#PASSWORD#,
+		LOGICID=#LOGICID#,
+		MAC_ADDR=#MAC_ADDR#,
+		SEQNO=#SEQNO#,
+		CREATTIME=#CREATTIME#,
+		MAINT_MODE=#MAINT_MODE#,
+		LAST_MODIFY_TIME=#LAST_MODIFY_TIME#,
+		PORT_NUMBER = #PORT_NUMBER#,
+		MAINT_PERSON = #MAINT_PERSON#,
+		DATA_QUALITY_PERSON=#DATA_QUALITY_PERSON#
+		FDN=#FDN#
+		WHERE 
+		CUID = #CUID#
+	</update>
+	<update id="updateImportPonTopoInfo" parameterClass="java.util.HashMap">
+		UPDATE
+		PON_TOPO_LINK
+		SET 
+		LABEL_CN=#LABEL_CN#,
+		NATIVE_NAME=#NATIVE_NAME#,
+		FDN=#FDN#,
+		USER_LABEL=#USER_LABEL#,
+		RELATED_EMS_CUID=#RELATED_EMS_CUID#,
+		LAYER_RATE=#LAYER_RATE#,
+		DIRECTION=#DIRECTION#,
+		ORIG_NE_CUID=#ORIG_NE_CUID#,
+		ORIG_PTP_CUID=#ORIG_PTP_CUID#,
+		DEST_NE_CUID=#DEST_NE_CUID#,
+		REMARK=#REMARK#,
+		DEST_PTP_CUID=#DEST_PTP_CUID#
+		WHERE
+		CUID = #CUID#
+	</update>
+	<update id="updateCoverageInfo" parameterClass="java.util.HashMap">
+		UPDATE
+		GPON_COVER
+		SET 
+		   DEVICE_TYPE=#DEVICE_TYPE#,
+		   RELATED_NE_CUID=#RELATED_NE_CUID#,
+		   USE_PROPERTY=#USE_PROPERTY#,
+		   ONTINADDR=#ONTINADDR#,
+		   COVER_RANGE=#COVER_RANGE#,
+		   RELATED_DISTRICT_CUID=#RELATED_DISTRICT_CUID#,
+		   BUILD_NAME=#BUILD_NAME#,
+		   MAINCOMP=#MAINCOMP#,
+		   PRO_RIGHT=#PRO_RIGHT#,
+		   LONGITUDE=#LONGITUDE#,
+		   LATITUDE=#LATITUDE#,
+		   PROJECT_NO=#PROJECT_NO#,
+		   REMARK=#REMARK#
+		WHERE
+		CUID = #CUID#
+	</update>
+	<update id="updateCustomerInfo" parameterClass="java.util.HashMap">
+		UPDATE
+		T_ROFH_CUSTOMER 
+		SET 
+		   CUID=#CUID#,
+		   LABEL_CN=#LABEL_CN#,
+		   CUSTOMER_CODE=#CUSTOMER_CODE#,
+		   EMAIL_ADDRESS=#EMAIL_ADDRESS#,
+		   CUSTOMER_ADDRESS=#CUSTOMER_ADDRESS#,
+		   REMARK=#REMARK#
+		WHERE
+		CUID = #CUID#
+	</update>
+	<update id="insertCoverageInfo" parameterClass="java.util.HashMap">
+		INSERT INTO GPON_COVER
+		  (CUID,
+		   OBJECTID,
+		   DEVICE_TYPE,
+		   RELATED_NE_CUID,
+		   USE_PROPERTY,
+		   ONTINADDR,
+		   COVER_RANGE,
+		   RELATED_DISTRICT_CUID,
+		   BUILD_NAME,
+		   MAINCOMP,
+		   PRO_RIGHT,
+		   LONGITUDE,
+		   LATITUDE,
+		   PROJECT_NO,
+		   REMARK)
+		VALUES
+		  (#CUID#,
+		   #OBJECTID#,
+		   #DEVICE_TYPE#,
+		   #RELATED_NE_CUID#,
+		   #USE_PROPERTY#,
+		   #ONTINADDR#,
+		   #COVER_RANGE#,
+		   #RELATED_DISTRICT_CUID#,
+		   #BUILD_NAME#,
+		   #MAINCOMP#,
+		   #PRO_RIGHT#,
+		   #LONGITUDE#,
+		   #LATITUDE#,
+		   #PROJECT_NO#,
+		   #REMARK#)
+	</update>
+	<update id="insertCustomerInfo" parameterClass="java.util.HashMap">
+		INSERT INTO T_ROFH_CUSTOMER 
+		  (CUID,
+		   LABEL_CN,
+		   CUSTOMER_CODE,
+		   EMAIL_ADDRESS,
+		   CUSTOMER_ADDRESS,
+		   REMARK)
+		VALUES
+		  (#CUID#,
+		   #LABEL_CN#,
+		   #CUSTOMER_CODE#,
+		   #EMAIL_ADDRESS#,
+		   #CUSTOMER_ADDRESS#,
+		   #REMARK#)
+	</update>
+	<select id="queryCustomerByLabelCn" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT * FROM T_ROFH_CUSTOMER WHERE LABEL_CN = #LABEL_CN#
+	</select>
+	<select id="queryAccountName" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT * FROM PON_WAY_ANMS WHERE ACCOUNT_NAME = #ACCOUNT_NAME#
+	</select>
+	<insert id="insertPonWayInfo" parameterClass="java.util.HashMap">
+		INSERT INTO PON_WAY_ANMS
+		  (CUID,
+		   OBJECTID,
+		   LABEL_CN,
+		   RELATED_ONU_CUID,
+		   ONU_TYPE_CUID,
+		   ONU_PORT_CUID,
+		   RELATED_LIGHT_CUID,
+		   LIGHT_PORT_CUID,
+		   RELATED_OLT_CUID,
+		   OLT_PON_PORT_CUID,
+		   RELATED_DISTRICT_CUID,
+		   SVLAN,
+		   CVLAN,
+		   VP_CUID,
+		   ACCOUNT_NAME,
+		   ONU_IN_ADDR,
+		   BUSINISS_TYPE_CUID,
+		   CREATE_TIME,
+		   LAST_MODIFY_TIME,
+		   BAND_WIDTH)
+		VALUES
+		  (#CUID#,
+		   #OBJECTID#,
+		   #LABEL_CN#,
+		   #RELATED_ONU_CUID#,
+		   #ONU_TYPE_CUID#,
+		   #ONU_PORT_CUID#,
+		   #RELATED_LIGHT_CUID#,
+		   #LIGHT_PORT_CUID#,
+		   #RELATED_OLT_CUID#,
+		   #OLT_PON_PORT_CUID#,
+		   #RELATED_DISTRICT_CUID#,
+		   #SVLAN#,
+		   #CVLAN#,
+		   #VP_CUID#,
+		   #ACCOUNT_NAME#,
+		   #ONU_IN_ADDR#,
+		   #BUSINISS_TYPE_CUID#,
+		   #CREATE_TIME#,
+		   #LAST_MODIFY_TIME#,
+		   #BAND_WIDTH#
+		   )
+	</insert>
+	<insert id="insertGponBusiType" parameterClass="java.util.HashMap">
+		INSERT INTO GPON_BUSI_TYPE
+		  (CUID,
+		   OBJECTID,
+		   GT_VERSION,
+		   BUSI_TYPE_NAME,
+		   BUSI_NAME_ABR,
+		   USE_TYPE,
+		   IS_RESERVE,
+		   REMARK,
+		   ISDELETE,
+		   CREATE_TIME,
+		   LAST_MODIFY_TIME,
+		   PUBLIC_BUSINESS_TYPE
+		   )
+		VALUES
+		  (#CUID#,
+		   #OBJECTID#,
+		   #GT_VERSION#,
+		   #BUSI_TYPE_NAME#,
+		   #BUSI_NAME_ABR#,
+		   #USE_TYPE#,
+		   #IS_RESERVE#,
+		   #REMARK#,
+		   #ISDELETE#,
+		   #CREATE_TIME#,
+		   #LAST_MODIFY_TIME#,
+		   #PUBLIC_BUSINESS_TYPE#
+		  )
+	</insert>
+	<select id="queryOnuByOnuCuid" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		SELECT * FROM AN_ONU WHERE CUID = #CUID#
+	</select>
+	<select id="queryPosByOnuCuid" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		SELECT * FROM AN_POS WHERE CUID = #CUID#
+	</select>
+	<update id="updateOltMaintainInfo" parameterClass="java.util.HashMap">
+		UPDATE
+		TRANS_ELEMENT 
+		SET 
+		   DEV_MAINTAIN=#DEV_MAINTAIN#,
+		   LINE_MAINTAIN=#LINE_MAINTAIN#
+		WHERE CUID = #CUID# 
+	</update>
+	<select id="queryOltBylabelcn" parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT T.CUID,T.LABEL_CN,T.RELATED_DISTRICT_CUID FROM TRANS_ELEMENT T WHERE T.SIGNAL_TYPE=9 AND T.CONFIG_TYPE=1 
+		AND T.LABEL_CN = #LABEL_CN#
+		<isNotEmpty property="STANDARD_NAME">
+		    AND	T.STANDARD_NAME = #STANDARD_NAME#
+		 </isNotEmpty>
+		<isNotEmpty property="RELATED_DISTRICT_CUID">
+		    AND	T.RELATED_DISTRICT_CUID LIKE #RELATED_DISTRICT_CUID#
+		 </isNotEmpty>
+	</select>
+	<select id="queryDistrictBylabelcn" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT D.CUID,D.LABEL_CN FROM DISTRICT D  WHERE D.LABEL_CN = #LABEL_CN#
+	</select>
+	<select id="queryMaintainBylabelcn" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT  S.CUID,S.LABEL_CN  FROM T_EXT_RADIO_MAINTAIN S  WHERE S.LABEL_CN = #LABEL_CN#
+	</select>
+</sqlMap>

@@ -4,7 +4,6 @@ package com.boco.workflow.webservice.upload.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.boco.common.util.debug.LogHome;
+import com.boco.core.bean.SpringContextUtil;
 import com.boco.core.utils.lang.TimeFormatHelper;
 import com.boco.workflow.webservice.upload.service.ImportResService;
 
@@ -54,10 +54,8 @@ public class ImportServlet extends HttpServlet {
 				//上传文件写到服务器上
 				File file = new File(upLoadFileName);
 				fileitem.write(file);
-				Map map = new HashMap();
+				Map<String,ImportResultDO> map = ((ImportResService) SpringContextUtil.getBean("importResService")).resolveExcel(file);
 				
-				
-				new ImportResService().resolveExcel(file);
 			
 				
 				Iterator<Entry<String, ImportResultDO>> iterator = map.entrySet().iterator();

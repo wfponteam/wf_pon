@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="FULLADDRESS">
+	 
+	<!--根据CUID查询标准地址-->
+	  <select id="getAddressInfoByCuid"  parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT 
+				  FA.CUID,/*主键CUID*/
+				  FA.LABEL_CN,/*名称*/
+				  FA.PROVINCE,/*1 省份*/
+				  (SELECT T1.LABEL_CN 
+					   FROM DISTRICT T1 
+					  WHERE T1.CUID=FA.PROVINCE) AS N_PROVINCE,/*1 省份*/
+			      FA.CITY,
+				  (SELECT T2.LABEL_CN 
+					 FROM DISTRICT T2 
+					WHERE T2.CUID=FA.CITY) AS N_CITY,/*2 地市*/
+				  FA.COUNTY,
+				  (SELECT T3.LABEL_CN 
+					 FROM DISTRICT T3 
+					WHERE T3.CUID=FA.COUNTY) AS N_COUNTY,/*3 区县*/
+				  FA.TOWN,
+				  (SELECT T4.LABEL_CN
+						FROM DISTRICT T4 
+					   WHERE T4.CUID=FA.TOWN) AS N_TOWN,/*4 镇乡/街道办*/
+				  FA.COMMUNITY,/*5 社区/行政村*/
+				  FA.ROAD,/*6 路/巷/街*/
+				  FA.ROAD_NUMBER,/*7 门牌号码*/
+				  FA.VILLAGES,/*8 小区/公司/单位/学校/自然村/村组*/
+				  FA.VILLAGE_ALIAS,/*9 小区别名*/
+				  FA.BUILDING,/*10 楼栋号*/  
+				  FA.UNIT_NO,/*11 单元*/
+				  FA.FLOOR_NO,/*12 楼层*/
+				  FA.ROOM_NO,/*13 房号/村内编号*/
+				  FA.LONGITUDE,/*经度*/
+				  FA.LATITUDE,/*纬度*/
+				  FA.ABBREVIATION,/*地址简称*/
+				  FA.PINYIN,/*地址拼音*/
+				  FA.POSTCODE,/*邮政编码*/
+				  FA.REGIONTYPE1, /*地域属性一级分类*/
+				  FA.REGIONTYPE2, /*地域属性二级分类*/
+				  FA.RELATED_COMMUNITY_CUID,
+				  (SELECT T7.LABEL_CN 
+					   FROM BUSINESS_COMMUNITY T7
+					  WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2) AS N_RELATED_COMMUNITY_CUID/*所属业务区*/
+				  FROM T_ROFH_FULL_ADDRESS FA
+				  WHERE FA.CUID = #cuid#  /*AND FLAG=0*/
+				  Order by N_RELATED_COMMUNITY_CUID
+	  </select>
+	  <select id="selectAddressInfoByLabeCn"  parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+           SELECT  FA.CUID,FA.CITY,FA.COUNTY,FA.RELATED_COMMUNITY_CUID FROM T_ROFH_FULL_ADDRESS FA WHERE FA.LABEL_CN = #addressName#
+	  </select>
+	  <select id="selectBusinessCommunityInfoByLabeCn"  parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+           SELECT BC.CUID FROM BUSINESS_COMMUNITY BC WHERE  BC.LABEL_CN = #labelCn# AND ACCESS_MODE=2
+	  </select>
+	  <select id="selectDistrictInfoByLabeCn"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+           SELECT D.CUID FROM DISTRICT D WHERE D.DATA_TYPE = #DATA_TYPE# AND D.LABEL_CN = #LABEL_CN#
+           <isNotEmpty property="RELATED_SPACE_CUID">
+		    AND D.RELATED_SPACE_CUID = #RELATED_SPACE_CUID#
+		   </isNotEmpty>
+	  </select>
+	   <update id="updateAddressBusinessInfo" parameterClass="java.util.HashMap">
+		UPDATE T_ROFH_FULL_ADDRESS 
+		SET
+		RELATED_COMMUNITY_CUID = #RELATED_COMMUNITY_CUID#
+		WHERE CUID IN
+		<iterate property="CUIDS" conjunction="," open="(" close=")">
+					#CUIDS[]#
+		</iterate>
+	  </update>
+	  <update id="updateAddressInfo" parameterClass="java.util.HashMap">
+		UPDATE T_ROFH_FULL_ADDRESS
+		SET
+		LABEL_CN = #LABEL_CN#,
+		PROVINCE = #PROVINCE#,
+		CITY     = #CITY#,
+		COUNTY   = #COUNTY#,
+		TOWN     = #TOWN#,
+		COMMUNITY = #COMMUNITY#,
+		ROAD     = #ROAD#,
+		ROAD_NUMBER = #ROAD_NUMBER#,
+		VILLAGES = #VILLAGES#,
+		VILLAGE_ALIAS = #VILLAGE_ALIAS#,
+		BUILDING = #BUILDING#,
+		UNIT_NO  = #UNIT_NO#,
+		FLOOR_NO = #FLOOR_NO#,
+		ROOM_NO  = #ROOM_NO#,
+		LONGITUDE = #LONGITUDE#,
+		LATITUDE = #LATITUDE#,
+		ABBREVIATION = #ABBREVIATION#,
+		PINYIN   = #PINYIN#,
+		POSTCODE = #POSTCODE#,
+		RELATED_COMMUNITY_CUID = #RELATED_COMMUNITY_CUID#,
+		REGIONTYPE1 = #REGIONTYPE1#,
+		REGIONTYPE2 = #REGIONTYPE2#,
+		LAST_MODIFY_TIME=#LAST_MODIFY_TIME#,
+		FLAG	= '0'
+		WHERE CUID = #CUID#
+	</update>
+	<update id="updateGponCoverByAddress" parameterClass="java.util.HashMap">
+	  UPDATE GPON_COVER SET COVER_RANGE = #LABEL_CN# || '|' || COVER_INFO WHERE STANDARD_ADDR = #CUID#
+	</update>
+	<!-- 修改产品信息中的标准地址 -->
+	<update id="updateRofhProductInfo" parameterClass="java.util.HashMap">
+	  	UPDATE T_SF_ROFH_PRODUCT SET BUSINESS_CITY_D = #BUSINESS_CITY_D# ,
+	  								 BUSINESS_COUNTY_D = #BUSINESS_COUNTY_D# ,
+	  								 RELATED_COMMUNITY_CUID = #RELATED_COMMUNITY_CUID#
+	  		 	WHERE RELATED_COVERAGE_ADDR_CUID = #RELATED_COVERAGE_ADDR_CUID#
+	</update>
+	<insert id="insertAddressInfo" parameterClass="java.util.HashMap">
+		INSERT INTO T_ROFH_FULL_ADDRESS
+		(CUID,FLAG,OBJECT_ID,LABEL_CN,PROVINCE,CITY,COUNTY,
+		 TOWN,COMMUNITY,ROAD,ROAD_NUMBER,VILLAGES,
+		 VILLAGE_ALIAS,BUILDING,UNIT_NO,
+		 FLOOR_NO,ROOM_NO,LONGITUDE,LATITUDE,
+		 ABBREVIATION,PINYIN,POSTCODE,RELATED_COMMUNITY_CUID,REGIONTYPE1,REGIONTYPE2,CREATE_TIME,LAST_MODIFY_TIME) VALUES 
+		 (#CUID#,'0',get_object_id('T_ROFH_FULL_ADDRESS'),#LABEL_CN#,#PROVINCE#,#CITY#,#COUNTY#,
+		 #TOWN#,#COMMUNITY#,#ROAD#,#ROAD_NUMBER#,#VILLAGES#,
+		 #VILLAGE_ALIAS#,#BUILDING#,#UNIT_NO#,
+		 #FLOOR_NO#,#ROOM_NO#,#LONGITUDE#,#LATITUDE#,
+		 #ABBREVIATION#,#PINYIN#,#POSTCODE#,#RELATED_COMMUNITY_CUID#,#REGIONTYPE1#,#REGIONTYPE2#,SYSDATE,#LAST_MODIFY_TIME#)
+	</insert> 
+    <delete id="deleteAddressInfo" parameterClass="java.util.HashMap">
+	 DELETE FROM  T_ROFH_FULL_ADDRESS  WHERE  1=1
+	 <isNotEmpty property="CUID">
+	    AND CUID = #CUID#
+	  </isNotEmpty>
+	  <isEmpty property="CUID">
+	  	AND 1=2
+	  </isEmpty>
+     </delete>
+    <!--根据标准地址CUID查询是否被引用 -->
+	<select id="selectRelatedAddressNum" resultClass="com.boco.core.ibatis.vo.ResultMap"
+		parameterClass="java.lang.String">
+		SELECT sum(RELATED_NUM)  AS  RELATED_NUM FROM
+		(
+        SELECT COUNT(1) RELATED_NUM
+          FROM GPON_COVER g
+         WHERE g.STANDARD_ADDR = #cuid#
+         UNION
+         SELECT COUNT(1) RELATED_NUM 
+         FROM T_SF_ROFH_PRODUCT g
+         WHERE g.RELATED_COVERAGE_ADDR_CUID = #cuid#
+         )
+	</select>
+	<!--根据CUIDS查询标准地址,导出信息-->
+	<select id="selectAddressInfoByCuids"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT 
+				  FA.CUID,/*主键CUID*/
+				  FA.LABEL_CN,/*名称*/
+				  FA.PROVINCE,/*1 省份*/
+				  (SELECT T1.LABEL_CN 
+					   FROM DISTRICT T1 
+					  WHERE T1.CUID=FA.PROVINCE) AS N_PROVINCE,/*1 省份*/
+			      FA.CITY,
+				  (SELECT T2.LABEL_CN 
+					 FROM DISTRICT T2 
+					WHERE T2.CUID=FA.CITY) AS N_CITY,/*2 地市*/
+				  FA.COUNTY,
+				  (SELECT T3.LABEL_CN 
+					 FROM DISTRICT T3 
+					WHERE T3.CUID=FA.COUNTY) AS N_COUNTY,/*3 区县*/
+				  FA.TOWN,
+				  (SELECT T4.LABEL_CN
+						FROM DISTRICT T4 
+					   WHERE T4.CUID=FA.TOWN) AS N_TOWN,/*4 镇乡/街道办*/
+				  FA.COMMUNITY,/*5 社区/行政村*/
+				  FA.ROAD,/*6 路/巷/街*/
+				  FA.ROAD_NUMBER,/*7 门牌号码*/
+				  FA.VILLAGES,/*8 小区/公司/单位/学校/自然村/村组*/
+				  FA.VILLAGE_ALIAS,/*9 小区别名*/
+				  FA.BUILDING,/*10 楼栋号*/  
+				  FA.UNIT_NO,/*11 单元*/
+				  FA.FLOOR_NO,/*12 楼层*/
+				  FA.ROOM_NO,/*13 房号/村内编号*/
+				  FA.LONGITUDE,/*经度*/
+				  FA.LATITUDE,/*纬度*/
+				  FA.ABBREVIATION,/*地址简称*/
+				  FA.PINYIN,/*地址拼音*/
+				  FA.POSTCODE,/*邮政编码*/
+				  FA.RELATED_COMMUNITY_CUID,
+				  FA.REGIONTYPE1,
+				  FA.REGIONTYPE1,
+				  (SELECT T7.LABEL_CN 
+					   FROM BUSINESS_COMMUNITY T7
+					  WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2) AS N_RELATED_COMMUNITY_CUID/*所属业务区*/
+				  FROM T_ROFH_FULL_ADDRESS FA 
+				  WHERE FA.CUID IN
+				  <iterate property="CUIDS" conjunction="," open="(" close=")">
+					#CUIDS[]#
+				  </iterate>
+	  </select>
+	  <select id="getProvinceAllChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT PROVINCE AS ID,
+		        ADR_NAME || '-地市' || NEXT_ADDR_NUM || '-总计' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.PROVINCE AS PROVINCE,
+	               (SELECT D.LABEL_CN FROM DISTRICT D WHERE D.CUID = A.PROVINCE) AS ADR_NAME,
+	               (SELECT COUNT(DISTINCT B.CITY)
+	                  FROM T_ROFH_FULL_ADDRESS B
+	                 WHERE B.PROVINCE = A.PROVINCE AND FLAG=0) AS NEXT_ADDR_NUM,
+	               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE FLAG=0
+         GROUP BY A.PROVINCE)
+	  </select>
+	  <select id="getCityAllChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT CITY AS ID,
+		       ADR_NAME || '-区/县' || NEXT_ADDR_NUM || '-总计' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY AS CITY,
+	               (SELECT D.LABEL_CN FROM DISTRICT D WHERE D.CUID = A.CITY) AS ADR_NAME,
+	               (SELECT COUNT(DISTINCT B.COUNTY)
+	                  FROM T_ROFH_FULL_ADDRESS B
+	                 WHERE B.PROVINCE=#parentId# AND B.CITY = A.CITY AND FLAG=0) AS NEXT_ADDR_NUM,
+	               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.PROVINCE=#parentId# AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY)
+	  </select>
+	  <select id="getCountyAllChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT COUNTY AS ID,
+		       ADR_NAME || '-镇乡/街道办' || NEXT_ADDR_NUM || '-总计' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY||'|'||A.COUNTY AS COUNTY,
+	               (SELECT D.LABEL_CN FROM DISTRICT D WHERE D.CUID = A.COUNTY) AS ADR_NAME,
+	               (SELECT COUNT(DISTINCT B.TOWN)
+	                  FROM T_ROFH_FULL_ADDRESS B
+	                 WHERE B.CITY=#parentId# AND B.COUNTY = A.COUNTY) AS NEXT_ADDR_NUM,
+	               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.CITY=#parentId# AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY,A.COUNTY)
+	  </select>
+	  <select id="getTownAllChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT TOWN AS ID,
+		        ADR_NAME || '路/巷/街' || NEXT_ADDR_NUM || '-总计' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY||'|'||A.COUNTY||'|'||A.TOWN AS TOWN,
+		               (SELECT D.LABEL_CN FROM DISTRICT D WHERE D.CUID = A.TOWN) AS ADR_NAME,
+		               (SELECT COUNT(DISTINCT B.ROAD) FROM T_ROFH_FULL_ADDRESS B WHERE B.COUNTY=#parentId# AND B.TOWN = A.TOWN) AS NEXT_ADDR_NUM,
+		               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.COUNTY=#parentId# AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY,A.COUNTY,A.TOWN) 
+	  </select>
+	  <!-- 获取 8级地址，小区-->
+	  <select id="getRoadAllChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT ROAD AS ID,
+		        ADR_NAME || '小区/单位/学校' || NEXT_ADDR_NUM || '-总计' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY||'|'||A.COUNTY||'|'||A.TOWN||'|'||A.ROAD AS ROAD,
+		               A.ROAD AS ADR_NAME,
+		               (SELECT COUNT(DISTINCT B.VILLAGES) FROM T_ROFH_FULL_ADDRESS B WHERE B.TOWN=#parentId# AND B.ROAD = A.ROAD) AS NEXT_ADDR_NUM,
+		               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.TOWN=#parentId# AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY,A.COUNTY,A.TOWN,A.ROAD) 
+	  </select>
+	  <!-- 获取 10级栋-->
+	  <select id="getVillageAllChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT VILLAGES AS ID,
+		        ADR_NAME || '楼栋号' || NEXT_ADDR_NUM || '-总计' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY||'|'||A.COUNTY||'|'||A.TOWN||'|'||A.ROAD||'|'||A.VILLAGES AS VILLAGES,
+		               A.VILLAGES AS ADR_NAME,
+		               (SELECT COUNT(DISTINCT B.BUILDING) FROM T_ROFH_FULL_ADDRESS B WHERE B.TOWN=#TOWN# AND B.ROAD=#parentId#  AND B.VILLAGES = A.VILLAGES) AS NEXT_ADDR_NUM,
+		               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.TOWN=#TOWN# AND A.ROAD=#parentId#  AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY,A.COUNTY,A.TOWN,A.ROAD,A.VILLAGES) 
+	  </select>
+	  
+	  <!-- 获取 7级单元-->
+	  <select id="getBuildingAllChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT BUILDING AS ID,
+		        ADR_NAME || '单元' || NEXT_ADDR_NUM || '-总计' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY||'|'||A.COUNTY||'|'||A.TOWN||'|'||A.ROAD||'|'||A.VILLAGES||'|'||A.BUILDING AS BUILDING,
+		               BUILDING AS ADR_NAME,
+		               (SELECT COUNT(DISTINCT B.UNIT_NO) FROM T_ROFH_FULL_ADDRESS B WHERE B.TOWN=#TOWN# AND B.ROAD=#ROAD# AND B.VILLAGES=#parentId# AND B.BUILDING = A.BUILDING) AS NEXT_ADDR_NUM,
+		               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.TOWN=#TOWN# AND A.ROAD=#ROAD# AND A.VILLAGES=#parentId#  AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY,A.COUNTY,A.TOWN,A.ROAD,A.VILLAGES,A.BUILDING) 
+	  </select>
+	  
+	  <!-- 获取 12级层-->
+	  <select id="getUnitChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT UNIT_NO AS ID,
+		        ADR_NAME || '层' || ADR_NUM AS TEXT,
+		       'FALSE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY||'|'||A.COUNTY||'|'||A.TOWN||'|'||A.ROAD||'|'||A.VILLAGES||'|'||A.BUILDING||'|'||A.UNIT_NO AS UNIT_NO,
+		               UNIT_NO AS ADR_NAME,
+		               (SELECT COUNT(DISTINCT B.FLOOR_NO) FROM T_ROFH_FULL_ADDRESS B WHERE B.TOWN=#TOWN# AND B.ROAD=#ROAD# AND B.VILLAGES=#VILLAGES# AND B.BUILDING=#parentId# AND B.UNIT_NO = A.UNIT_NO) AS NEXT_ADDR_NUM,
+		               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.TOWN=#TOWN# AND A.ROAD=#ROAD# AND A.VILLAGES=#VILLAGES# AND A.BUILDING=#parentId# AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY,A.COUNTY,A.TOWN,A.ROAD,A.VILLAGES,A.BUILDING,A.UNIT_NO) 
+	  </select>
+	  <!-- 获取 12级层-->
+	  <select id="getFloorChildren"  parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	     SELECT FLOOR_NO AS ID,
+		        ADR_NAME || '户' || ADR_NUM AS TEXT,
+		       'TRUE' AS LEAF
+		  FROM (SELECT A.PROVINCE||'|'||A.CITY||'|'||A.COUNTY||'|'||A.TOWN||'|'||A.ROAD||'|'||A.VILLAGES||'|'||A.BUILDING||'|'||A.UNIT_NO||'|'||A.FLOOR_NO AS FLOOR_NO,
+		               FLOOR_NO AS ADR_NAME,
+		               (SELECT COUNT(DISTINCT B.ROOM_NO) FROM T_ROFH_FULL_ADDRESS B WHERE  B.TOWN=#TOWN# AND B.ROAD=#ROAD# AND B.VILLAGES=#VILLAGES# AND B.BUILDING=#BUILDING# AND A.UNIT_NO=#parentId# AND B.FLOOR_NO = A.FLOOR_NO) AS NEXT_ADDR_NUM,
+		               COUNT(1) AS ADR_NUM
+		          FROM T_ROFH_FULL_ADDRESS A WHERE A.TOWN=#TOWN# AND A.ROAD=#ROAD# AND A.VILLAGES=#VILLAGES# AND A.BUILDING=#BUILDING# AND A.UNIT_NO=#parentId# AND FLAG=0
+		         GROUP BY A.PROVINCE,A.CITY,A.COUNTY,A.TOWN,A.ROAD,A.VILLAGES,A.BUILDING,A.UNIT_NO,A.FLOOR_NO) 
+	  </select>
+	  
+</sqlMap>

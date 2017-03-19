@@ -68,8 +68,8 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 										        url: ctx+'/webServiceAction/syncHangingResult.do',
 										        method: 'POST',
 										        params: {
-										        	parentPrjCode:JSON.stringify(Ext.getCmp("customPanel").getForm().getValues()).PARENT_PRJ_CODE,
-										        	prjCode: JSON.stringify(Ext.getCmp("customPanel").getForm().getValues()).PRJ_CODE
+										        	parentPrjCode:Ext.getCmp("customPanel").getForm().getValues().PARENT_PRJ_CODE,
+										        	prjCode: Ext.getCmp("customPanel").getForm().getValues().PRJ_CODE
 										        },
 										        success: function(response) {
 										            var result = JSON.parse(response.responseText);

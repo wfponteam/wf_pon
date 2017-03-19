@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="GPONCOVER">
+	 <insert id="insertGponCover" parameterClass="java.util.HashMap">
+		INSERT INTO GPON_COVER
+		(CUID,STANDARD_ADDR,RELATED_NE_CUID,DEVICE_NAME,COVER_INFO,REGIONTYPE1,REGIONTYPE2,BUSINESS_TYPE) VALUES 
+		 (#CUID#,
+		  #STANDARD_ADDR#,
+		  #RELATED_NE_CUID#,
+		  #DEVICE_NAME#,
+		#COVER_INFO#,
+		#REGIONTYPE1#,
+		#REGIONTYPE2#,
+		#BUSINESS_TYPE#
+		)
+	</insert>
+	 <delete id="deleteGponCover" parameterClass="java.util.HashMap">
+	  DELETE FROM  GPON_COVER  WHERE  1=1
+	 <isNotEmpty property="CUID">
+	    AND CUID = #CUID#
+	  </isNotEmpty>
+	  <isEmpty property="CUID">
+	  	AND 1=2
+	  </isEmpty>
+     </delete>
+     <update id="updateGponCover" parameterClass="java.util.HashMap">
+		UPDATE GPON_COVER 
+		SET COVER_INFO = #COVER_INFO#,
+			REGIONTYPE1 = #REGIONTYPE1#,
+			REGIONTYPE2 = #REGIONTYPE2#,
+			BUSINESS_TYPE=#BUSINESS_TYPE#
+		WHERE CUID = #CUID#
+	  </update>
+	  
+	  <update id="updateGponCoverForExcel" parameterClass="java.util.HashMap">
+		UPDATE GPON_COVER 
+		SET COVER_INFO = #COVER_INFO#,
+			REGIONTYPE1 = #REGIONTYPE1#,
+			REGIONTYPE2 = #REGIONTYPE2#,
+			BUSINESS_TYPE=#BUSINESS_TYPE#,
+			REMARK = #REMARK# 
+		WHERE CUID = #CUID#
+	  </update>
+	  
+	   <insert id="insertGponCoverForExcel" parameterClass="java.util.HashMap">
+		INSERT INTO GPON_COVER
+		(CUID,STANDARD_ADDR,RELATED_NE_CUID,DEVICE_NAME,COVER_INFO,REGIONTYPE1,REGIONTYPE2,REMARK,BUSINESS_TYPE) VALUES 
+		 (#CUID#,
+		  #STANDARD_ADDR#,
+		  #RELATED_NE_CUID#,
+		  #DEVICE_NAME#,
+		  #COVER_INFO#,
+		  #REGIONTYPE1#,
+		  #REGIONTYPE2#,
+		  #REMARK#,
+		  #BUSINESS_TYPE#
+		)
+	</insert>
+	
+	  <select id="selectRelatedNeCuidByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
+	 <![CDATA[	SELECT   cuid,  label_cn
+			  FROM fiber_cab_gx POS
+			 WHERE label_cn = #neName#
+			UNION ALL
+			SELECT  CUID,  LABEL_CN
+			  FROM fiber_dp_gx  ONU
+			 WHERE label_cn = #neName#
+		 ]]>
+	 </select>
+	 
+	 <select id="selectFullAddressByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
+	 	select CUID,LABEL_CN FROM T_ROFH_FULL_ADDRESS WHERE LABEL_CN=#addressName#
+	 </select>
+	 
+	 <select id="selectGponCoverByNeAndAddress" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.util.HashMap">
+	 	SELECT CUID FROM GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
+	 </select>
+	 
+</sqlMap>
+
