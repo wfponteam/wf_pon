@@ -82,7 +82,7 @@ Frame.grid.plugins.query.onu_query = Ext.extend(Object, {
 				hidden: true,
 				queryCfg : {
 					type : "string",
-					relation : "=",
+					relation : "="
 				}
 			}]
 		},{

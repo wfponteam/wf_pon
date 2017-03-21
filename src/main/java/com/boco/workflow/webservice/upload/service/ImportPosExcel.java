@@ -76,7 +76,7 @@ public class ImportPosExcel {
 	/**
 	 * 导入POS基础数据
 	 */
-	protected  ImportResultDO importPosBasicData(Workbook writeWorkBook, Sheet writeSheet,String pathname, String excelName) throws Exception {
+	protected  ImportResultDO importPosBasicData(Workbook writeWorkBook, Sheet writeSheet,String pathname, String excelName,String prjcode) throws Exception {
 		ImportResultDO importResultDO = new ImportResultDO(excelName);
 		posList = new ArrayList();
 		posNameList = new ArrayList();	
@@ -107,7 +107,7 @@ public class ImportPosExcel {
 					if(name != null && !"".equals(name.toString().trim())){
 						verificationPosCell( writeWorkBook,  writeSheet,xRow ,headingMap,i,lastColumns,lastRows,portNameList);
 						if(ImportCommonMethod.isExistFalse(writeWorkBook, writeSheet, lastColumns,lastRows) == 0){
-							addPosModel(xRow , headingMap, i);
+							addPosModel(xRow , headingMap, i,prjcode);
 						}
 					}else{
 						int labelCnInt = Integer.parseInt(headingMap.get(Constant.POS_LABELCN).toString());
@@ -197,12 +197,17 @@ public class ImportPosExcel {
 			if(!ImportCommonMethod.isEmpty(posName)){
 				Map temp = getImportAttributeQueryBO().getPosByName(posName);
 				if(temp!=null){
-					posCuid = ObjectUtils.toString(temp.get("CUID"));
 					
+					String type = ObjectUtils.toString(temp.get("TYPE"));
+					if("0".equals(type)){
+						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, labelCn, lastColumns, "pos名称已经归档！");
+					}else{
+						posCuid = ObjectUtils.toString(temp.get("CUID"));
+					}
 					
 					}
 					//ImportCommonMethod.VerificationCardNameRepeat(writeWorkBook, writeSheet, labelCn, i, lastColumns);
-				}
+			}
 			
 			ImportCommonMethod.isExcelExist(writeWorkBook, writeSheet, labelCn, i, lastColumns,lastRows,nameMap);
 			
@@ -402,7 +407,7 @@ public class ImportPosExcel {
 	/**
 	 * 将Excel数据增加到POS模型中
 	 */
-	private void addPosModel(Row xRow ,Map headingMap,int i) throws Exception{
+	private void addPosModel(Row xRow ,Map headingMap,int i,String prjcode) throws Exception{
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// 01.PBOSS系统分光器名称
 		// 02.分光器名称
@@ -555,9 +560,8 @@ public class ImportPosExcel {
 				map.put("SEQNO", ImportCommonMethod.getCellValue(xRow.getCell(seqNo)));
 			}
 			// 10.所属工程
-			if(xRow.getCell(relatedProjectCuid)!=null && !"".equals(xRow.getCell(relatedProjectCuid).toString())){
-				map.put("RELATED_PROJECT_CUID", xRow.getCell(relatedProjectCuid).toString());
-			}
+				map.put("RELATED_PROJECT_CUID", prjcode);
+			
 			// 11.生命周期状态
 			if(xRow.getCell(liveCycle)!=null && !"".equals(xRow.getCell(liveCycle).toString())){
 				if(ImportCommonMethod.isEnum(Constant.LIVECYCLE,xRow.getCell(liveCycle).toString())){
@@ -734,19 +738,19 @@ public class ImportPosExcel {
 			
 			String	posFdn = "";
 			String posOLtCuid="" ;
-			if(map.get("FDN")=="" ||map.get("FDN")== null ){
-				if(map.get("UP_DEV_TYPE").equals("POS")){
-					posOLtCuid =  ObjectUtils.toString(map.get("RELATED_UPNE_CUID"));		 	
-					Map temp1=getImportAttributeQueryBO().getPosByLabelCuid(posOLtCuid) ; 
+
+			if(map.get("UP_DEV_TYPE").equals("POS")){
+				posOLtCuid =  ObjectUtils.toString(map.get("RELATED_UPNE_CUID"));		 	
+				Map temp1=getImportAttributeQueryBO().getPosByLabelCuid(posOLtCuid) ; 
+				posFdn = temp1.get("FDN") + ":POS=" +  ObjectUtils.toString(map.get("LABEL_CN"));
+			}
+			else if(map.get("UP_DEV_TYPE").equals("OLT")){
+	        		posOLtCuid =  ObjectUtils.toString(map.get("RELATED_OLT_CUID"));		 	
+					Map temp1=getImportAttributeQueryBO().getOltByLabelCuid(posOLtCuid) ; 
 					posFdn = temp1.get("FDN") + ":POS=" +  ObjectUtils.toString(map.get("LABEL_CN"));
-				}
-				else if(map.get("UP_DEV_TYPE").equals("OLT")){
-		        		posOLtCuid =  ObjectUtils.toString(map.get("RELATED_OLT_CUID"));		 	
-						Map temp1=getImportAttributeQueryBO().getOltByLabelCuid(posOLtCuid) ; 
-						posFdn = temp1.get("FDN") + ":POS=" +  ObjectUtils.toString(map.get("LABEL_CN"));
-		           }
-					map.put("FDN", posFdn);
-				}
+	           }
+				map.put("FDN", posFdn);
+				
 			posList.add(map);
 		} catch (Exception e) {
 			LogHome.getLog().error("接入网-POS设备校验装入Map出错", e);			

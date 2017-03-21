@@ -32,7 +32,7 @@ public class WebServiceConstant {
 	 */
 	public static enum ResultEnum{
 		
-		SUCESS("0",""),VALIDERROR("1","校验不同过"),FAIL("1","");
+		SUCESS("0",""),VALIDERROR("1","校验不通过"),BUSINESSFAIL("1","业务逻辑出错:");
 		
 		private String isSuccess;
 		

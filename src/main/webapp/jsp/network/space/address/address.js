@@ -10,6 +10,7 @@ NETWORK.address= Ext.extend(Ext.Panel,{
 	frame 		: true,
 	layout 		: 'border',
 	autoScroll  : true,
+	prjcode     : '',
 	
 	initComponent : function() {
 		this._initItems();
@@ -23,7 +24,9 @@ NETWORK.address= Ext.extend(Ext.Panel,{
 			enableGeneralQuery: false,
 			enableContextMenu : true,
 			rendererPlugin : 'address_renderer',
+			prjcode    : this.prjcode,
 			gridCfg : {
+				boName : 'ponTemplateGirdBo',
 				cfgParams : {
 					templateId : 'ADDRESS_MANAGE'
 				}

@@ -288,9 +288,9 @@ public class ImportCommonMethod {
 						String neCuid = ObjectUtils.toString(map.get("CUID"));
 						String neFdn = ObjectUtils.toString(map.get("FDN"));
 						// 根据需求，在页面新增onu的时候，不新建板卡
-						/*if (excelName.equals(Constant.ONUNAME)) {
-							getAnOltManageBO().createCardInfo(neCuid, neFdn, "ONU", 2);
-						}*/
+						if (excelName.equals(Constant.ONUNAME)) {
+							getOnuManageBO().createCardInfo(neCuid, neFdn, "ONU", 2);
+						}
 						if (excelName.equals(Constant.POSNAME)) {
 							getOnuManageBO().createCardInfo(neCuid, neFdn, "POS", 3);
 						}
@@ -310,7 +310,6 @@ public class ImportCommonMethod {
 			}
 			
 			//更新端口状态
-			//TODO:如果新端口中有重复的，需要提示用户端口被占用
 			if(!newPortList.isEmpty()){
 				getImportBasicDataBO().updatePortState(newPortList, "2");
 			}
@@ -848,36 +847,29 @@ public class ImportCommonMethod {
 				//if(canImportPortTypes.contains(excelName)){
 				
 				if (cardMaps != null && cardMaps.size() > 0) {
-					List updateCardList = new ArrayList();
+
 					List updateCardList1 = new ArrayList();
 					List insertCardList = new ArrayList();
 					for (String k : cardMaps.keySet()) {
 						Map card = cardMaps.get(k);
 						String pcType = card.get("TYPE") + "";
 						if ("update".equals(pcType)) {
-							if(excelName.equals(Constant.OLTPORTNAME)){
-								updateCardList.add(card);
-							}else{
-								updateCardList1.add(card);
-							}
+							
+							updateCardList1.add(card);
+							
 						}
 						if ("add".equals(pcType)) {
 							insertCardList.add(card);
 						}
 					}
-					if (updateCardList != null && updateCardList.size() > 0) {
-						getImportBasicDataBO().importCardBatchUpdate( updateCardList, excelName);
-//						if ("updatePtpName".equals(control)) {
-//							getImportBasicDataBO().updatePtpNameByCard( updateCardList, excelName);
-//						}
-					}
+
 					if (updateCardList1 != null && updateCardList1.size() > 0) {
 						getImportBasicDataBO().importCardBatchUpdate1(updateCardList1, excelName);
 //						if ("updatePtpName".equals(control)) {
 //							getImportBasicDataBO().updatePtpNameByCard( updateCardList, excelName);
 //						}
 					}
-					importResultDO.setInfo("更新板卡数据:" + (updateCardList.size()+updateCardList1.size())
+					importResultDO.setInfo("更新板卡数据:" + (updateCardList1.size())
 							+ "条");
 					if (insertCardList != null && insertCardList.size() > 0) {
 						getImportBasicDataBO().importCardBatchInsert(
@@ -975,14 +967,10 @@ public class ImportCommonMethod {
 				Cell xCell = xRow.getCell(relatedNeCuidInt);
 				if (xCell != null && !StringUtils.isEmpty(xCell.toString())) {
 					List<Map> list = new ArrayList<Map>();
-					if(sheetName.indexOf("OLT端口")>=0){
-						list = oltManageBO.getOLTCuidByLabelCn(xCell.toString());
-					}else if(sheetName.indexOf("ONU端口")>=0){
+					if(sheetName.indexOf("ONU端口")>=0){
 						list = oltManageBO.getONUCuidByLabelCn(xCell.toString());
 					}else if(sheetName.indexOf("POS端口")>=0){
 						list = oltManageBO.getPOSCuidByLabelCn(xCell.toString());
-					}else{
-						list = oltManageBO.getAllNeCuidByLabelCn(xCell.toString());
 					}
 					if (list.isEmpty()) {
 						String showmessage = "网元名称在数据库中不存在\r\n";

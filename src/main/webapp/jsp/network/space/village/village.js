@@ -10,6 +10,7 @@ NETWORK.village= Ext.extend(Ext.Panel,{
 	frame 		: true,
 	layout 		: 'border',
 	autoScroll  : true,
+	prjcode     : '',
 	
 	initComponent : function() {
 		this._initItems();
@@ -23,7 +24,9 @@ NETWORK.village= Ext.extend(Ext.Panel,{
 			enableGeneralQuery: false,
 			enableContextMenu : true,
 			rendererPlugin : 'village_renderer',
+			prjcode    : this.prjcode,
 			gridCfg : {
+				boName : 'ponTemplateGirdBo',
 				cfgParams : {
 					templateId : 'VILLAGE_MANAGE'
 				}

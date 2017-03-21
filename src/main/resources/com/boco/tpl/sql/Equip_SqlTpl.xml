@@ -45,7 +45,7 @@
              A.SEQNO,
              TO_CHAR(A.CREATE_TIME, 'yyyy-mm-dd hh24:mm:ss') AS CREATE_TIME,
              A.RELATED_PROJECT_CUID
-             FROM AN_ONU A
+             FROM $ns$AN_ONU A
 			 WHERE A.RELATED_DISTRICT_CUID LIKE '{USERDISTRICT}%'
 		]]>
 	</sql>
@@ -102,7 +102,7 @@
                                to_char(T.CREATE_TIME, 'yyyy-mm-dd hh24:mm:ss') AS CREATE_TIME,
                                T.SEQNO,
            T.RELATED_PROJECT_CUID
-      FROM AN_POS T
+      FROM $ns$AN_POS T
        WHERE T.RELATED_DISTRICT_CUID LIKE '{userDistrict}%'
 		]]>
 	</sql>
@@ -135,12 +135,12 @@
 			       (SELECT AO.RELATED_DISTRICT_CUID
 			          FROM AN_ONU AO
 			         WHERE AO.CUID = P.RELATED_NE_CUID) AS RELATED_DISTRICT_CUID,
-			       P.REMARK
-			  FROM PTP P
+			       P.REMARK,
+			       ao.related_project_cuid
+			  FROM $ns$PTP P ,  $ns$AN_ONU AO
 			 WHERE P.DEV_TYPE = 2
-			   AND EXISTS
-			 (SELECT 1 FROM AN_ONU AO WHERE  AO.RELATED_DISTRICT_CUID LIKE '{userDistrict}%' AND  AO.CUID = P.RELATED_NE_CUID)
-			 and 1=1
+			   AND  AO.RELATED_DISTRICT_CUID LIKE '{userDistrict}%' AND  AO.CUID = P.RELATED_NE_CUID
+
 		]]>
 	</sql>
 	
@@ -172,11 +172,11 @@
              (SELECT AP.RELATED_DISTRICT_CUID
                 FROM AN_POS AP
                WHERE AP.CUID = P.RELATED_NE_CUID) AS RELATED_DISTRICT_CUID,
-             P.REMARK
-        FROM PTP P
+             P.REMARK,
+             ap.related_project_cuid
+        FROM $ns$PTP P,  $ns$AN_POS AP
        WHERE P.DEV_TYPE = 3
-         AND EXISTS
-       (SELECT 1 FROM AN_POS AP WHERE  AP.RELATED_DISTRICT_CUID LIKE '{userDistrict}%' AND  AP.CUID = P.RELATED_NE_CUID)
+         AND AP.RELATED_DISTRICT_CUID LIKE '{userDistrict}%' AND  AP.CUID = P.RELATED_NE_CUID
 		]]>
 	</sql>
 	

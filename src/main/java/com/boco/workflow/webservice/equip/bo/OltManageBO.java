@@ -14,36 +14,24 @@ public class OltManageBO {
 	@Autowired
 	private IbatisDAO IbatisDAO;
 	
-	public List getOLTCuidByLabelCn(String labelCn){
-		String sql = "SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID,'' AS RATION FROM TRANS_ELEMENT WHERE LABEL_CN='"+labelCn+"' ";
-		return this.IbatisDAO.querySql(sql);
-	}
 	
 	public List getONUCuidByLabelCn(String labelCn){
-		String sql = "SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID,'' AS RATION FROM AN_ONU WHERE LABEL_CN='"+labelCn+"' ";
+		String sql = "SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID,'' AS RATION FROM t_attemp_AN_ONU WHERE LABEL_CN='"+labelCn+"' ";
 		return this.IbatisDAO.querySql(sql);
 	}
 	
 	public List getPOSCuidByLabelCn(String labelCn){
-		String sql = "SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID, RATION FROM AN_POS WHERE LABEL_CN='"+labelCn+"'";
+		String sql = "SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID, RATION FROM t_attemp_AN_POS WHERE LABEL_CN='"+labelCn+"'";
 		return this.IbatisDAO.querySql(sql);
 	}
 	
-	public List getAllNeCuidByLabelCn(String labelCn){
-		String sql = "SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID,'' AS RATION FROM TRANS_ELEMENT WHERE LABEL_CN='"+labelCn+"' " +
-				"UNION ALL"
-				+ " SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID,'' AS RATION FROM AN_ONU WHERE LABEL_CN='"+labelCn+"' " +
-				"UNION ALL "
-				+ " SELECT CUID,FDN,RELATED_EMS_CUID,RELATED_VENDOR_CUID,RELATED_DISTRICT_CUID, RATION FROM AN_POS WHERE LABEL_CN='"+labelCn+"'";
-		return this.IbatisDAO.querySql(sql);
-	}
 	
 	/*
 	 * 根据机盘名称、端口编号查询端口
 	 */
 	public List isSameCardPtpExist(String cardName,String portNo,String neCuid ){
-		String sql = "SELECT LABEL_CN FROM PTP WHERE  PORT_NO="+portNo+ ""
-	            + " AND RELATED_CARD_CUID = (SELECT CUID FROM CARD WHERE LABEL_CN='"+cardName+"'"
+		String sql = "SELECT LABEL_CN FROM t_attemp_PTP WHERE  PORT_NO="+portNo+ ""
+	            + " AND RELATED_CARD_CUID = (SELECT CUID FROM t_attemp_CARD WHERE LABEL_CN='"+cardName+"'"
 	            		+ " AND RELATED_DEVICE_CUID = '"+neCuid+"' ) AND RELATED_NE_CUID='"+neCuid+"'";
 		return this.IbatisDAO.querySql(sql);
 	}
@@ -53,9 +41,9 @@ public class OltManageBO {
 	 */
 	public List getCardByLabelCnAndNeCuid(String cardName,String neCuid){
 		if(cardName!=null&&cardName.length()>0){
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE LABEL_CN='"+cardName+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_CARD WHERE LABEL_CN='"+cardName+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 		}else{
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_CARD WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 		}
 	}
 	
@@ -64,9 +52,9 @@ public class OltManageBO {
 	 */
 	public List getCardByFdnAndNeCuid(String cardFdn,String neCuid){
 		if(cardFdn!=null&&cardFdn.length()>0){
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE FDN='"+cardFdn+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_CARD WHERE FDN='"+cardFdn+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 		}else{
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_CARD WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 		}
 	}
 	
@@ -75,7 +63,7 @@ public class OltManageBO {
 	 */
 	public List getPtpByLabelCnAndCardCuidAndNeCuid(String ptpName,String cardCuid,String neCuid){
 		if(!ImportCommonMethod.isEmpty(ptpName)&&!ImportCommonMethod.isEmpty(cardCuid)&&!ImportCommonMethod.isEmpty(neCuid)){
-			String sql = "SELECT CUID,LABEL_CN FROM PTP WHERE LABEL_CN='"+ptpName+"'"
+			String sql = "SELECT CUID,LABEL_CN FROM t_attemp_PTP WHERE LABEL_CN='"+ptpName+"'"
 					+ " AND RELATED_CARD_CUID='"+cardCuid+"' AND RELATED_NE_CUID='"+neCuid+"'";
 			return this.IbatisDAO.querySql(sql);
 		}else{
@@ -88,7 +76,7 @@ public class OltManageBO {
 	 */
 	public List isExistCardFdn(String cardFdn){
 		if(!ImportCommonMethod.isEmpty(cardFdn)){
-			String sql = "SELECT CUID,LABEL_CN,RELATED_DEVICE_CUID FROM CARD WHERE FDN='"+cardFdn+"'";
+			String sql = "SELECT CUID,LABEL_CN,RELATED_DEVICE_CUID FROM t_attemp_CARD WHERE FDN='"+cardFdn+"'";
 			return this.IbatisDAO.querySql(sql);
 		}else{
 			return null;
@@ -100,7 +88,7 @@ public class OltManageBO {
 	 */
 	public List isExistPtpFdn(String ptpFdn){
 		if(!ImportCommonMethod.isEmpty(ptpFdn)){
-			String sql = "SELECT CUID,LABEL_CN FROM PTP WHERE FDN='"+ptpFdn+"'";
+			String sql = "SELECT CUID,LABEL_CN FROM t_attemp_PTP WHERE FDN='"+ptpFdn+"'";
 			return this.IbatisDAO.querySql(sql);
 		}else{
 			return null;

@@ -54,7 +54,7 @@ public class ImportServlet extends HttpServlet {
 				//上传文件写到服务器上
 				File file = new File(upLoadFileName);
 				fileitem.write(file);
-				Map<String,ImportResultDO> map = ((ImportResService) SpringContextUtil.getBean("importResService")).resolveExcel(file);
+				Map<String,ImportResultDO> map = ((ImportResService) SpringContextUtil.getBean("importResService")).resolveExcel(file,prjcode);
 				
 			
 				

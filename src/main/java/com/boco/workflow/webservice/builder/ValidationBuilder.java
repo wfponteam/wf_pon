@@ -15,6 +15,12 @@ public class ValidationBuilder extends AbstractBuilder<Validation> implements IB
 		
 	}
 	
+	public ValidationBuilder(Validation v) {
+		
+		super(v);
+		
+	}
+	
 	public ValidationBuilder addPrjCode(String prjCode){
 		
 		pojo.setPrjCode(prjCode);

@@ -24,11 +24,10 @@ public class ProjectServiceImpl extends AbstractService<ProjectBuilder,Project> 
 	private ProjectDAO dao;
 	
 	@Override
-	protected void doBusiness(Project project) {
+	protected void doBusiness(Project project) throws Exception {
 		
 		logger.info("ProjectServiceImpl.doBusiness");
-		dao.insertProject(project.getBuilder().addCuid().build());
-		
+		dao.insertProject(project.getBuilder().addCuid().addPrjStatus("施工").build());
 		
 	}
 }

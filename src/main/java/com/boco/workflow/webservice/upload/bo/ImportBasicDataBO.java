@@ -161,6 +161,7 @@ public class ImportBasicDataBO {
 		String sql = "1".equals(state) ? "updatePortStateFree":"updatePortStateOccu";
 	
 		this.IbatisDAO.getSqlMapClient().update(IMPROT_BASIC_DATA_SQL_MAP1+"." + sql  , ports);
+		this.IbatisDAO.getSqlMapClient().update(IMPROT_BASIC_DATA_SQL_MAP1+"." + sql + "Att"  , ports);
 	}
 	
 	/**
@@ -181,22 +182,6 @@ public class ImportBasicDataBO {
 		return cardNodelMap;
 	}
 	
-	/**
-	 * 批量更新卡板,卡板入库使用
-	 */
-	public boolean importCardBatchUpdate(List list, String excelName) throws Exception {
-		boolean res = true;
-		String sql1 = IMPORT_PON + ".importCardBatchUpdate";
-		try {
-			BoUtil.batchUpdate(this.IbatisDAO.getSqlMapClient(), sql1, list);
-			
-		} catch (Exception e) {
-			res = false;
-			LogHome.getLog().error(excelName+"批量更新卡板出错，请您联系管理员！", e);
-			throw new Exception(excelName+"批量更新卡板出错，请您联系管理员！");
-		}
-		return res;
-	}
 	
 	/**
 	 * 批量更新卡板,卡板入库使用

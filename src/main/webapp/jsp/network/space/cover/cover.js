@@ -10,6 +10,7 @@ NETWORK.cover= Ext.extend(Ext.Panel,{
 	frame 		: true,
 	layout 		: 'border',
 	autoScroll  : true,
+	prjcode     : '',
 	
 	initComponent : function() {
 		this._initItems();
@@ -23,7 +24,9 @@ NETWORK.cover= Ext.extend(Ext.Panel,{
 			enableGeneralQuery: false,
 			enableContextMenu : true,
 			rendererPlugin : 'cover_renderer',
+			prjcode    : this.prjcode,
 			gridCfg : {
+				boName : 'ponTemplateGirdBo',
 				cfgParams : {
 					templateId : 'COVER_MANAGE'
 				}

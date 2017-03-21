@@ -134,7 +134,7 @@
 	<logger name="com.boco.core.quartz">
 		<level value="ERROR" />
 	</logger>
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="LogConsole" />
 		<appender-ref ref="PON-INFO" />
 		<appender-ref ref="PON-DEBUG" />

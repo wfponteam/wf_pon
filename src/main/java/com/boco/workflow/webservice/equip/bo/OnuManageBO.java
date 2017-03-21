@@ -260,9 +260,9 @@ public class OnuManageBO {
 			String sql = "SELECT("
 					+ " SELECT FDN FROM TRANS_ELEMENT T WHERE T.CUID = '"+neCuid+"'"+
 					" UNION ALL "
-					+ "  SELECT FDN FROM AN_POS T WHERE T.CUID = '"+neCuid+"'"+
+					+ "  SELECT FDN FROM t_attemp_AN_POS T WHERE T.CUID = '"+neCuid+"'"+
 					" UNION ALL "
-					+ " SELECT FDN FROM AN_ONU T WHERE T.CUID = '"+neCuid+"') AS FDN "
+					+ " SELECT FDN FROM t_attemp_AN_ONU T WHERE T.CUID = '"+neCuid+"') AS FDN "
 					+ " FROM DUAL ";
 			List<Map> resList =  this.IbatisDAO.querySql(sql);
 			if(resList!=null&&resList.size()>0){
@@ -280,9 +280,9 @@ public class OnuManageBO {
 	 */
 	public List getCardByFdnAndNeCuid(String cardFdn,String neCuid){
 		if(cardFdn!=null&&cardFdn.length()>0){
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE FDN='"+cardFdn+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_card WHERE FDN='"+cardFdn+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 		}else{
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_card WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 		}
 	}
 	
@@ -291,8 +291,8 @@ public class OnuManageBO {
 	 */
 	public List getPtpByAndNeCuid(String neCuid){
 		if(!ImportCommonMethod.isEmpty(neCuid)){
-			String sql = "SELECT P.CUID,P.PORT_NO FROM PTP P WHERE  RELATED_NE_CUID='"+neCuid+"'"
-					+ " AND NOT EXISTS (SELECT 1 FROM CARD C WHERE C.CUID = P.RELATED_CARD_CUID) ";
+			String sql = "SELECT P.CUID,P.PORT_NO FROM t_attemp_PTP P WHERE  RELATED_NE_CUID='"+neCuid+"'"
+					+ " AND NOT EXISTS (SELECT 1 FROM t_attemp_CARD C WHERE C.CUID = P.RELATED_CARD_CUID) ";
 			return this.IbatisDAO.querySql(sql);
 		}else{
 			return null;
@@ -305,6 +305,7 @@ public class OnuManageBO {
 	public List getPtpByLabelCnAndNeCuid(String ptpName,String neCuid){
 		if(!ImportCommonMethod.isEmpty(ptpName)&&!ImportCommonMethod.isEmpty(neCuid)){
 			String sql = "SELECT CUID,LABEL_CN,PORT_SUB_TYPE,port_state FROM PTP WHERE LABEL_CN='"+ptpName+"' AND RELATED_NE_CUID='"+neCuid+"'";
+			sql += " union all SELECT CUID,LABEL_CN,PORT_SUB_TYPE,port_state FROM t_attemp_ptp WHERE LABEL_CN='"+ptpName+"' AND RELATED_NE_CUID='"+neCuid+"'";
 			return this.IbatisDAO.querySql(sql);
 		}else{
 			return null;
@@ -315,7 +316,7 @@ public class OnuManageBO {
 
 	public String getOldOnuPortCuid(String onuCuid) {
 		
-		String sql = "select related_pos_port_cuid from an_onu where cuid = '"+ onuCuid + "'";
+		String sql = "select related_pos_port_cuid from t_attemp_an_onu where cuid = '"+ onuCuid + "'";
 		List<ResultMap<String, String>> list = this.IbatisDAO.querySql(sql);
 		return list.get(0).get("RELATED_POS_PORT_CUID");
 	}

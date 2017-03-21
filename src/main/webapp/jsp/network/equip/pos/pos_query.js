@@ -122,6 +122,23 @@ Frame.grid.plugins.query.pos_query = Ext.extend(Object, {
 					}
 					
 				}]
+		},{
+			layout : 'form',
+			columnWidth : .5,
+			defaults : {
+				anchor : '-20'
+			},
+			items : [ {
+				xtype : 'textfield',
+				fieldLabel : '工程编号',
+				name : 'RELATED_PROJECT_CUID',
+				value : grid.prjcode,
+				hidden: true,
+				queryCfg : {
+					type : "string",
+					relation : "="
+				}
+			}]
 		}, {
 			   layout : 'form',
 				columnWidth : .5,

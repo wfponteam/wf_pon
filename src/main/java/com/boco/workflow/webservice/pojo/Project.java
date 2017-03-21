@@ -110,6 +110,8 @@ public class Project {
 	 */
 	@XStreamAlias("parentprjcode")
 	private String parentPrjCode;
+	
+	private String prjStatus;
 
 	
 	public String getCuid() {
@@ -248,6 +250,16 @@ public class Project {
 		this.parentPrjCode = parentPrjCode;
 	}
 	
+	
+	
+	public String getPrjStatus() {
+		return prjStatus;
+	}
+
+	public void setPrjStatus(String prjStatus) {
+		this.prjStatus = prjStatus;
+	}
+
 	@Override
 	public String toString() {
 		

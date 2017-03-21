@@ -26,7 +26,7 @@ public class ImportResService {
 	
 	Map<String,String> neModelCuidNameMap =null;
  	//解析excel
-	public Map<String,ImportResultDO> resolveExcel(File file) throws Exception{
+	public Map<String,ImportResultDO> resolveExcel(File file,String prjcode) throws Exception{
 		
 		FileInputStream inputStream = new FileInputStream(file);
 		Map<String,ImportResultDO> map = new HashMap<String,ImportResultDO>();
@@ -40,7 +40,7 @@ public class ImportResService {
 		
 		Sheet writeSheet =writeWorkBook.getSheet(Constant.POSNAME);
 		ImportPosExcel importPosExcel=new ImportPosExcel(neModelCuidNameMap);	
-		ImportResultDO resultDO = importPosExcel.importPosBasicData(writeWorkBook,writeSheet,file.getAbsolutePath(), Constant.POSNAME);
+		ImportResultDO resultDO = importPosExcel.importPosBasicData(writeWorkBook,writeSheet,file.getAbsolutePath(), Constant.POSNAME,prjcode);
 		map.put(Constant.POSNAME, resultDO);
 		
 		if(resultDO.isSuccess()){
@@ -54,7 +54,7 @@ public class ImportResService {
 		if(resultDO.isSuccess()){
 			writeSheet =writeWorkBook.getSheet(Constant.ONUNAME);
 			ImportOnuExcel importOnuExcel=new ImportOnuExcel(neModelCuidNameMap);
-			resultDO = importOnuExcel.importOnuBasicData(writeWorkBook,writeSheet,file.getAbsolutePath(), Constant.ONUNAME);
+			resultDO = importOnuExcel.importOnuBasicData(writeWorkBook,writeSheet,file.getAbsolutePath(), Constant.ONUNAME,prjcode);
 			map.put(Constant.ONUNAME, resultDO);
 		}
 		
@@ -65,30 +65,24 @@ public class ImportResService {
 			map.put(Constant.ONUPORTNAME, resultDO);
 		}
 		
-		if(resultDO.isSuccess()){
-			writeSheet =writeWorkBook.getSheet("业务区");
-			BusinessCommunityImportExcel importExcel = new BusinessCommunityImportExcel();
-			resultDO =  importExcel.importData(writeWorkBook, writeSheet, file.getAbsolutePath(), "业务区");
-			map.put("业务区", resultDO);
-		}
 		
 		if(resultDO.isSuccess()){
 			writeSheet =writeWorkBook.getSheet("业务区");
 			BusinessCommunityImportExcel importExcel = new BusinessCommunityImportExcel();
-			resultDO =  importExcel.importData(writeWorkBook, writeSheet, file.getAbsolutePath(), "业务区");
+			resultDO =  importExcel.importData(writeWorkBook, writeSheet, file.getAbsolutePath(), "业务区",prjcode);
 			map.put("业务区", resultDO);
 		}
 		if(resultDO.isSuccess()){
 			writeSheet =writeWorkBook.getSheet("标准地址");
 			ImportAddressExcel importAddress = new ImportAddressExcel();
-			resultDO =  importAddress.importData(writeWorkBook, writeSheet, file.getAbsolutePath(), "标准地址");
+			resultDO =  importAddress.importData(writeWorkBook, writeSheet, file.getAbsolutePath(), "标准地址",prjcode);
 			map.put("标准地址", resultDO);
 		}
 		
 		if(resultDO.isSuccess()){
 			writeSheet =writeWorkBook.getSheet("覆盖范围");
 			GponCoverImportExcel coverImportExcel = new GponCoverImportExcel();
-			resultDO =  coverImportExcel.importData(writeWorkBook, writeSheet, file.getAbsolutePath(), "覆盖范围");
+			resultDO =  coverImportExcel.importData(writeWorkBook, writeSheet, file.getAbsolutePath(), "覆盖范围",prjcode);
 			map.put("覆盖范围", resultDO);
 		}
 		

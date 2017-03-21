@@ -90,7 +90,7 @@ public class ImportOnuExcel {
 	/**
 	 * 导入Onu基础数据
 	 */
-	protected  ImportResultDO importOnuBasicData(Workbook writeWorkBook ,Sheet writeSheet,String pathname, String excelName) throws Exception {
+	protected  ImportResultDO importOnuBasicData(Workbook writeWorkBook ,Sheet writeSheet,String pathname, String excelName,String prjcode) throws Exception {
 		
 		ImportResultDO importResultDO = new ImportResultDO(excelName);
 		List returnList = null;
@@ -124,7 +124,7 @@ public class ImportOnuExcel {
 						
 						Map verificationMap = verificationOnuCell( writeWorkBook,  writeSheet,xRow ,headingMap,i,lastColumns,lastRows,portNameList);
 						if(ImportCommonMethod.isExistFalse(writeWorkBook, writeSheet, lastColumns,lastRows)==0){
-							addOnuModel(xRow , headingMap, i,verificationMap);
+							addOnuModel(xRow , headingMap, i,verificationMap,prjcode);
 						}
 					}else{
 						int labelCnInt = Integer.parseInt(headingMap.get(Constant.ONU_LABELCN).toString());
@@ -232,7 +232,11 @@ public class ImportOnuExcel {
 			if(!ImportCommonMethod.isEmpty(onuName)){
 				String temp = getImportAttributeQueryBO().getOnuByName(onuName);
 				if(temp!=null){
-					onuCuid = temp;
+					if("0".equals(temp)){
+						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, labelCn, lastColumns, "onu名称已归档！");
+					}else{
+						onuCuid = temp;
+					}
 				}
 			}
 			// 01.PBOSS系统ONU名称
@@ -258,7 +262,7 @@ public class ImportOnuExcel {
 				posCuid = ObjectUtils.toString(posTemp.get("CUID"));
 			}
 			// 06.归属分光器端口
-			ImportCommonMethod.verificationEmpty(writeWorkBook, writeSheet, relatedPosCuid, i, lastColumns,"上联设备端口");
+			ImportCommonMethod.verificationEmpty(writeWorkBook, writeSheet, relatedPosPortCuid, i, lastColumns,"上联设备端口");
 			if (xRow.getCell(relatedPosPortCuid) !=null && xRow.getCell(relatedPosPortCuid) !=null) {
 				//  归属分光器和归属分光器端口 是否有关联关系
 				if(portNameList.contains(xRow.getCell(relatedPosPortCuid).toString())){
@@ -434,7 +438,7 @@ public class ImportOnuExcel {
 	/**
 	 * 将Excel数据增加到Onu模型中
 	 */
-	private void addOnuModel(Row xRow ,Map headingMap,int i,Map verificationMap) throws Exception{
+	private void addOnuModel(Row xRow ,Map headingMap,int i,Map verificationMap,String prjcode) throws Exception{
 		// 规定时间格式
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// 01.PBOSS系统ONU名称
@@ -552,7 +556,7 @@ public class ImportOnuExcel {
 //				String relatedDistrictCuid = (String)map.get(AnOnu.AttrName.relatedDistrictCuid);
 //				boolean isDistrictEmpty = StringUtils.isEmpty(relatedDistrictCuid);
 				if (emsMap != null && !emsMap.isEmpty()) {
-					map.put("RELATED_ACCESS_POINT", emsMap.get("CUID"));
+					map.put("RELATED_EMS_CUID", emsMap.get("CUID"));
 //					if(isDistrictEmpty){
 //						map.put(AnOnu.AttrName.relatedDistrictCuid, emsMap.get("RELATED_SPACE_CUID"));
 //					}
@@ -727,9 +731,8 @@ public class ImportOnuExcel {
 				
 			}
 			// 26.所属工程
-			if(xRow.getCell(relatedProjectCuid)!=null && !"".equals(xRow.getCell(relatedProjectCuid).toString())){
-				map.put("RELATED_PROJECT_CUID", xRow.getCell(relatedProjectCuid).toString());
-			}
+			map.put("RELATED_PROJECT_CUID", prjcode);
+			
 			// 27 宽带端口数量
 			/*if(xRow.getCell(PORT_NUMBER) !=null && !"".equals(xRow.getCell(PORT_NUMBER).toString())){
 				map.put("PORT_NUMBER",xRow.getCell(PORT_NUMBER).toString());
@@ -831,11 +834,11 @@ public class ImportOnuExcel {
 	 */
 				String	onuFdn = "";
 				String onuposCuid="" ;
-				if(map.get("FDN")=="" ||map.get("FDN")== null ){
+				if(map.get("FDN")== null ||  "".equals(map.get("FDN"))){
 					onuposCuid =  ObjectUtils.toString(map.get("RELATED_POS_CUID"));		 	
-				Map temp1=getImportAttributeQueryBO().getPosByLabelCuid(onuposCuid) ; 
-				onuFdn = temp1.get("FDN") + ":ONU=" + ObjectUtils.toString(map.get("LABEL_CN"));;
-				map.put("FDN", onuFdn);
+					Map temp1=getImportAttributeQueryBO().getPosByLabelCuid(onuposCuid) ; 
+					onuFdn = temp1.get("FDN") + ":ONU=" + ObjectUtils.toString(map.get("LABEL_CN"));;
+					map.put("FDN", onuFdn);
 				}		
 			onuList.add(map);					
 		} catch (Exception e) {

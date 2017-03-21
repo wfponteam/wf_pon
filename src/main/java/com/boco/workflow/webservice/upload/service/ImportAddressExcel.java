@@ -6,16 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
-import com.boco.core.ibatis.vo.ServiceActionContext;
 import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.workflow.webservice.space.bo.FullAddressBO;
 import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
@@ -103,7 +99,7 @@ public class ImportAddressExcel {
 	}
 
 	public ImportResultDO importData(
-										Workbook writeWorkBook, Sheet writeSheet, String pathname,String excelName) 
+										Workbook writeWorkBook, Sheet writeSheet, String pathname,String excelName,String prjcode) 
 												throws Exception {
 
 		Map<String, String> nameMaps = new HashMap<String, String>();
@@ -138,6 +134,7 @@ public class ImportAddressExcel {
 					if (!ImportCommonMethod.isRowExistError(xRow, lastColumns)
 							&& dataMap.get("TYPE") != null
 							&& dataMap.get("CUID") != null) {
+						dataMap.put("RELATED_PROJECT_CUID", prjcode);
 						dataList.add(dataMap);
 					} else {
 						erroNum++;
@@ -179,8 +176,17 @@ public class ImportAddressExcel {
 			if (!ImportCommonMethod.isEmpty(adrName)) {
 				Map tempObj = getFullAddressManageBO().selectAddressInfoByLabeCn(adrName);
 				if (tempObj != null) {
-					adrCuid = tempObj.get("CUID").toString();
-					dataMap.put(dataColumns[0], adrCuid);
+					
+					String type = tempObj.get("TYPE").toString();
+					if("0".equals(type)){
+						
+						ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
+								c, lastColumns, "标准地址名称已归档！");
+					}else{
+						adrCuid = tempObj.get("CUID").toString();
+						dataMap.put(dataColumns[0], adrCuid);
+					}
+					
 				}
 			}
 			c++;

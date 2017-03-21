@@ -53,7 +53,7 @@ public class GponCoverImportExcel {
 	}
 	
 	public  ImportResultDO importData(Workbook writeWorkBook ,Sheet writeSheet,
-			String pathname, String excelName) throws Exception {;
+			String pathname, String excelName,String prjcode) throws Exception {;
 		List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>(); 
 		ImportResultDO importResultDO = new ImportResultDO(excelName);
 		try {
@@ -79,6 +79,7 @@ public class GponCoverImportExcel {
 					Map<String,Object> dataMap = verificationCell(writeWorkBook, writeSheet, xRow, i,lastColumns);	
 					if(!ImportCommonMethod.isRowExistError(xRow,lastColumns)
 							&&dataMap.get("TYPE")!=null&&dataMap.get("CUID")!=null){
+						dataMap.put("RELATED_PROJECT_CUID", prjcode);
 						dataList.add(dataMap);
 					}else{
 						erroNum++;
@@ -138,8 +139,13 @@ public class GponCoverImportExcel {
 				    if(!ImportCommonMethod.isEmpty(neCuid)){
 				    	Map<String, Object> resultMap = getGponCoverManageBO().selectGponCoverByNeAndAddress(neCuid,fullAddressCuid);
 				    	if(resultMap!=null&&resultMap.size()>0){
-				    		dataMap.put("TYPE","UPDATE");
-				    		dataMap.put(dataColumns[0],ObjectUtils.toString(resultMap.get("CUID")));
+				    		
+				    		if("0".equals(ObjectUtils.toString(resultMap.get("CUID")))){
+				    			ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet,i,c,lastColumns,"覆盖范围已归档！");
+				    		}else{
+					    		dataMap.put("TYPE","UPDATE");
+					    		dataMap.put(dataColumns[0],ObjectUtils.toString(resultMap.get("CUID")));
+				    		}
 				    	}else{
 				    		dataMap.put(dataColumns[0],CUIDHexGenerator.getInstance().generate(GPON_COVER));
 				    		dataMap.put("TYPE","INSERT");

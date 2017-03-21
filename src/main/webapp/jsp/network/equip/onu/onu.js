@@ -10,10 +10,11 @@ NETWORK.onu= Ext.extend(Ext.Panel,{
 	frame 		: true,
 	layout 		: 'border',
 	autoScroll  : true,
+	prjcode     : '',
 	
 	initComponent : function() {
 		this._initItems();
-		NETWORK.pos.superclass.initComponent.call(this);
+		NETWORK.onu.superclass.initComponent.call(this);
 	},
 	_initItems : function() {
 		this.rolePanel = new Frame.grid.ResGridPanel({
@@ -22,8 +23,10 @@ NETWORK.onu= Ext.extend(Ext.Panel,{
 			border : false,
 			enableGeneralQuery: false,
 			enableContextMenu : true,
+			prjcode    : this.prjcode,
 			rendererPlugin : 'equip_renderer',
 			gridCfg : {
+				boName : 'ponTemplateGirdBo',
 				cfgParams : {
 					templateId : 'ONU_MANAGE'
 				}

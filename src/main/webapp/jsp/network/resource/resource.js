@@ -75,11 +75,8 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 										            var result = JSON.parse(response.responseText);
 										            mk.hide(); //关闭
 										            // 返回值
-										            if (result.RespCode!='1') {
-										            	Ext.Msg.alert('温馨提示', result.RespMsg);
-										            } else {
-										                Ext.Msg.alert('错误提示', result.RespMsg);
-										            }
+										            Ext.Msg.alert('温馨提示', result.msg);
+										             
 										        }
 										});
 						   	 		 }else

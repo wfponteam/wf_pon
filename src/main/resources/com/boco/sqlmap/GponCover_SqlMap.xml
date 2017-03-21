@@ -33,18 +33,19 @@
 	  </update>
 	  
 	  <update id="updateGponCoverForExcel" parameterClass="java.util.HashMap">
-		UPDATE GPON_COVER 
+		UPDATE t_attemp_GPON_COVER 
 		SET COVER_INFO = #COVER_INFO#,
 			REGIONTYPE1 = #REGIONTYPE1#,
 			REGIONTYPE2 = #REGIONTYPE2#,
 			BUSINESS_TYPE=#BUSINESS_TYPE#,
-			REMARK = #REMARK# 
+			REMARK = #REMARK# ,
+			RELATED_PROJECT_CUID = #RELATED_PROJECT_CUID#
 		WHERE CUID = #CUID#
 	  </update>
 	  
 	   <insert id="insertGponCoverForExcel" parameterClass="java.util.HashMap">
-		INSERT INTO GPON_COVER
-		(CUID,STANDARD_ADDR,RELATED_NE_CUID,DEVICE_NAME,COVER_INFO,REGIONTYPE1,REGIONTYPE2,REMARK,BUSINESS_TYPE) VALUES 
+		INSERT INTO t_attemp_GPON_COVER
+		(CUID,STANDARD_ADDR,RELATED_NE_CUID,DEVICE_NAME,COVER_INFO,REGIONTYPE1,REGIONTYPE2,REMARK,BUSINESS_TYPE,RELATED_PROJECT_CUID) VALUES 
 		 (#CUID#,
 		  #STANDARD_ADDR#,
 		  #RELATED_NE_CUID#,
@@ -53,7 +54,8 @@
 		  #REGIONTYPE1#,
 		  #REGIONTYPE2#,
 		  #REMARK#,
-		  #BUSINESS_TYPE#
+		  #BUSINESS_TYPE#,
+		  #RELATED_PROJECT_CUID#
 		)
 	</insert>
 	
@@ -70,10 +72,14 @@
 	 
 	 <select id="selectFullAddressByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
 	 	select CUID,LABEL_CN FROM T_ROFH_FULL_ADDRESS WHERE LABEL_CN=#addressName#
+	 	UNION ALL
+	 	select CUID,LABEL_CN FROM T_attemp_t_ROFH_FULL_ADDRESS WHERE LABEL_CN=#addressName#
 	 </select>
 	 
 	 <select id="selectGponCoverByNeAndAddress" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.util.HashMap">
-	 	SELECT CUID FROM GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
+	 	SELECT '0' CUID FROM GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
+	 	UNION ALL
+	 	SELECT CUID FROM t_attemp_GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
 	 </select>
 	 
 </sqlMap>

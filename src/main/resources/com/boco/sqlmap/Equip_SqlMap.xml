@@ -12,7 +12,9 @@
 	
 	<!-- 查询onu名称是否存在 -->
 	<select id="queryOnuByLabelcn" parameterClass="java.lang.String" resultClass="java.lang.String">
-		SELECT cuid FROM AN_ONU WHERE LABEL_CN = #LABEL_CN#
+		SELECT '0' cuid FROM AN_ONU  WHERE LABEL_CN = #LABEL_CN#
+		union all
+		SELECT cuid FROM t_attemp_AN_ONU WHERE LABEL_CN = #LABEL_CN#
 	</select>
 	
 	<!-- 删除onu -->
@@ -152,7 +154,7 @@
 	<!-- 新增onu -->
 	<insert id="insertOnuInfo" parameterClass="java.util.HashMap">
 		INSERT INTO 
-		AN_ONU 
+		T_ATTEMP_AN_ONU 
 			(CUID,OBJECTID,GT_VERSION,ISDELETE,LAST_MODIFY_TIME,LABEL_CN,RELATED_VENDOR_CUID,SETUP_TIME,SEQNO,RELATED_DISTRICT_CUID,REMARK,MODEL,HARD_VERSION,SOFT_VERSION,
 			DEV_IP,REAL_LONGITUDE,REAL_LATITUDE,NATIVE_EMS_NAME,RELATED_EMS_CUID,RELATED_ACCESS_POINT,AUTH_TYPE,MAC_ADDR,PASSWORD,LOGICID,
 			ONU_ID,FTTX,ONU_TYPE,RELATED_OLT_CUID,USE_STATE,RELATED_TEMPLATE_NAME,IS_PERMIT_SYS_DEL,LIVE_CYCLE,FDN,RELATED_OLT_PORT_CUID,
@@ -172,7 +174,7 @@
 	<!-- 修改onu -->
 	<update id="updateOnuInfo" parameterClass="java.util.HashMap">
 		UPDATE 
-		AN_ONU 
+		T_ATTEMP_AN_ONU 
 		SET 
 		LAST_MODIFY_TIME=#LAST_MODIFY_TIME#,LABEL_CN=#LABEL_CN#,RELATED_VENDOR_CUID=#RELATED_VENDOR_CUID#,SETUP_TIME=#SETUP_TIME#,SEQNO=#SEQNO#,
 		RELATED_DISTRICT_CUID=#RELATED_DISTRICT_CUID#,REMARK=#REMARK#,MODEL=#MODEL#,HARD_VERSION=#HARD_VERSION#,SOFT_VERSION=#SOFT_VERSION#,
@@ -287,11 +289,15 @@
 	 </select>
 	 
 	<select id="queryPosBylabelcn" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT * FROM AN_POS WHERE LABEL_CN = #LABEL_CN#
+		SELECT ap.*,'0' type FROM AN_POS ap WHERE LABEL_CN = #LABEL_CN#
+		union all
+		SELECT tp.*,'1' type FROM t_attemp_AN_pos tp WHERE LABEL_CN = #LABEL_CN#
 	</select>
 	
 	<select id="getPtpByNameAndNeCuid" parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		SELECT * FROM PTP WHERE LABEL_CN = #LABEL_CN# AND RELATED_NE_CUID=#RELATED_NE_CUID#
+		union all
+		SELECT * FROM T_ATTEMP_PTP WHERE LABEL_CN = #LABEL_CN# AND RELATED_NE_CUID=#RELATED_NE_CUID#
 	</select>
 	
 	<update id="updatePortStateFree" parameterClass="java.util.ArrayList">
@@ -308,9 +314,23 @@
 		</iterate>
     </update>
     
+    <update id="updatePortStateFreeAtt" parameterClass="java.util.ArrayList">
+    	update t_attemp_ptp set port_state = 1 where cuid in
+    	 <iterate conjunction="," open="(" close=")">            
+				#ports[]#
+		</iterate>
+    </update>
+    
+    <update id="updatePortStateOccuAtt" parameterClass="java.util.ArrayList">
+    	update t_attemp_ptp set port_state = 2 where cuid in
+    	 <iterate conjunction="," open="(" close=")">            
+				#ports[]#
+		</iterate>
+    </update>
+    
     <update id="updatePosInfo" parameterClass="java.util.HashMap">
 		UPDATE 
-		AN_POS 
+		T_ATTEMP_AN_POS 
 		SET 
 		LAST_MODIFY_TIME=#LAST_MODIFY_TIME#,LABEL_CN=#LABEL_CN#,RELATED_VENDOR_CUID=#RELATED_VENDOR_CUID#,SETUP_TIME=#SETUP_TIME#,SEQNO=#SEQNO#,RATION=#RATION#,
 		RELATED_DISTRICT_CUID=#RELATED_DISTRICT_CUID#,RELATED_SITE_CUID=#RELATED_SITE_CUID#,RELATED_ROOM_CUID=#RELATED_ROOM_CUID#,REMARK=#REMARK#,LIVE_CYCLE=#LIVE_CYCLE#,
@@ -326,7 +346,7 @@
 	</update>
 	<insert id="insertPosInfo" parameterClass="java.util.HashMap">
 		INSERT INTO 
-		AN_POS 
+		T_ATTEMP_AN_POS 
 		(CUID,OBJECTID,GT_VERSION,ISDELETE,CREATE_TIME,LAST_MODIFY_TIME,LABEL_CN,RELATED_VENDOR_CUID,SETUP_TIME,SEQNO,RELATED_DISTRICT_CUID,
 		RELATED_SITE_CUID,RELATED_ROOM_CUID,REMARK,MODEL,HARD_VERSION,SOFT_VERSION,REAL_LONGITUDE,REAL_LATITUDE,NATIVE_EMS_NAME,
 		RELATED_OLT_CUID,FDN,RELATED_TEMPLATE_NAME,IS_PERMIT_SYS_DEL,LIVE_CYCLE,USE_STATE,RELATED_CAB_CUID,
@@ -341,7 +361,7 @@
 	
 	<insert id="insertCardInfo" parameterClass="java.util.HashMap">
 		INSERT INTO 
-		CARD 
+		t_attemp_CARD 
 		(CUID,OBJECTID,LABEL_CN,RELATED_DEVICE_CUID,FDN,CARD_ID,SERIAL,CARD_KIND,MODEL,IS_PROTECT,IS_REPLACE,PORTS_NUM,VERSION,HARD_VERSION,OWNERSHIP,
 		PRESERVER,REMARK,CREATE_TIME,GT_VERSION,ISDELETE,LAST_MODIFY_TIME,RELATED_UPPER_COMPONENT_CUID,PROJECT_STATE,IS_PERMIT_SYS_DEL,SERVICE_STATE,
 		USE_TYPE,OBJECT_TYPE_CODE,LIVE_CYCLE,USE_STATE,PHOTOELECTRICITY,DEV_TYPE,VENDOR) 
@@ -352,7 +372,7 @@
 	</insert>
 	
 	<update id="updateCardInfoByNe" parameterClass="java.util.HashMap">
-        UPDATE CARD SET 
+        UPDATE t_attemp_CARD SET 
         LABEL_CN = #LABEL_CN#,
         FDN = #FDN#,
         RELATED_UPPER_COMPONENT_CUID = #RELATED_UPPER_COMPONENT_CUID#,
@@ -361,7 +381,7 @@
     </update>
     
     <update id="updatePtpInfoByCard" parameterClass="java.util.HashMap">
-        UPDATE PTP SET 
+        UPDATE t_attemp_PTP SET 
         RELATED_CARD_CUID = #RELATED_CARD_CUID#,
         FDN = #FDN#,
         SYS_NO = #SYS_NO#,
@@ -383,6 +403,8 @@
 	</select>
 	<select id="queryPosBylabelCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		SELECT CUID,LABEL_CN,FDN FROM AN_POS T WHERE CUID = #nameValue#
+		UNION ALL
+		SELECT CUID,LABEL_CN,FDN FROM T_ATTEMP_AN_POS  WHERE CUID = #nameValue#
 	</select>
 	
 	<select id="getPosUpDevByName" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
@@ -390,6 +412,10 @@
 		  FROM (SELECT AP.CUID, 'POS' AS UP_DEV_TYPE ,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID
 		          FROM AN_POS AP
 		         WHERE AP.LABEL_CN = #LABEL_CN#
+		         UNION ALL
+		         SELECT TP.CUID, 'POS' AS UP_DEV_TYPE ,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID
+		          FROM T_ATTEMP_AN_POS TP
+		         WHERE TP.LABEL_CN = #LABEL_CN#
 		        UNION ALL
 		        SELECT TE.CUID, 'OLT' AS UP_DEV_TYPE,LABEL_CN,'' AS RELATED_OLT_CUID,'' AS RELATED_PORT_CUID
 		          FROM TRANS_ELEMENT TE
@@ -404,25 +430,25 @@
      <select id="getOnuPortCount" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		 SELECT AO.CUID AS RELATED_NE_CUID,
 		       AO.LABEL_CN,
-		       (SELECT COUNT(1) FROM PTP P WHERE P.RELATED_NE_CUID = AO.CUID) AS PTPNUM,
+		       (SELECT COUNT(1) FROM t_attemp_PTP P WHERE P.RELATED_NE_CUID = AO.CUID) AS PTPNUM,
 		       (SELECT COUNT(1)
-		          FROM PTP P
+		          FROM t_attemp_PTP P
 		         WHERE P.PORT_SUB_TYPE = 14
 		           AND P.RELATED_NE_CUID = AO.CUID) AS UPPTPNUM 
-		  FROM AN_ONU AO
+		  FROM t_attemp_AN_ONU AO
 		 WHERE AO.CUID IN ($neCuidStr$)
     </select>
     
     <select id="getPosPortCount" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		 SELECT AP.CUID AS RELATED_NE_CUID,
 		       AP.LABEL_CN,
-		       (SELECT COUNT(1) FROM PTP P WHERE P.RELATED_NE_CUID = AP.CUID) AS PTPNUM,
+		       (SELECT COUNT(1) FROM t_attemp_PTP P WHERE P.RELATED_NE_CUID = AP.CUID) AS PTPNUM,
 		       (SELECT COUNT(1)
-		          FROM PTP P
+		          FROM t_attemp_PTP P
 		         WHERE P.PORT_SUB_TYPE = 12
 		           AND P.RELATED_NE_CUID = AP.CUID) AS UPPTPNUM,
 		       AP.RATION 
-		  FROM AN_POS AP
+		  FROM t_attemp_AN_POS AP
 		 WHERE AP.CUID IN ($neCuidStr$)
     </select>
 	

@@ -73,7 +73,7 @@
        )
     </insert>
 	<select id="queryCoverageByNeCuid" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT * FROM GPON_COVER WHERE  RELATED_NE_CUID IN 
+		SELECT * FROM t_attemp_GPON_COVER WHERE  RELATED_NE_CUID IN 
           <iterate  conjunction="," open="(" close=")">
 				#related_ne_cuid[]#
 		</iterate>			
@@ -108,14 +108,9 @@
 		</iterate>
 	</select>
 	<select id="queryPosName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT A.CUID,A.LABEL_CN,Z.RELATED_OLT_CUID,A.FDN,A.DEV_CUID,A.RELATED_VENDOR_CUID,A.OWNERSHIP,'2' AS POSTYPE 
-	    FROM AN_POS A,AN_POS Z WHERE A.RELATED_OLT_CUID=Z.CUID AND 	A.LABEL_CN IN  
-          <iterate conjunction="," open="(" close=")">
-				#name[]#
-		</iterate>
-		UNION 
+
 		SELECT CUID,LABEL_CN,RELATED_OLT_CUID,FDN,DEV_CUID,RELATED_VENDOR_CUID,OWNERSHIP,'1' AS POSTYPE 
-		FROM AN_POS 
+		FROM t_attemp_AN_POS 
 		WHERE  LABEL_CN IN  
         <iterate conjunction="," open="(" close=")">
 				#name[]#
@@ -123,29 +118,22 @@
 	</select>	
 	<select id="queryOnuName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		SELECT *   
-		FROM AN_ONU 
+		FROM t_attemp_AN_ONU 
 		WHERE  LABEL_CN IN 
           <iterate conjunction="," open="(" close=")">            
 				#name[]#
 		</iterate>			
 	</select>
-	<select id="queryTopoName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT LABEL_CN,CUID,NATIVE_NAME,USER_LABEL,RELATED_EMS_CUID,LAYER_RATE,DIRECTION,ORIG_NE_CUID,
-				ORIG_PTP_CUID,DEST_NE_CUID,	DEST_PTP_CUID, REMARK 
-		FROM PON_TOPO_LINK WHERE  LABEL_CN IN 
-          <iterate conjunction="," open="(" close=")">
-				#name[]#
-		</iterate>			
-	</select>
+
 	
 	<select id="queryCardName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT LABEL_CN,CUID ,FDN ,RELATED_DEVICE_CUID,MODEL,RELATED_UPPER_COMPONENT_CUID FROM CARD WHERE  LABEL_CN IN 
+		SELECT LABEL_CN,CUID ,FDN ,RELATED_DEVICE_CUID,MODEL,RELATED_UPPER_COMPONENT_CUID FROM t_attemp_CARD WHERE  LABEL_CN IN 
           <iterate conjunction="," open="(" close=")">
 				#name[]#
 		</iterate>			
 	</select>
 	<select id="queryPtpName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT LABEL_CN,CUID ,FDN ,PORT_NO   ,PORT_RATE,PORT_TYPE,VLAN, REMARK FROM PTP WHERE  LABEL_CN IN 
+		SELECT LABEL_CN,CUID ,FDN ,PORT_NO   ,PORT_RATE,PORT_TYPE,VLAN, REMARK FROM t_attemp_PTP WHERE  LABEL_CN IN 
           <iterate conjunction="," open="(" close=")">
 				#name[]#
 		</iterate>			
@@ -168,7 +156,7 @@
 		  </iterate>			
 	</select>
 	<select id="queryPortByName" parameterClass="java.util.List" resultClass="com.boco.core.ibatis.vo.ResultMap">	
-		SELECT LABEL_CN,CUID,FDN,RELATED_NE_CUID FROM PTP WHERE LABEL_CN in 
+		SELECT LABEL_CN,CUID,FDN,RELATED_NE_CUID FROM t_attemp_PTP WHERE LABEL_CN in 
 		<iterate conjunction="," open="(" close=")">
 				#name[]#
 		</iterate>	

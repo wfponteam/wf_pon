@@ -259,9 +259,10 @@ public class ImportAttributeQueryBO {
 	/**
 	 * 获取ONU上联设备-pos的FDN信息  （导入二级分光器也调用此方法）
 	 * by lichao
+	 * @throws SQLException 
 	 */
-	public Map getPosByLabelCuid(String nameValue) {
-			List<Map> list = this.IbatisDAO.getSqlMapClientTemplate()
+	public Map getPosByLabelCuid(String nameValue) throws SQLException {
+			List<Map> list = this.IbatisDAO.getSqlMapClient()
 					.queryForList(EQUIP_SQL_MAP + ".queryPosBylabelCuid",
 							nameValue);
 			if (list != null && list.size() > 0) {
@@ -272,10 +273,10 @@ public class ImportAttributeQueryBO {
 	}		
 	
 	
-	public Map getFdnByEms(String name) {
+	public Map getFdnByEms(String name) throws SQLException {
 		
 		
-		List<Map> list = this.IbatisDAO.getSqlMapClientTemplate().queryForList(EQUIP_SQL_MAP + ".queryEmsByName",name);
+		List<Map> list = this.IbatisDAO.getSqlMapClient().queryForList(EQUIP_SQL_MAP + ".queryEmsByName",name);
 				
 						
 		Map m = list.get(0);

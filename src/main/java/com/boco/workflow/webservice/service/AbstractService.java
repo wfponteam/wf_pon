@@ -46,17 +46,17 @@ public abstract class AbstractService<T extends AbstractBuilder<E>, E> implement
 	 * @param errorInfo
 	 * @return
 	 */
-	private String buildResult(ResultEnum reEnum){
+	private String buildResult(ResultEnum reEnum,String error){
 		
 		String xml = PojoBuilderFactory.getBuilder(ResultBuilder.class)
-					.addErrorInfo(reEnum.getErrorInfo()).addIsSuccess(reEnum.getIsSuccess()).toXml();
+					.addErrorInfo(reEnum.getErrorInfo() + error).addIsSuccess(reEnum.getIsSuccess()).toXml();
 		return xml;
 	}
 	
 	/**
 	 * 执行具体业务
 	 */
-	abstract protected void doBusiness(E e) ;
+	abstract protected void doBusiness(E e) throws Exception;
 	
 	
 	@Override
@@ -68,12 +68,18 @@ public abstract class AbstractService<T extends AbstractBuilder<E>, E> implement
 		//报文验证
 		if(this.validate(e)){
 			//处理业务逻辑
-			this.doBusiness(e);
-			result = this.buildResult(ResultEnum.SUCESS);
+			try {
+				this.doBusiness(e);
+				result = this.buildResult(ResultEnum.SUCESS,"");
+			} catch (Exception e2) {
+				
+				result = this.buildResult(ResultEnum.BUSINESSFAIL,e2.getMessage());
+			}
+			
 		}else{
 			
 			//验证未通过
-			result = this.buildResult(ResultEnum.VALIDERROR);
+			result = this.buildResult(ResultEnum.VALIDERROR,"");
 		}
 		return result;
 	}

@@ -155,7 +155,24 @@ Frame.grid.plugins.query.cover_query = Ext.extend(Object, {
 			         {items:[lable_cn]},
 			         {items:[RELATED_COMMUNITY_LABEL]},
 			         {items:[RELATED_DISTRICT_CUID]},
-			         {items:[county]}
+			         {items:[county]},{
+			 			layout : 'form',
+						columnWidth : .5,
+						defaults : {
+							anchor : '-20'
+						},
+						items : [ {
+							xtype : 'textfield',
+							fieldLabel : '工程编号',
+							name : 'RELATED_PROJECT_CUID',
+							value : grid.prjcode,
+							hidden: true,
+							queryCfg : {
+								type : "string",
+								relation : "="
+							}
+						}]
+					}
 			         ]		
 		});
 		return panel;

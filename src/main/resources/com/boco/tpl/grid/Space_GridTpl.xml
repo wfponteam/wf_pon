@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tpl>
 	
-	<grid name="ADDRESS_MANAGE"  title="标准地址管理"  allowDisControl="true">
+	<grid name="ADDRESS_MANAGE"  title="标准地址管理" >
 		<plugins>
 			<plugin>checkbox</plugin>
 		</plugins>
@@ -81,17 +81,18 @@
           FA.RELATED_COMMUNITY_CUID,
           FA.REGIONTYPE1, /*地域属性一级分类*/
           FA.REGIONTYPE2, /*地域属性二级分类*/
+          fa.related_project_cuid,
           (SELECT T7.LABEL_CN 
              FROM BUSINESS_COMMUNITY T7
             WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2) AS N_RELATED_COMMUNITY_CUID
-             FROM T_ROFH_FULL_ADDRESS FA
+             FROM $ns$T_ROFH_FULL_ADDRESS FA
           WHERE  FLAG=0 
           AND 1=1
        
 		</sql>
 	</grid>
 	
-	<grid name="VILLAGE_MANAGE"  title="业务区管理"  allowDisControl="true">
+	<grid name="VILLAGE_MANAGE"  title="业务区管理" >
 		<plugins>
 			<plugin>checkbox</plugin>
 		</plugins>
@@ -162,8 +163,9 @@
 			       SOUTH_LONGITUDE,
 			       SOUTH_LATITUDE,
 			       NORTH_LONGITUDE,
-			       NORTH_LATITUDE
-			  FROM BUSINESS_COMMUNITY BC where ACCESS_MODE=2
+			       NORTH_LATITUDE,
+			       related_project_cuid
+			  FROM $ns$BUSINESS_COMMUNITY BC where ACCESS_MODE=2
 			]]>
 		</sql>
 	</grid>
@@ -277,8 +279,8 @@
                      
                     (select count(*) from  cover_to_port where related_access_point=L.RELATED_NE_CUID and port_state=2  )
                                   )   USER_PTP_COUNT,
-                           L.COVER_INFO,L.REMARK,L.REGIONTYPE1,L.REGIONTYPE2
-          FROM GPON_COVER L ,t_rofh_full_address TP where L.standard_addr=TP.cuid              
+                           L.COVER_INFO,L.REMARK,L.REGIONTYPE1,L.REGIONTYPE2,L.related_project_cuid
+          FROM $ns$GPON_COVER L ,(select * from t_rofh_full_address union all select * from t_attemp_t_rofh_full_address) TP where L.standard_addr=TP.cuid              
 ) tt
  WHERE TT.RELATED_DISTRICT_CUID LIKE '{userDistrict}%'
 			]]>

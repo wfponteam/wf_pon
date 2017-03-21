@@ -14,7 +14,7 @@
 	  </isEmpty>
      </delete>
      <update id="updateBCInfo" parameterClass="java.util.HashMap">
-		UPDATE BUSINESS_COMMUNITY 
+		UPDATE t_attemp_BUSINESS_COMMUNITY 
 		  SET LABEL_CN =#LABEL_CN#,
 			CITY =	#CITY#,
 			ADDRESS =	#ADDRESS#,
@@ -37,12 +37,13 @@
 			SOUTH_LONGITUDE = #SOUTH_LONGITUDE#,
 			SOUTH_LATITUDE  = #SOUTH_LATITUDE#,
 			NORTH_LONGITUDE = #NORTH_LONGITUDE#,
-			NORTH_LATITUDE  =#NORTH_LATITUDE#
+			NORTH_LATITUDE  =#NORTH_LATITUDE#,
+			RELATED_PROJECT_CUID = #RELATED_PROJECT_CUID#
 		WHERE CUID = #CUID# AND ACCESS_MODE=2
 	  </update>
 	  
 	   <insert id="insertBCInfo" parameterClass="java.util.HashMap">
-		INSERT INTO BUSINESS_COMMUNITY
+		INSERT INTO t_attemp_BUSINESS_COMMUNITY
 		(LABEL_CN	,
 			CITY	,
 			ADDRESS	,
@@ -67,7 +68,8 @@ SOUTH_LONGITUDE,
 SOUTH_LATITUDE, 	
 NORTH_LONGITUDE,	
 NORTH_LATITUDE,  	
-CUID
+CUID,
+RELATED_PROJECT_CUID
 			) VALUES 
 		 (#LABEL_CN#,
 			#CITY#,
@@ -93,7 +95,8 @@ CUID
 #SOUTH_LATITUDE#,    
 #NORTH_LONGITUDE#,   
 #NORTH_LATIT#,        
-#CUID#
+#CUID#,
+#RELATED_PROJECT_CUID#
 		)
 	</insert>
 	 <select id="selectBusinessCommunityByCuid" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
@@ -150,7 +153,7 @@ CUID
                    SOUTH_LATITUDE, 
                    NORTH_LONGITUDE,
                    NORTH_LATITUDE  	 
-			FROM BUSINESS_COMMUNITY WHERE LABEL_CN=#LABEL_CN# AND CITY =#CITY# AND ACCESS_MODE=2
+			FROM t_attemp_BUSINESS_COMMUNITY WHERE LABEL_CN=#LABEL_CN# AND CITY =#CITY# AND ACCESS_MODE=2
 	 </select>
 	 
 	 <select id="selectDistrictByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">

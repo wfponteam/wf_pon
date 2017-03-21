@@ -2,6 +2,7 @@ package com.boco.workflow.webservice.pojo;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.boco.workflow.webservice.builder.ValidationBuilder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -72,6 +73,11 @@ public class Validation {
 	public String toString() {
 		
 		return ToStringBuilder.reflectionToString(this);
+	}
+	
+	public ValidationBuilder getBuilder(){
+		
+		return new ValidationBuilder(this);
 	}
 
 }

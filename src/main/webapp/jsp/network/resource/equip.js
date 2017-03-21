@@ -19,13 +19,13 @@ NETWORK.equip = Ext.extend(Ext.Panel, {
 	_initItems : function() {
 		var scope = this;
 		var items = []; 
-		var onu = new NETWORK.onu({});
-		var onuPtp = new NETWORK.ptp({id:'onuPtp',devTable:'onu'});
-		var pos = new NETWORK.pos({});
-		var posPtp = new NETWORK.ptp({id:'posPtp',devTable:'pos'});
-		var address = new NETWORK.address({});
-		var village = new NETWORK.village({});
-		var cover = new NETWORK.cover({});
+		var onu = new NETWORK.onu({prjcode : this.prjcode});
+		var onuPtp = new NETWORK.ptp({id:'onuPtp',devTable:'onu',prjcode : this.prjcode});
+		var pos = new NETWORK.pos({prjcode : this.prjcode});
+		var posPtp = new NETWORK.ptp({id:'posPtp',devTable:'pos',prjcode : this.prjcode});
+		var address = new NETWORK.address({prjcode : this.prjcode});
+		var village = new NETWORK.village({prjcode : this.prjcode});
+		var cover = new NETWORK.cover({prjcode : this.prjcode});
 
 		
 		this.equipPanel = new Ext.TabPanel({

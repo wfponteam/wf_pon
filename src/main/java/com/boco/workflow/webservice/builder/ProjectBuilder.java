@@ -27,5 +27,11 @@ public class ProjectBuilder extends AbstractBuilder<Project> implements IBuilder
 		return this;
 	}
 	
+	public ProjectBuilder addPrjStatus(String prjStatus){
+		
+		pojo.setPrjStatus(prjStatus);
+		return this;
+	}
+	
 	
 }

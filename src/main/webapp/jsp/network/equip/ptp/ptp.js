@@ -17,6 +17,7 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
     devCuid		: '',
     devName		: '',
     devTable	: '',
+    prjcode     : '',
     initComponent : function() {
 		var panelType = "";
 		if('onu'==this.devTable){
@@ -206,7 +207,7 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
 			enableGeneralQuery: false,
 			pageSize : 20,
 			gridCfg 			: {
-				boName 	  			: 'XmlTemplateGridBO',
+				boName 	  			: 'ponTemplateGirdBo',
 //				exportBoName        : 'EquipGridExportBO',
 				cfgParams : {
 					templateId 		: panelType
@@ -280,6 +281,11 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
     				value 		: "%"+Ext.getCmp(this.devTable + 'vlanField').getValue()+"%",
     				relation 	: Ext.getCmp(this.devTable + 'vlanField').queryCfg.relation
     		}
+    	}
+    	whereParams['RELATED_PROJECT_CUID'] = {
+    			key: 'RELATED_PROJECT_CUID',
+    			value: this.prjcode,
+    			relation:'='
     	}
     	
     	return whereParams;

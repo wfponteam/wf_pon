@@ -9,6 +9,7 @@ NETWORK.pos= Ext.extend(Ext.Panel,{
 	frame 		: true,
 	layout 		: 'border',
 	autoScroll  : true,
+	prjcode     : '',
 	
 	initComponent : function() {
 		this._initItems();
@@ -22,7 +23,9 @@ NETWORK.pos= Ext.extend(Ext.Panel,{
 			enableGeneralQuery: false,
 			enableContextMenu : true,
 			rendererPlugin : 'equip_renderer',
+			prjcode    : this.prjcode,
 			gridCfg : {
+				boName : 'ponTemplateGirdBo',
 				cfgParams : {
 					templateId : 'POS_MANAGE'
 				}

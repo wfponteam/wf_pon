@@ -135,6 +135,17 @@ Frame.grid.plugins.query.address_query = Ext.extend(Object, {
 				items : [county]
 			},{
 				items : [relatedcommunitycuid]
+			},{
+					xtype : 'textfield',
+					fieldLabel : '工程编号',
+					name : 'RELATED_PROJECT_CUID',
+					value : grid.prjcode,
+					hidden: true,
+					queryCfg : {
+						type : "string",
+						relation : "="
+					}
+				
 			}]		
 		});
 		return panel;

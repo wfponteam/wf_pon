@@ -47,7 +47,7 @@ public class BusinessCommunityImportExcel {
 	}
 	
 	public  ImportResultDO importData(Workbook writeWorkBook ,Sheet writeSheet,
-			String pathname, String excelName) throws Exception {;
+			String pathname, String excelName,String prjcode) throws Exception {;
 		List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>(); 
 		ImportResultDO importResultDO = new ImportResultDO(excelName);
 		try {
@@ -73,6 +73,7 @@ public class BusinessCommunityImportExcel {
 					Map<String,Object> dataMap = verificationCell(writeWorkBook, writeSheet, xRow, i,lastColumns);	
 					if(!ImportCommonMethod.isRowExistError(xRow,lastColumns)
 							&&dataMap.get("TYPE")!=null&&dataMap.get("CUID")!=null){
+						dataMap.put("RELATED_PROJECT_CUID", prjcode);
 						dataList.add(dataMap);
 					}else{
 						erroNum++;

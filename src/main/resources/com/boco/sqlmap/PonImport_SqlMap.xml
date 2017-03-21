@@ -2,7 +2,7 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
 <sqlMap namespace="PONIMPORT">
     <update id="importCardBatchUpdate"  parameterClass="java.util.HashMap">
-        UPDATE CARD
+        UPDATE t_attemp_CARD
 		   SET LABEL_CN                     = #LABEL_CN#,
 		       RELATED_DEVICE_CUID          = #RELATED_DEVICE_CUID#,
 		       FDN                          = #FDN#,
@@ -15,12 +15,12 @@
 		 WHERE CUID = #CUID#
     </update>
     <update id="updatePtpNameByCard"  parameterClass="java.util.HashMap">
-        UPDATE PTP 
+        UPDATE t_attemp_PTP 
 		   SET LABEL_CN = #LABEL_CN# || '.' || PORT_NO
 		 WHERE RELATED_CARD_CUID = #CUID#
     </update>
     <insert id="importCardBatchInsert" parameterClass="java.util.HashMap">
-		INSERT INTO CARD  
+		INSERT INTO t_attemp_CARD  
 	    (CUID,OBJECTID,LABEL_CN,RELATED_DEVICE_CUID,FDN,CARD_KIND,MODEL,
 	     CREATE_TIME,GT_VERSION,ISDELETE,LAST_MODIFY_TIME,RELATED_UPPER_COMPONENT_CUID,
 	     PROJECT_STATE,IS_PERMIT_SYS_DEL,USE_TYPE,OBJECT_TYPE_CODE,LIVE_CYCLE,USE_STATE,PHOTOELECTRICITY,DEV_TYPE,VENDOR) 
@@ -30,7 +30,7 @@
 	     #PROJECT_STATE#,#IS_PERMIT_SYS_DEL#,#USE_TYPE#,#OBJECT_TYPE_CODE#,#LIVE_CYCLE#,#USE_STATE#,#PHOTOELECTRICITY#,#DEV_TYPE#,#VENDOR#)
 	</insert>
 	<update id="importPtpBatchUpdate" parameterClass="java.util.HashMap">
-		UPDATE PTP
+		UPDATE t_attemp_PTP
 		   SET LABEL_CN          = #LABEL_CN#,
 		       PORT_NO           = #PORT_NO#,
 		       PORT_TYPE         = #PORT_TYPE#,
@@ -48,7 +48,7 @@
 		 WHERE CUID = #CUID#
 	</update>
 	<insert id="importPtpBatchInsert" parameterClass="java.util.HashMap">
-		INSERT INTO PTP 
+		INSERT INTO t_attemp_PTP 
 	    (CUID,OBJECTID,LABEL_CN,PORT_TYPE,PORT_NO,PORT_STATE,RELATED_EMS_CUID,RELATED_CARD_CUID,FDN,SYS_NO,
 	      GT_VERSION,CREATE_TIME,LAST_MODIFY_TIME,PROJECT_STATE,RELATED_NE_CUID,IS_CHANNEL,TERMINATION_MODE,
 	      DIRECTIONALITY,MSTP_NANFCMODE,MSTP_PORT_TYPE,IS_PERMIT_SYS_DEL,MSTP_FLOWCTRL,MSTP_ANFCMODE,

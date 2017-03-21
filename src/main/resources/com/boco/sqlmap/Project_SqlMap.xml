@@ -14,6 +14,7 @@
 		  PRJ_CODE           ,
 		  PRJ_CATEGORY       ,
 		  PRJ_TYPE           ,
+		  PRJ_STATUS         ,
 		  COST               ,
 		  LENGTH             ,
 		  DOMAIN_NAME        ,
@@ -34,6 +35,7 @@
 		  #prjCode#          ,
 		  #prjCategory#      ,
 		  #prjType#          ,
+		  #prjStatus#        ,
 		  #cost#             ,
 		  #length#           ,
 		  #domainName#       ,
@@ -50,7 +52,7 @@
 			set prj_status = #prjStatus# ,
 				username = #userName# ,
 				LAST_MODIFY_TIME = sysdate
-		where p.prj_code = #prjCode# and parent_prj_code = #parentPrjCode#
+		where p.prj_code = #prjCode# 
 	</update>
 	
 	<select id="queryProjectByCode" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
@@ -78,4 +80,75 @@
 				 LAST_MODIFY_TIME   
 			from T_WF_PROJECT where PRJ_CODE = #prjCode#
 	</select>
+	
+	<insert id="movePos" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
+		insert into $ns$an_pos select * from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+	</insert>
+	
+	<insert id="moveOnu" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
+		insert into $ns$an_onu select * from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
+	</insert>
+	
+	<insert id="moveCard" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
+		insert into $ns$card select * from t_attemp_card t where t.related_device_cuid in(
+		 	select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
+			union all
+			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+		 )
+	</insert>
+	
+	<insert id="moveAddress" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
+		insert into $ns$t_rofh_full_address select * from t_attemp_t_rofh_full_address t where t.related_project_cuid = #prjcode#
+	</insert>
+	
+	<insert id="moveCover" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
+		insert into $ns$gpon_cover select * from t_attemp_gpon_cover t where t.related_project_cuid = #prjcode#
+	</insert>
+	<insert id="moveCommunity" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
+		insert into $ns$BUSINESS_COMMUNITY select * from t_attemp_BUSINESS_COMMUNITY t where t.related_project_cuid = #prjcode#
+	</insert>
+	<insert id="movePtp" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
+		insert into $ns$ptp select * from t_attemp_ptp t where t.related_ne_cuid in(
+			select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
+			union all
+			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+		)
+	</insert>
+	
+	<delete id="deleteAttempOnu" parameterClass="java.lang.String">
+		delete from  t_attemp_an_onu where related_project_cuid = #prjcode#
+	</delete>
+	
+	<delete id="deleteAttempPos" parameterClass="java.lang.String">
+		delete from  t_attemp_an_pos where related_project_cuid = #prjcode#
+	</delete>
+	
+	<delete id="deleteAttempCover" parameterClass="java.lang.String">
+		delete from  t_attemp_gpon_cover where related_project_cuid = #prjcode#
+	</delete>
+	
+	<delete id="deleteAttempAddress" parameterClass="java.lang.String">
+		delete from  t_attemp_t_rofh_full_address where related_project_cuid = #prjcode#
+	</delete>
+	
+	<delete id="deleteAttempCommunity" parameterClass="java.lang.String">
+		delete from  t_attemp_BUSINESS_COMMUNITY where related_project_cuid = #prjcode#
+	</delete>
+	
+	<delete id="deleteAttempPtp" parameterClass="java.lang.String">
+		delete from  t_attemp_ptp where related_ne_cuid in(
+			select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
+			union all
+			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+		)
+	</delete>
+	
+	<delete id="deleteAttempCard" parameterClass="java.lang.String">
+		delete from  t_attemp_card where related_device_cuid in(
+		 	select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
+			union all
+			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+		 )
+	</delete>
+	
 </sqlMap>
