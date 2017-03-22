@@ -1,7 +1,7 @@
 Ext.namespace("NETWORK");
 $importjs(ctx + "/jsp/network/equip/pos/pos_query.js");
 $importjs(ctx + "/jsp/network/equip/equip_renderer.js");
-
+$importjs(ctx + "/jsp/network/equip/pos/pos_tbar.js");
 NETWORK.pos= Ext.extend(Ext.Panel,{
 	id 			: 'NETWORK.pos',
 	region 		: 'center',
@@ -31,7 +31,7 @@ NETWORK.pos= Ext.extend(Ext.Panel,{
 				}
 			},
 			queryPlugin : 'pos_query',
-			tbarPlugin : '',
+			tbarPlugin : 'pos_tbar',
 			view : new Ext.grid.GridView({
 				forceFit : true
 			}),

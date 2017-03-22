@@ -1,12 +1,10 @@
 Ext.ns('Frame.grid.plugins.tbar');
 $importjs(ctx + "/jsp/anms/authority/common/FilterTbarBtnNode.js");
-$importjs(ctx + "/dwr/interface/RoleAuthorityAction.js");
 $importjs(ctx + "/jsp/anms/common/AnmsOverride.js");
 $importjs(ctx + "/commons/utils/FrameHelper.js");
 $importjs(ctx + "/jsp/anms/common/Util.js");
-$importjs(ctx + "/jsp/anms/businesscommunity/plugins/tbar/BusinessCommunityManage.js");
+$importjs(ctx + "/jsp/network/space/village/village_panel.js");
 $importjs(ctx + "/dwr/interface/BusinessCommunityManageAction.js");
-
 Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{
 		constructor : function(grid){
 			this.grid = grid;
@@ -25,7 +23,7 @@ Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{
 						text : '新增',
 						iconCls : 'c_add',
 						scope : this,
-						id	: 'BusinessCommunityGridTBar.add',
+						id	: 'village_tbar.add',
 						handler : function() {
 							this.showDetailView('', 'add', '新增业务区',this);
 						}
@@ -33,7 +31,7 @@ Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{
 						text : '修改',
 						iconCls : 'c_pencil',
 						scope : this,
-						id	: 'BusinessCommunityGridTBar.modify',
+						id	: 'village_tbar.modify',
 						handler : function() {
 							var record = this.grid.getSelectionModel().getSelected();
 							if (!Ext.isEmpty(record)) {
@@ -47,7 +45,7 @@ Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{
 						text : '删除',
 						iconCls : 'c_delete',
 						scope : this,
-						id	: 'BusinessCommunityGridTBar.delete',
+						id	: 'village_tbar.delete',
 						handler : function() {
 							var selections = this.grid.getSelectionModel().getSelections();
 							if (selections.length > 0) {
@@ -75,20 +73,9 @@ Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{
 								return;
 							}
 						}
-					}, {
-						text : '批量导入',
-						iconCls : 'c_page_excel',
-						scope : this,
-						id	: 'BusinessCommunityGridTBar.import',
-						handler : function() {
-							var scope = this;
-							FrameHelper.openUrl("$(WEBAN_SERVER)/jsp/anms/importres/ImportBasicData.jsp?fileName=businessCommunityTemplet",'业务区批量导入');
-							return;
-						}
 					}];
 			
 
-			FilterTbarBtnNode.filterTbarBtn(returnCfg,true);
 			
 			return [returnCfg];
 		},
@@ -107,7 +94,7 @@ Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{
 				_type : type
 			};
 			
-		openWindow('ANMS.BusinessCommunityManage', true, config, function(_result, _scope,_options) {
+		openWindow('NETWORK.village_panel', true, config, function(_result, _scope,_options) {
 						if (!Ext.isEmpty(_result) && !Ext.isEmpty(type)) {
 							DWREngine.setAsync(false);
 							BusinessCommunityManageAction.queryLoadBCInfoByCuid(_result,function(_data) {

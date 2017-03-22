@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tpl>
+    <!--家宽代维公司-->
+	<combo name="CONSTRUCT_DEPT_COMBOX" allowDisControl="true">
+		<sql dao="IbatisResDAO">
+		<![CDATA[
+			SELECT CUID,LABEL_CN FROM T_ROFH_MAINTAIN_DEPT MD WHERE DEPT_TYPE = '2'
+		]]>
+		</sql>
+	</combo>
+	<combo name="CONSTRUCT_DEPT_COMBOX_1" allowDisControl="true">
+		<sql dao="IbatisResDAO">
+		<![CDATA[
+			SELECT CUID,LABEL_CN FROM T_ROFH_MAINTAIN_DEPT MD WHERE DEPT_TYPE = '1'
+		]]>
+		</sql>
+	</combo>
+	<combo name="BOOLEAN_COMBOX" allowDisControl="true">
+		<sql dao="IbatisResDAO">
+		<![CDATA[
+			SELECT '1' AS CUID,'是' AS LABEL_CN FROM DUAL
+			UNION ALL
+			SELECT '2' AS CUID,'否'  AS LABEL_CN FROM DUAL
+		]]>
+		</sql>
+	</combo>
+	<combo name="BUILD_TYPE_COMBOX" allowDisControl="true">
+		<sql dao="IbatisResDAO">
+		<![CDATA[
+			SELECT '1' AS CUID,'自建' AS LABEL_CN FROM DUAL
+			UNION ALL
+			SELECT '2' AS CUID,'光割'  AS LABEL_CN FROM DUAL
+			UNION ALL
+			SELECT '3' AS CUID,'光改'  AS LABEL_CN FROM DUAL
+			UNION ALL
+			SELECT '4' AS CUID,'第三方'  AS LABEL_CN FROM DUAL
+			UNION ALL
+			SELECT '5' AS CUID,'无线'  AS LABEL_CN FROM DUAL
+			UNION ALL
+			SELECT '6' AS CUID,'商铺'  AS LABEL_CN FROM DUAL
+			UNION ALL
+			SELECT '7' AS CUID,'一网通'  AS LABEL_CN FROM DUAL
+		]]>
+		</sql>
+	</combo>
+</tpl>
