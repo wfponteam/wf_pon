@@ -415,21 +415,7 @@ public class ImportPonCardPortExcel {
 			if(!ImportCommonMethod.isEmpty(ptpSubtype)){
 				ImportCommonMethod.verificationEnum(writeWorkBook, writeSheet, portSubType, i, lastColumns,Constant.PORTSUBTYPE);
 				map.put("PORT_SUB_TYPE", ptpSubtype);
-				/*if(ptpSubtype.equals("分光器上联口")){
-					cardStr = neStr+"-1";
-				}else{
-					cardStr = neStr+"-2";
-				}
-				map.put("CARD_NAME",cardStr);
-				map.put("CARD_TEMP_FDN",(int)(Math.random()*10)+"-"+(int)(Math.random()*10)+"-"+(int)(Math.random()*10+30));
-				if(ImportCommonMethod.isNotEmpty(neFdn)){
-					String cardFdn1 = getCardPashFdn(map.get("CARD_TEMP_FDN")+"");
-					cardFdn = AnFdnHelper.makeOltCardFdn(neFdn,cardFdn1, "1");
-					map.put("CARD_FDN", cardFdn);
-					map.put("CARD_RELATED_UPPER_COMPONENT_CUID", EquipmentHolder.CLASS_NAME
-							+ AnFdnHelper.fdnSpliterD + neFdn + AnFdnHelper.fdnSpliter
-							+ AnFdnHelper.HolderHeader + cardFdn1);
-				}*/
+
 			}
 			String ptpStr = ImportCommonMethod.getCellValue(xRow.getCell(portName));
 			if(!ImportCommonMethod.isEmpty(ptpStr)){
@@ -440,30 +426,8 @@ public class ImportPonCardPortExcel {
 			String ptpNo = ImportCommonMethod.getCellValue(xRow.getCell(portNo));
 			if(!ImportCommonMethod.isEmpty(ptpNo)){
 				map.put("PORT_NO", ptpNo);
-//				if(!ImportCommonMethod.isNotEmpty(map.get("CARD_TEMP_FDN")+"")){
-//					map.put("sysNo, map.get("CARD_TEMP_FDN")+"-"+ptpNo);
-//				}
 			}
-				/*ImportCommonMethod.verificationNumber(writeWorkBook, writeSheet, portNo, i, lastColumns,Constant.PORTNO);
-				if(!ImportCommonMethod.isEmpty(neStr)){
-					//  将excel 中获取 strCardName-strPortNo  然后放入 checkPortFdnMap <设备名称+端口号 , 端口号>  ，最后核查是否已经重复
-					if(ptpNoMap.containsKey(neStr+cardStr+"-"+ptpNo)){
-						ImportCommonMethod.verificationSamePortFdn(writeWorkBook, writeSheet, portNo, i, lastColumns,Constant.PORTNO);
-					}else{
-						if(neMaps.get(neStr)!=null){
-							if(ImportCommonMethod.isSamePortFdn(writeWorkBook, writeSheet,neStr,cardStr,ptpStr,ptpNo,portNo,i, lastColumns,Constant.PORTNO,neMaps.get(neStr).get("CUID").toString())){
-								ImportCommonMethod.verificationSamePortFdn(writeWorkBook, writeSheet, portNo, i, lastColumns,Constant.PORTNO);
-							}else{
-								ptpNoMap.put(neStr+cardStr+"-"+ptpNo, ptpNo);
-							}
-						}
-					}
-				}
-				if(ImportCommonMethod.isNotEmpty(cardFdn)){
-					String ptpFdn = AnFdnHelper.getPortFdnByCardFdnAndPortNo(cardFdn,Integer.parseInt(ptpNo));
-					map.put("fdn,ptpFdn);
-				}
-			}*/
+
 			String ptpRate = ImportCommonMethod.getCellValue(xRow.getCell(portRate));
 			if(!ImportCommonMethod.isEmpty(ptpRate)){
 				ImportCommonMethod.verificationEnum(writeWorkBook, writeSheet, portRate, i, lastColumns,Constant.PORTRATE);
@@ -567,76 +531,6 @@ public class ImportPonCardPortExcel {
 				map.put("PORT_SUB_TYPE", ptpSubtype);
 			}
 			
-/*			String cardStr = ImportCommonMethod.getCellValue(xRow.getCell(cardName));
-			if(!ImportCommonMethod.isEmpty(cardStr)){
-				map.put("CARD_NAME",cardStr);
-			}else {
-				if("ONU上联口".equals(ptpSubtype)){
-					cardStr = neStr+"-1";
-				}else{
-					cardStr = neStr+"-2";
-				}
-				map.put("CARD_NAME",cardStr);
-			}
-			String modelStr = ImportCommonMethod.getCellValue(xRow.getCell(singeModel));
-			if(!ImportCommonMethod.isEmpty(modelStr)){
-				map.put("CARD_MODEL", modelStr);
-				ImportCommonMethod.verificationRelated(writeWorkBook, xRow,singeModel, lastColumns,Constant.SINGLEMODEL,cardKindMap);
-			}
-			String cardTempFdn = ImportCommonMethod.getCellValue(xRow.getCell(relatedUpperComponentCuid));
-			boolean res = true;
-			boolean cardSam = true;
-			boolean fdnSam = true;
-			if(!ImportCommonMethod.isEmpty(cardTempFdn)){
-			    res = ImportCommonMethod.verificationCardFdn(writeWorkBook, writeSheet, relatedUpperComponentCuid, i, lastColumns,Constant.RELATEDUPPERCOMPONENTCUID);
-				//判断Excel中相同架框槽的板卡是否一致
-				if(cardFdnMap.containsKey("FDNSAME"+neStr+cardTempFdn)){
-					if(!cardFdnMap.get("FDNSAME"+neStr+cardTempFdn).equals(cardStr)){
-						fdnSam = false;
-						ImportCommonMethod.verificationSameFdnCard(writeWorkBook, writeSheet, cardName, i, lastColumns,Constant.RELATEDUPPERCOMPONENTCUID);
-					}//如果相等的话不做任何操作
-				}else{
-					cardFdnMap.put("FDNSAME"+neStr+cardTempFdn,cardStr);
-				}
-				//判断Excel中相同板卡的架框槽是否一致
-				if(cardFdnMap.containsKey("CARD"+neStr+cardStr)){
-					if(!cardFdnMap.get("CARD"+neStr+cardStr).equals(cardTempFdn)){
-						cardSam = false;
-						ImportCommonMethod.verificationSameCardFdn(writeWorkBook, writeSheet, relatedUpperComponentCuid, i, lastColumns,Constant.RELATEDUPPERCOMPONENTCUID);
-					}//如果相等的话不做任何操作
-				}else{
-					cardFdnMap.put("CARD"+neStr+cardStr,cardTempFdn);
-				}
-				map.put("CARD_TEMP_FDN", cardTempFdn);
-			}else{
-				map.put("CARD_TEMP_FDN",(int)(Math.random()*10)+"-"+(int)(Math.random()*10)+"-"+(int)(Math.random()*10+30));
-			}
-			String cardFdn = "";
-			if(ImportCommonMethod.isNotEmpty(neFdn)){
-				String cardFdn1 = getCardPashFdn(map.get("CARD_TEMP_FDN")+"");
-				String cardFdn2 = AnFdnHelper.makeOltCardFdn(neFdn,cardFdn1, "1");
-				if(ImportCommonMethod.isNotEmpty(cardTempFdn)&&res&&cardSam&&fdnSam){
-					//校验板卡FDN是否已经存在
-					List<Map> tempList = ImportCommonMethod.oltManageBO.
-							isExistCardFdn(cardFdn);
-					if(tempList!=null&&tempList.size()>0){
-						Map map2 = tempList.get(0);
-						if(!cardStr.equals(map2.get("LABEL_CN").toString())){
-							ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,relatedUpperComponentCuid, lastColumns,"根据所属机槽编号生成的板卡FDN信息数据库中已存在，请检查！");
-						}else {
-							cardFdn = cardFdn2;
-						}
-					}else {
-						cardFdn = cardFdn2;
-					}
-					if(ImportCommonMethod.isNotEmpty(cardFdn)){
-						map.put("CARD_FDN", cardFdn);
-						map.put("CARD_RELATED_UPPER_COMPONENT_CUID", EquipmentHolder.CLASS_NAME
-								+ AnFdnHelper.fdnSpliterD + neFdn + AnFdnHelper.fdnSpliter
-								+ AnFdnHelper.HolderHeader + cardFdn1);
-					}
-				}
-			}*/
 			String ptpStr = ImportCommonMethod.getCellValue(xRow.getCell(portName));
 			if(!ImportCommonMethod.isEmpty(ptpStr)){
 				map.put("LABEL_CN", ptpStr);
@@ -645,44 +539,10 @@ public class ImportPonCardPortExcel {
 			String ptpNo = ImportCommonMethod.getCellValue(xRow.getCell(portNo));
 			if(!ImportCommonMethod.isEmpty(ptpNo)){
 				map.put("PORT_NO", ptpNo);
-//				if(!ImportCommonMethod.isNotEmpty(map.get("CARD_TEMP_FDN")+"")){
-//					map.put("sysNo, map.get("CARD_TEMP_FDN")+"-"+ptpNo);
-//				}
+
 				ImportCommonMethod.verificationNumber(writeWorkBook, writeSheet, portNo, i, lastColumns,Constant.PORTNO);
 			}       
-					/*if(!ImportCommonMethod.isEmpty(neStr)&& !ImportCommonMethod.isEmpty(cardStr)){
-					//  将excel 中获取 strCardName-strPortNo  然后放入 checkPortFdnMap <设备名称+机盘名+端口号 , 端口号>  ，最后核查是否已经重复
-					if(ptpNoMap.containsKey(neStr+cardStr+"-"+ptpNo)){
-						ImportCommonMethod.verificationSamePortFdn(writeWorkBook, writeSheet, portNo, i, lastColumns,Constant.PORTNO);
-					}else{
-						if(neMaps.get(neStr)!=null){
-							if(ImportCommonMethod.isSamePortFdn(writeWorkBook, writeSheet,neStr,cardStr,ptpStr,ptpNo,portNo,i, lastColumns,Constant.PORTNO,neMaps.get(neStr).get("CUID").toString())){
-								ImportCommonMethod.verificationSamePortFdn(writeWorkBook, writeSheet, portNo, i, lastColumns,Constant.PORTNO);
-							}else{
-								ptpNoMap.put(neStr+cardStr+"-"+ptpNo, ptpNo);
-							}
-						}
-					}
-				}
-				if(ImportCommonMethod.isNotEmpty(cardFdn)){
-					String ptpFdn = AnFdnHelper.getPortFdnByCardFdnAndPortNo(cardFdn,Integer.parseInt(ptpNo));
-					if(ImportCommonMethod.isNotEmpty(cardTempFdn)){
-						//校验端口FDN是否已经存在
-						List<Map> tempList = ImportCommonMethod.oltManageBO.
-								isExistPtpFdn(ptpFdn);
-						if(tempList!=null&&tempList.size()>0){
-							Map map2 = tempList.get(0);
-							if(!ptpStr.equals(map2.get("LABEL_CN").toString())){
-								ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,relatedUpperComponentCuid, lastColumns,"根据所属机槽编号生成的端口FDN信息数据库中已存在，请检查！");
-							}else {
-								map.put("fdn,ptpFdn);
-							}
-						}else {
-							map.put("fdn,ptpFdn);
-						}
-					}
-				}
-			}*/
+					
 			
 			String ptpRate = ImportCommonMethod.getCellValue(xRow.getCell(portRate));
 			if(!ImportCommonMethod.isEmpty(ptpRate)){

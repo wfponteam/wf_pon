@@ -30,17 +30,6 @@ public class WebServiceAction {
 	@RequestMapping("/syncHangingResult")
 	public @ResponseBody String syncHangingResult(String parentPrjCode,String prjCode){
 		
-		/*ResourceCheckServiceImplService service = new ResourceCheckServiceImplServiceLocator();
-		
-		
-		String xml = PojoBuilderFactory.getBuilder(ValidationBuilder.class).addParentPrjCode(parentPrjCode)
-		.addPrjCode(prjCode).addtestinfo("test").addteststatus("成功").toXml();
-		
-		logger.info(xml);
-		String result = service.getResourceCheckServiceImplPort().resourceCheck(xml);
-		logger.info(result);
-		
-		Result res = PojoBuilderFactory.getBuilder(ResultBuilder.class).fromXml(result);*/
 		
 		logger.info("将" + prjCode + "状态改为挂测");
 		try {

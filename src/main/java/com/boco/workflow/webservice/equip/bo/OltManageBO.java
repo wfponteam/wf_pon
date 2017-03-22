@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.boco.core.ibatis.dao.IbatisDAO;
+import com.boco.core.ibatis.vo.ResultMap;
 import com.boco.workflow.webservice.upload.service.ImportCommonMethod;
 
 @Repository
@@ -93,6 +94,13 @@ public class OltManageBO {
 		}else{
 			return null;
 		}
+	}
+
+	public String getOldPosPortCuid(String posCuid) {
+		
+		String sql = "select related_upne_port_cuid from t_attemp_an_pos where cuid = '"+ posCuid + "'";
+		List<ResultMap<String, String>> list = this.IbatisDAO.querySql(sql);
+		return list.get(0).get("RELATED_UPNE_PORT_CUID");
 	}
 		
 }

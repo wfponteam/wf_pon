@@ -258,8 +258,6 @@ public class OnuManageBO {
 		String devType = "";
 		if(StringUtils.isNotEmpty(neCuid)){
 			String sql = "SELECT("
-					+ " SELECT FDN FROM TRANS_ELEMENT T WHERE T.CUID = '"+neCuid+"'"+
-					" UNION ALL "
 					+ "  SELECT FDN FROM t_attemp_AN_POS T WHERE T.CUID = '"+neCuid+"'"+
 					" UNION ALL "
 					+ " SELECT FDN FROM t_attemp_AN_ONU T WHERE T.CUID = '"+neCuid+"') AS FDN "

@@ -6,10 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -20,8 +18,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
-import com.boco.core.ibatis.dao.IbatisDAO;
-import com.boco.core.spring.SysProperty;
 import com.boco.workflow.webservice.upload.bo.ImportAttributeQueryBO;
 import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
 import com.boco.workflow.webservice.upload.bo.ImportCache;
@@ -282,16 +278,16 @@ public class ImportOnuExcel {
 					    		if(!ImportCommonMethod.isEmpty(posPtpCuid)&&!ImportCommonMethod.isEmpty(posCuid)){
 					    			map.put("RELATED_POS_PORT_CUID", posPtpCuid);
 					    			map.put("RELATED_POS_CUID", posCuid);
-					    			if("2".equals(portState) || "3".equals(portState)){
+					    			if(!"1".equals(portState)){
 					    				
 					    				if(StringUtils.isNotBlank(onuCuid)){
 					    					//判断端口是否是原来的
 					    					String oldPort = ImportCommonMethod.getOldOnuPortCuid(onuCuid);
 					    					if(!posPtpCuid.equals(oldPort)){
-					    						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedPosCuid, lastColumns, "归属分光器+归属分光器端口已被占用，请重新填写！");
+					    						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedPosPortCuid, lastColumns, "归属分光器端口已被占用，请重新填写！");
 					    					}
 					    				}else{
-					    					ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedPosCuid, lastColumns, "归属分光器+归属分光器端口已被占用，请重新填写！");
+					    					ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedPosPortCuid, lastColumns, "归属分光器端口已被占用，请重新填写！");
 					    				}
 					    			}
 //					    			Map<String,String> param =new HashMap<String,String>();

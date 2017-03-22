@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -248,6 +246,7 @@ public class ImportPosExcel {
 				    if(ptpMap!=null){
 				    	String portSubType = ObjectUtils.toString(ptpMap.get("PORT_SUB_TYPE"));
 				    	String portCuid = ObjectUtils.toString(ptpMap.get("CUID"));
+				    	String portState = ObjectUtils.toString(ptpMap.get("PORT_STATE"));
 				    	if("POS".equals(upDevType)&&"12".equals(portSubType)){
 				    		ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedUpnePortCuid, lastColumns, "上联设备主用端口是分光器上联口，请重新填写所属上联设备的下联端口！");
 				    	}else if("OLT".equals(upDevType)&&"11".equals(portSubType)){
@@ -256,15 +255,18 @@ public class ImportPosExcel {
 				    	else{
 				    		//验证上联设备和端口是否已经存在链路
 				    		if(!ImportCommonMethod.isEmpty(portCuid)&&!ImportCommonMethod.isEmpty(upDevCuid)){
-//				    			Map<String,String> param =new HashMap<String,String>();
-//				    			param.put("DEST_NE_CUID",upDevCuid);
-//				    			param.put("DEST_PTP_CUID",portCuid);
-//				    			if(!ImportCommonMethod.isEmpty(posCuid)){
-//				    				param.put("NOT_ORIG_NE_CUID",posCuid);
-//				    			}
-//				    			if(getPonTopoLinkManageBo().isPonTopoLinkExist(param)){
-//				    				ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedUpnePortCuid, lastColumns, "所属上联设备+上联设备主用端口已存在PON拓扑链路信息，请重新填写！");
-//				    			}
+				    			if(!"1".equals(portState)){
+			    				
+			    				if(StringUtils.isNotBlank(posCuid)){
+			    					//判断端口是否是原来的
+			    					String oldPort = ImportCommonMethod.getOldPosPortCuid(posCuid);
+			    					if(!portCuid.equals(oldPort)){
+			    						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedUpnePortCuid, lastColumns, "所属端口已被占用，请重新填写！");
+			    					}
+			    				}else{
+			    					ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, relatedUpnePortCuid, lastColumns, "所属端口已被占用，请重新填写！");
+			    				}
+			    			}
 				    		}
 				    	}
 				    }
@@ -336,65 +338,7 @@ public class ImportPosExcel {
 			 * 22.上联设备备用端口
 			 */
 
-//			Object cellContant=xRow.getCell(relatedEmsCuid);
-//			String emsName = "";
-//			if(cellContant != null && !StringUtils.isEmpty(cellContant.toString())){
-//				emsName = cellContant.toString();
-//			}
-//			ImportCommonMethod.verificationEmpty(writeWorkBook, writeSheet, relatedEmsCuid, i, lastColumns,Constant.RELATEDEMSCUID);
-//			verificationRelated(writeWorkBook, writeSheet,  relatedEmsCuid, i, lastColumns,Constant.RELATEDEMSCUID,emsName);
-			
-			//所属机房/资源点 可空
-			//ImportCommonMethod.verificationEmpty(writeWorkBook, writeSheet, relatedSpaceCuid, i, lastColumns,Constant.ROOMACCESSPOINT);
-			//如果机房/资源点不为空，判断是在数据库存在
-			/*if(xRow.getCell(relatedSpaceCuid)!=null&& !StringUtils.isEmpty(xRow.getCell(relatedSpaceCuid).toString())){
-				verificationRelated(writeWorkBook, writeSheet,  relatedSpaceCuid, i, lastColumns,Constant.ROOMACCESSPOINT,xRow.getCell(relatedSpaceCuid).toString());						
-			}*/
-//			ImportCommonMethod.verificationEmpty(writeWorkBook, writeSheet, relatedOltPortCuid, i, lastColumns,Constant.RELATEDOLTPORTCUID);
-//			if(xRow.getCell(relatedOltPortCuid) != null && !StringUtils.isEmpty(xRow.getCell(relatedOltPortCuid).toString())){
-//				String portName = xRow.getCell(relatedOltPortCuid).toString();
-//				if(portNameList.contains(portName)){
-//					ImportCommonMethod.VerificationCardNameRepeat(writeWorkBook, writeSheet, relatedOltPortCuid, i, lastColumns);
-//				}else{
-//					portNameList.add(portName);
-//				}
-//			}
-			//ImportCommonMethod.verificationAddress(writeWorkBook, writeSheet, location, i, lastColumns,Constant.LOCATION);
 
-			
-			// ImportCommonMethod.verificationEmpty(writeWorkBook, writeSheet, model, i, lastColumns,Constant.MODEL);
-			// verificationRelated(writeWorkBook, writeSheet,  model, i, lastColumns,Constant.MODEL,xRow.getCell(model).toString());
-		
-			// writeSheet.getRow(i).getCell(model).setCellType(Cell.CELL_TYPE_STRING);
-			/*String modelStr=writeSheet.getRow(i).getCell(model).getStringCellValue();
-			List list = getImportAttributeQueryBO().getProducterAndModelRelated(producterStr,modelStr,3);
-			if(list==null||list.size()==0){
-				ImportCommonMethod.updateExcelFormat(writeWorkBook,writeSheet,i, vendorCuid);
-				Cell cell=xRow.getCell(lastColumns);
-				if(cell==null){
-					cell=xRow.createCell(lastColumns);
-					cell.setCellValue("生产厂商和设备型号关系错误 \r\n");
-				}else{
-					String strValue=cell.getStringCellValue();
-					strValue=strValue + "生产厂商和设备型号关系错误 \r\n";
-					cell.setCellValue(strValue);				
-				}
-			}*/
-
-			/*if (xRow.getCell(realLongitude)!=null && !"".equals(xRow.getCell(realLongitude).toString())) {
-				ImportCommonMethod.verificationNumber(writeWorkBook, writeSheet, realLongitude, i, lastColumns,Constant.REALLATITUDE);
-			}
-			
-			if (xRow.getCell(realLatitude) !=null && !"".equals( xRow.getCell(realLatitude).toString())) {
-				ImportCommonMethod.verificationNumber(writeWorkBook, writeSheet, realLatitude, i, lastColumns,Constant.REALLATITUDE);
-			}*/
-			
-
-			/*if(xRow.getCell(backNetWorkTime)!=null){
-				ImportCommonMethod.verificationDate(writeWorkBook, writeSheet, backNetWorkTime, i, lastColumns,Constant.BACKNETWORKTIME);
-			}*/
-			
-			// ImportCommonMethod.verificationDate(writeWorkBook, writeSheet, repairTime, i, lastColumns,Constant.REPAIRTIME);
 		} catch (Exception e) {
 			LogHome.getLog().error("接入网-POS设备校验出错", e);			
 			throw new Exception("接入网-POS设备校验出错："+e.getMessage());
@@ -658,63 +602,6 @@ public class ImportPosExcel {
 			}
 			
 			
-			//所属机房/资源点
-			/*if(xRow.getCell(relatedSpaceCuid)!=null && !StringUtils.isEmpty(xRow.getCell(relatedSpaceCuid).toString())){
-				Map temp = getImportAttributeQueryBO().getRoomAccessPointByName(xRow.getCell(relatedSpaceCuid).toString());
-				if(temp!=null&&temp.size()>0){
-					map.put("RELATED_SPACE_CUID",temp.get("CUID"));
-					getAnOltManageBO().setRelatedMapValuesNew(map, AnPos.CLASS_NAME);
-				}
-			}*/	
-			/*if (xRow.getCell(relatedEmsCuid)!=null && !StringUtils.isEmpty(xRow.getCell(relatedEmsCuid).toString())) {
-				map.put(AnPos.AttrName.relatedEmsCuid, getImportAttributeQueryBO().getPropertyCuidByName(xRow.getCell(relatedEmsCuid).toString(),NmsSystem.CLASS_NAME));
-				String emsName = xRow.getCell(relatedEmsCuid).toString();
-				map.put("emsName",emsName);
-				Map emsMap = ImportCache.getInstance().getEmsMap(emsName);
-				String relatedDistrictCuid = (String)map.get(AnPos.AttrName.relatedDistrictCuid);
-				boolean isDistrictEmpty = StringUtils.isEmpty(relatedDistrictCuid);
-				if (emsMap != null && !emsMap.isEmpty()) {
-					map.put(AnPos.AttrName.relatedEmsCuid, emsMap.get("CUID"));
-					if(isDistrictEmpty){
-						map.put(AnPos.AttrName.relatedDistrictCuid, emsMap.get("RELATED_SPACE_CUID"));
-					}
-				}
-				else{
-					if(isDistrictEmpty){
-						map.put(AnPos.AttrName.relatedDistrictCuid, SysProperty.getInstance().getValue("district"));
-					}
-				}
-			}*/
-			/*if(xRow.getCell(model)!=null && !"".equals(xRow.getCell(model).toString())){
-				map.put(AnPos.AttrName.model, neModelCuidNameMap.get(xRow.getCell(model).toString()));
-			}*/
-			/*
-			if(xRow.getCell(realLongitude) !=null && !"".equals(xRow.getCell(realLongitude).toString()) ){
-				Float fltRealLongitude=Float.parseFloat(xRow.getCell(realLongitude).toString());
-				map.put(AnPos.AttrName.realLongitude,fltRealLongitude);	
-			}					
-			if(xRow.getCell(realLatitude) !=null && !"".equals(xRow.getCell(realLatitude).toString())){
-				Float fltRealLatitude=Float.parseFloat(xRow.getCell(realLatitude).toString());
-				map.put(AnPos.AttrName.realLatitude,fltRealLatitude);
-			}*/
-			/*if (xRow.getCell(backNetWorkTime) !=null && !"".equals(xRow.getCell(backNetWorkTime).toString())) {
-				int creatType=xRow.getCell(backNetWorkTime).getCellType();						
-				if(creatType==Cell.CELL_TYPE_NUMERIC){
-					map.put(AnPos.AttrName.backNetworkTime, getImportBasicDataBO().formtTime(formatter.format( xRow.getCell(backNetWorkTime).getDateCellValue())));
-				}else if(creatType==Cell.CELL_TYPE_STRING){
-					map.put(AnPos.AttrName.backNetworkTime, ImportCommonMethod.getTimestame(xRow.getCell(backNetWorkTime).toString()));
-				}	
-			}*/			
-			/*if ( xRow.getCell(repairTime) !=null && !"".equals(xRow.getCell(repairTime).toString())) {
-				int creatType=xRow.getCell(repairTime).getCellType();						
-				if(creatType==Cell.CELL_TYPE_NUMERIC){
-					map.put(AnPos.AttrName.repairTime, getImportBasicDataBO().formtTime(formatter.format( xRow.getCell(repairTime).getDateCellValue())));
-				}else if(creatType==Cell.CELL_TYPE_STRING){
-					map.put(AnPos.AttrName.repairTime, ImportCommonMethod.getTimestame(xRow.getCell(repairTime).toString()));
-				};
-			}*/
-			
-			//String cuid = AnmsUtilBO.getCuidByClassName(TransElement.CLASS_NAME);
 			String cuid="";
 			if(!ImportCommonMethod.isEmpty(posCuid)){
 				cuid=posCuid;

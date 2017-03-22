@@ -1,10 +1,9 @@
 package com.boco.workflow.webservice.upload.constants;
 
+import org.apache.commons.lang.StringUtils;
+
 /*     */
 /*     */ import com.boco.common.util.debug.LogHome;
-
-import org.apache.commons.lang.StringUtils;
-/*     */ import org.apache.commons.logging.Log;
 
 /*     */
 /*     */ public class AnFdnHelper

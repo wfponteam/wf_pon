@@ -799,6 +799,13 @@ public class ImportCommonMethod {
 			return id;
 		}
 		
+		public static String getOldPosPortCuid(String onuCuid) {
+			
+			String id = getOltManageBO().getOldPosPortCuid(onuCuid);
+			
+			return id;
+		}
+		
 		/**
 		 * 校验最后一行是否有错误信息
 		 * */
@@ -1379,31 +1386,6 @@ public class ImportCommonMethod {
 			}
 		}
 		
-		protected static boolean isSamePortFdn(Workbook writeWorkBook,
-				Sheet writeSheet, String neName, String cardName, String ptpStr,
-				String ptpnNo, int portNoInt, int i, int lastColumns,
-				String constantValue, String neCuid) throws Exception {
-			try {
-				Row xRow = writeSheet.getRow(i);
-				Cell cellContant = xRow.getCell(portNoInt);
-				List list = oltManageBO
-						.isSameCardPtpExist(cardName, ptpnNo, neCuid);
-				if (!list.isEmpty()) {
-					String labelCn = ((Map) list.get(0)).get("LABEL_CN")
-							.toString();
-					if (!labelCn.equals(ptpStr)) {
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			} catch (Exception e) {
-				LogHome.getLog().error("", e);
-				throw new Exception(e);
-			}
-		}
 		
 		/**
 		 * 验证Number的类型是否正确，不正确将错误打印到最后一列中去(VLAN:有可能是以逗号隔开的数字组成的字符串)

@@ -1,7 +1,5 @@
 package com.boco.workflow.webservice.service.impl;
 
-import java.sql.SQLException;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,7 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 		
 		String status = prjStatus.getPrjStatus();
 		if("归档".equals(status)){
-			//归档把
+			//归档
 			String prjcode = prjStatus.getPrjCode();
 			
 			ProjectNameSpace ns = new ProjectNameSpace();
@@ -47,6 +45,16 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 			
 			this.dao.removeResourse(prjcode);
 				
+		}else if("作废".equals(status)){
+			
+			//TODO:释放端口
+			String prjcode = prjStatus.getPrjCode();
+			
+			ProjectNameSpace ns = new ProjectNameSpace();
+			ns.setPrjcode(prjcode);
+			ns.setNs(NameSpace.HIS.getName());
+			this.dao.moveResourse(ns);		
+			this.dao.removeResourse(prjcode);
 		}
 		
 		dao.updateProjectStatus(prjStatus);

@@ -1,8 +1,6 @@
 package com.boco.workflow.webservice.dao;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;

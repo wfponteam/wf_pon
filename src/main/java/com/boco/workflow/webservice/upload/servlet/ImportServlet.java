@@ -21,6 +21,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
+import com.boco.core.ibatis.dao.IbatisDAO;
 import com.boco.core.utils.lang.TimeFormatHelper;
 import com.boco.workflow.webservice.upload.service.ImportResService;
 
@@ -41,6 +42,18 @@ public class ImportServlet extends HttpServlet {
 		String prjcode = request.getParameter("prjcode");
 		
 		try {
+			IbatisDAO dao = (IbatisDAO)SpringContextUtil.getBean("IbatisDAO");
+			List<Map> list = dao.querySql("select prj_status from t_wf_project where prj_code = '" +prjcode+ "'");
+			if(list == null || list.size() == 0){
+				response.getWriter().write("{'success':true,'showMessage':'工程信息缺失！'}");
+		    	return ;
+			}
+		    String status = list.get(0).get("PRJ_STATUS").toString();
+		    if(!"施工".equals(status)){
+		    	
+		    	response.getWriter().write("{'success':true,'showMessage':'工程状态为【" + status + "】，不能进行资源导入！'}");
+		    	return ;
+		    }
 			
 			ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 			List<FileItem>  fileItems = upload.parseRequest(request);
