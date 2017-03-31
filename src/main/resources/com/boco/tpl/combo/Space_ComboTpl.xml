@@ -80,7 +80,9 @@
 		<sql dao="IbatisResDAO">
 		<![CDATA[
 		SELECT B.CUID,B.LABEL_CN FROM BUSINESS_COMMUNITY B where ACCESS_MODE=2	
-		
+		union all
+		SELECT B.CUID,B.LABEL_CN FROM t_attemp_BUSINESS_COMMUNITY B where ACCESS_MODE=2	
+
 		]]>
 		</sql>
 	</combo>

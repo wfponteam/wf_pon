@@ -1,5 +1,4 @@
 Ext.ns("Frame.grid.plugins.query");
-$importcss(ctx + "/jsp/common/style/customize.css");
 
 Frame.grid.plugins.query.pos_query = Ext.extend(Object, {
 	constructor: function(grid){

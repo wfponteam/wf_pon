@@ -1,12 +1,8 @@
 Ext.ns('Frame.grid.plugins.tbar');
-$importjs(ctx + "/commons/utils/FrameHelper.js");
 $importjs(ctx + "/dwr/interface/AnPosManageAction.js");
 $importjs(ctx + "/jsp/network/equip/pos/pos_query.js");
 $importjs(ctx + "/jsp/network/equip/pos/pos_tbar.js");
 $importjs(ctx + "/jsp/network/equip/pos/pos_panel.js");
-$importcss(ctx + "/jsp/component/batchmodify/css/customize.css");
-$importjs(ctx + "/dwr/interface/BatchModifyAction.js");
-$importjs(ctx + "/jsp/component/batchmodify/BatchModifyWin.js");
 Frame.grid.plugins.tbar.pos_tbar = Ext.extend(Object, {
 	constructor : function(grid) {
 		this.grid = grid;

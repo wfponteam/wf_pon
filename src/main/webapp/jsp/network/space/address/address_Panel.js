@@ -1,6 +1,5 @@
-$importjs(ctx + "/jsp/anms/common/Util.js");
 $importjs(ctx + "/dwr/interface/FullAddressManageAction.js");
-Ext.ns('ANMS');
+Ext.ns('NETWORK');
 NETWORK.address_Panel = Ext.extend(Ext.Panel,{
 	id 			: 'NETWORK.address_Panel',
 	region 		: 'center',

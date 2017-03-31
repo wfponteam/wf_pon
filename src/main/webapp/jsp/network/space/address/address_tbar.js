@@ -1,11 +1,6 @@
 Ext.ns('Frame.grid.plugins.tbar');
-$importjs(ctx + "/dwr/interface/RoleAuthorityAction.js");
-$importjs(ctx + "/jsp/anms/common/AnmsOverride.js");
-$importjs(ctx + "/commons/utils/FrameHelper.js");
 $importjs(ctx + "/jsp/network/space/address/address_Panel.js");
 $importjs(ctx + "/dwr/interface/FullAddressManageAction.js");
-$importjs(ctx + "/commons/utils/FrameHelper.js");
-$importcss(ctx + "/jsp/component/batchmodify/css/customize.css");
 
 
 Frame.grid.plugins.tbar.address_tbar = Ext.extend(Object,{

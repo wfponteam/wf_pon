@@ -1,9 +1,5 @@
 
 $importjs(ctx + "/dwr/interface/AnPosManageAction.js");
-$importjs(ctx + "/dwr/interface/AnDevSelectAction.js");
-$importjs(ctx + "/jsp/anms/common/DevSelectedPanel.js");
-$importjs(ctx + "/jsp/anms/equip/ModelSelectPanel.js");
-$importjs(ctx + "/jsp/anms/common/ux/AnmsPopCombox.js");
 Ext.ns('NETWORK');
  
 NETWORK.pos_panel = Ext.extend(Ext.Panel, {

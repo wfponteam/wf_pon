@@ -1,9 +1,4 @@
 Ext.ns('Frame.grid.plugins.tbar');
-$importjs(ctx + "/jsp/anms/authority/common/FilterTbarBtnNode.js");
-$importjs(ctx + "/dwr/interface/RoleAuthorityAction.js");
-$importjs(ctx + "/jsp/anms/common/AnmsOverride.js");
-$importjs(ctx + "/commons/utils/FrameHelper.js");
-$importjs(ctx + "/jsp/anms/common/Util.js");
 $importjs(ctx + "/jsp/network/space/cover/cover_Panel.js");
 $importjs(ctx + "/dwr/interface/GponCoverManageAction.js");
 

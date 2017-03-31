@@ -1,8 +1,4 @@
 Ext.ns('Frame.grid.plugins.tbar');
-$importjs(ctx + "/jsp/anms/authority/common/FilterTbarBtnNode.js");
-$importjs(ctx + "/jsp/anms/common/AnmsOverride.js");
-$importjs(ctx + "/commons/utils/FrameHelper.js");
-$importjs(ctx + "/jsp/anms/common/Util.js");
 $importjs(ctx + "/jsp/network/space/village/village_panel.js");
 $importjs(ctx + "/dwr/interface/BusinessCommunityManageAction.js");
 Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{

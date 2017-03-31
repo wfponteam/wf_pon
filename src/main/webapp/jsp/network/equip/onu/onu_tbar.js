@@ -1,6 +1,5 @@
 Ext.ns('Frame.grid.plugins.tbar');
 
-$importjs(ctx + "/commons/utils/FrameHelper.js");
 $importjs(ctx + "/jsp/network/equip/onu/onu_panel.js");
 $importjs(ctx + "/dwr/interface/OnuManageAction.js");
 

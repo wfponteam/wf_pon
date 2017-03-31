@@ -1,8 +1,5 @@
-$importjs(ctx + "/jsp/anms/common/Util.js");
 $importjs(ctx + "/dwr/interface/BusinessCommunityManageAction.js");
-$importjs(ctx + "/jsp/anms/common/DevSelectedPanel.js");
-$importjs(ctx + "/jsp/anms/equip/ModelSelectPanel.js");
-$importjs(ctx + "/jsp/anms/common/ux/AnmsPopCombox.js");
+
 Ext.ns('NETWORK');
 NETWORK.village_panel = Ext.extend(
 				Ext.Panel,

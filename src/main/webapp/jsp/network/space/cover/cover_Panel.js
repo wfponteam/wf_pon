@@ -1,7 +1,6 @@
 	Ext.namespace('NETWORK');
 	$importjs(ctx + "/jsp/network/space/cover/coveraddress_Panel.js");
 	$importjs(ctx + "/jsp/network/space/cover/FullAddressQueryFormPanel.js");
-	$importjs(ctx + "/dwr/interface/NetDomainMaintainDwrAction.js");
 	NETWORK.cover_panel = Ext.extend(Ext.Panel, {
 			region 		: 'center',
 			border 		: false,

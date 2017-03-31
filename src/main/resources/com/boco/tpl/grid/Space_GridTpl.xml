@@ -27,6 +27,8 @@
 			<column dataIndex="POSTCODE">邮政编码</column> 
 			<column dataIndex="REGIONTYPE1">地域属性一级分类</column> 
 			<column dataIndex="REGIONTYPE2">地域属性二级分类</column> 
+			<column dataIndex="N_RELATED_COMMUNITY_CUID">所属业务区</column>
+
 	    </columns>
 		<cm>
 			{	
@@ -84,6 +86,8 @@
           fa.related_project_cuid,
           (SELECT T7.LABEL_CN 
              FROM BUSINESS_COMMUNITY T7
+            WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2 union all SELECT T7.LABEL_CN 
+             FROM t_attemp_BUSINESS_COMMUNITY T7
             WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2) AS N_RELATED_COMMUNITY_CUID
              FROM $ns$T_ROFH_FULL_ADDRESS FA
           WHERE  FLAG=0 
@@ -374,7 +378,7 @@
 					  WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2	) AS N_RELATED_COMMUNITY_CUID,/*所属业务区*/
 				  B.RELATED_NE_CUID,
 				  B.CUID AS GPONCOVER_CUID
-				  FROM T_ROFH_FULL_ADDRESS FA,GPON_COVER B WHERE FA.CUID = B.STANDARD_ADDR
+				  FROM (select * from T_ROFH_FULL_ADDRESS union all select * from t_attemp_T_ROFH_FULL_ADDRESS) FA,t_attemp_GPON_COVER B WHERE FA.CUID = B.STANDARD_ADDR
 			]]>
 		</sql>
 		</grid>
@@ -457,9 +461,13 @@
                   FA.RELATED_COMMUNITY_CUID,
                   (SELECT T7.LABEL_CN 
                        FROM BUSINESS_COMMUNITY T7
+                      WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2
+                      union all
+                      SELECT T7.LABEL_CN 
+                       FROM t_attemp_BUSINESS_COMMUNITY T7
                       WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2) AS N_RELATED_COMMUNITY_CUID,/*所属业务区*/
                   '新添加' as FLAGINFO
-                  FROM T_ROFH_FULL_ADDRESS FA
+                  FROM (select * from T_ROFH_FULL_ADDRESS union all select * from t_attemp_T_ROFH_FULL_ADDRESS) FA
                   WHERE 1=1)
 			]]>
 		</sql>
