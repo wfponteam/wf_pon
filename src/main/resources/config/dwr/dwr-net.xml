@@ -21,7 +21,30 @@
       		<param name="class" value="com.boco.workflow.webservice.project.action.ProjectAction"/>
     	</create>
 	</allow>
-	
+		<allow>
+		<!-- POS管理 -->
+    	<create creator="new" javascript="AnPosManageAction" scope="application">
+      		<param name="class" value="com.boco.workflow.webservice.equip.action.AnPosManageAction"/>
+    	</create>
+	</allow>
+			<allow>
+		<!-- 业务区管理 -->
+    	<create creator="new" javascript="BusinessCommunityManageAction" scope="application">
+      		<param name="class" value="com.boco.workflow.webservice.businesscommunity.action.BusinessCommunityManageAction"/>
+    	</create>
+	</allow>
+		<allow>
+		<!-- 标准地址管理 -->
+    	<create creator="new" javascript="FullAddressManageAction" scope="application">
+      		<param name="class" value="com.boco.workflow.webservice.fulladdress.action.FullAddressManageAction"/>
+    	</create>
+	</allow>
+	<allow>
+		<!-- 覆盖范围管理 -->
+    	<create creator="new" javascript="GponCoverManageAction" scope="application">
+      		<param name="class" value="com.boco.workflow.webservice.gponcover.action.GponCoverManageAction"/>
+    	</create>
+	</allow>
 	<signatures>
 	  <![CDATA[
 	   

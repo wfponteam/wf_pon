@@ -24,6 +24,7 @@ NETWORK.village= Ext.extend(Ext.Panel,{
 			enableGeneralQuery: false,
 			enableContextMenu : true,
 			rendererPlugin : 'village_renderer',
+			tbarPlugin : 'village_tbar',
 			prjcode    : this.prjcode,
 			gridCfg : {
 				boName : 'ponTemplateGirdBo',
@@ -32,7 +33,6 @@ NETWORK.village= Ext.extend(Ext.Panel,{
 				}
 			},
 			queryPlugin : 'village_query',
-		//	tbarPlugin : 'address_tbar',
 			view : new Ext.grid.GridView({
 				forceFit : true
 			}),

@@ -755,6 +755,7 @@ NETWORK.pos_panel = Ext.extend(Ext.Panel, {
 				SETUP_TIME 			  : SETUP_TIME,
 				CREATE_TIME 		  : CREATE_TIME,
 				REMARK				  : REMARK,
+				RELATED_PROJECT_CUID   :Ext.getCmp('NETWORK.resource').cuid,
 				oldPort               : oldPort
 		};
 		return PosData;

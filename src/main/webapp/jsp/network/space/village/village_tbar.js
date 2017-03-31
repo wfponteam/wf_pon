@@ -95,21 +95,7 @@ Frame.grid.plugins.tbar.village_tbar = Ext.extend(Object,{
 			};
 			
 		openWindow('NETWORK.village_panel', true, config, function(_result, _scope,_options) {
-						if (!Ext.isEmpty(_result) && !Ext.isEmpty(type)) {
-							DWREngine.setAsync(false);
-							BusinessCommunityManageAction.queryLoadBCInfoByCuid(_result,function(_data) {
-								if (!Ext.isEmpty(_data) && type == 'add') {
-									object.grid.getStore().loadData( {
-										'list' : [_data]
-									}, true); 
-								}else if(!Ext.isEmpty(_data) && type == 'modify'){
-									object.grid.getStore().reload({
-										'list' : [_data]
-									}, false);
-								}
-							});
-							DWREngine.setAsync(true);
-						}
+				
 					}, object, object.scope);
 		}
 	});

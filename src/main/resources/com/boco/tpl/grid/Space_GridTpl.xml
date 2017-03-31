@@ -282,12 +282,249 @@
                            L.COVER_INFO,L.REMARK,L.REGIONTYPE1,L.REGIONTYPE2,L.related_project_cuid
           FROM $ns$GPON_COVER L ,(select * from t_rofh_full_address union all select * from t_attemp_t_rofh_full_address) TP where L.standard_addr=TP.cuid              
 ) tt
- WHERE TT.RELATED_DISTRICT_CUID LIKE '{userDistrict}%'
+ WHERE 1=1
 			]]>
 		</sql>
 		<note>
 			覆盖范围
 		</note>
 	</grid>
+	<grid name="IRMS_GPON_COVER_FULLADDRESS" title="覆盖范围对应的标准地址">
+	     <plugins>
+			<plugin>checkbox</plugin>
+		</plugins>
+		<columns>
+		    <column dataIndex="LABEL_CN">名称</column> 
+			<column dataIndex="N_PROVINCE">省份</column> 
+			<column dataIndex="N_CITY">地市</column> 
+			<column dataIndex="N_COUNTY">区/县</column> 
+			<column dataIndex="N_TOWN">乡镇/街道办</column> 
+			<column dataIndex="COMMUNITY">社区/行政村</column> 
+			<column dataIndex="ROAD">路/巷/街</column> 
+			<column dataIndex="ROAD_NUMBER">门牌号码</column>
+			<column dataIndex="VILLAGES">小区/单位/学校/村组</column>  
+			<column dataIndex="VILLAGE_ALIAS">小区别名</column> 
+			<column dataIndex="BUILDING">楼栋号</column> 
+			<column dataIndex="UNIT_NO">单元</column>
+			<column dataIndex="FLOOR_NO">楼层</column>  
+			<column dataIndex="ROOM_NO">房号/村内编号</column> 
+			<column dataIndex="LONGITUDE">经度</column> 
+			<column dataIndex="LATITUDE">纬度</column> 
+			<column dataIndex="ABBREVIATION">地址简称</column> 
+			<column dataIndex="PINYIN">地址拼音</column> 
+			<column dataIndex="POSTCODE">邮政编码</column> 
+			<column dataIndex="N_RELATED_COMMUNITY_CUID">所属业务区</column>
+			<column dataIndex="FLAGINFO">FLAGINFO</column>
+			<column dataIndex="GPONCOVER_CUID">GPONCOVER_CUID</column>
+	    </columns>
+		<cm>
+			{	
+				CUID : {
+					hidden : true
+				},
+				FLAGINFO : {
+					hidden : true
+				},
+	   			LABEL_CN : {
+	    			width :450
+	    		},
+	    		GPONCOVER_CUID : {
+	    			hidden : true
+	    		}
+    		}
+   	 	</cm>
+		<sql dao="IbatisResDAO">
+			<![CDATA[
+				SELECT 
+				  FA.CUID,/*主键CUID*/
+				  FA.LABEL_CN,/*名称*/
+				  FA.PROVINCE,/*1 省份*/
+				  (SELECT T1.LABEL_CN 
+					   FROM DISTRICT T1 
+					  WHERE T1.CUID=FA.PROVINCE) AS N_PROVINCE,/*1 省份*/
+			      FA.CITY,
+				  (SELECT T2.LABEL_CN 
+					 FROM DISTRICT T2 
+					WHERE T2.CUID=FA.CITY) AS N_CITY,/*2 地市*/
+				  FA.COUNTY,
+				  (SELECT T3.LABEL_CN 
+					 FROM DISTRICT T3 
+					WHERE T3.CUID=FA.COUNTY) AS N_COUNTY,/*3 区县*/
+				  FA.TOWN,
+				  (SELECT T4.LABEL_CN
+						FROM DISTRICT T4 
+					   WHERE T4.CUID=FA.TOWN) AS N_TOWN,/*4 镇乡/街道办*/
+				  FA.COMMUNITY,/*5 社区/行政村*/
+				  FA.ROAD,/*6 路/巷/街*/
+				  FA.ROAD_NUMBER,/*7 门牌号码*/
+				  FA.VILLAGES,/*8 小区/公司/单位/学校/自然村/村组*/
+				  FA.VILLAGE_ALIAS,/*9 小区别名*/
+				  FA.BUILDING,/*10 楼栋号*/  
+				  FA.UNIT_NO,/*11 单元*/
+				  FA.FLOOR_NO,/*12 楼层*/
+				  FA.ROOM_NO,/*13 房号/村内编号*/
+				  FA.LONGITUDE,/*经度*/
+				  FA.LATITUDE,/*纬度*/
+				  FA.ABBREVIATION,/*地址简称*/
+				  FA.PINYIN,/*地址拼音*/
+				  FA.POSTCODE,/*邮政编码*/
+				  FA.RELATED_COMMUNITY_CUID,
+				  (SELECT T7.LABEL_CN 
+					   FROM BUSINESS_COMMUNITY T7
+					  WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2	) AS N_RELATED_COMMUNITY_CUID,/*所属业务区*/
+				  B.RELATED_NE_CUID,
+				  B.CUID AS GPONCOVER_CUID
+				  FROM T_ROFH_FULL_ADDRESS FA,GPON_COVER B WHERE FA.CUID = B.STANDARD_ADDR
+			]]>
+		</sql>
+		</grid>
+		<grid name="IRMS_GPON_COVER_FULL_ADDRESS_MANAGE"  title="覆盖范围中的标准地址"  allowDisControl="true">
+		<plugins>
+			<plugin>checkbox</plugin>
+		</plugins>
+		<columns>
+		    <column dataIndex="LABEL_CN">名称</column> 
+			<column dataIndex="N_PROVINCE">省份</column> 
+			<column dataIndex="N_CITY">地市</column> 
+			<column dataIndex="N_COUNTY">区/县</column> 
+			<column dataIndex="N_TOWN">乡镇/街道办</column> 
+			<column dataIndex="COMMUNITY">社区/行政村</column> 
+			<column dataIndex="ROAD">路/巷/街</column> 
+			<column dataIndex="ROAD_NUMBER">门牌号码</column>
+			<column dataIndex="VILLAGES">小区/单位/学校/村组</column>  
+			<column dataIndex="VILLAGE_ALIAS">小区别名</column> 
+			<column dataIndex="BUILDING">楼栋号</column> 
+			<column dataIndex="UNIT_NO">单元</column>
+			<column dataIndex="FLOOR_NO">楼层</column>  
+			<column dataIndex="ROOM_NO">房号/村内编号</column> 
+			<column dataIndex="LONGITUDE">经度</column> 
+			<column dataIndex="LATITUDE">纬度</column> 
+			<column dataIndex="ABBREVIATION">地址简称</column> 
+			<column dataIndex="PINYIN">地址拼音</column> 
+			<column dataIndex="POSTCODE">邮政编码</column> 
+			<column dataIndex="N_RELATED_COMMUNITY_CUID">所属业务区</column>
+			<column dataIndex="FLAGINFO">FLAGINFO</column>
+	    </columns>
+		<cm>
+			{	
+				CUID : {
+					hidden : true
+				},
+	   			LABEL_CN : {
+	    			width : 450
+	    		},
+	    		FLAGINFO:{
+	    			hidden : true
+	    		}
+    		}
+   	 	</cm>
+		<sql dao="IbatisResDAO">
+			<![CDATA[
+			SELECT * FROM (
+				SELECT 
+				  FA.CUID,/*主键CUID*/
+				  FA.LABEL_CN,/*名称*/
+				  FA.PROVINCE,/*1 省份*/
+				  (SELECT T1.LABEL_CN 
+					   FROM DISTRICT T1 
+					  WHERE T1.CUID=FA.PROVINCE) AS N_PROVINCE,/*1 省份*/
+			      FA.CITY,
+				  (SELECT T2.LABEL_CN 
+					 FROM DISTRICT T2 
+					WHERE T2.CUID=FA.CITY) AS N_CITY,/*2 地市*/
+				  FA.COUNTY,
+				  (SELECT T3.LABEL_CN 
+					 FROM DISTRICT T3 
+					WHERE T3.CUID=FA.COUNTY) AS N_COUNTY,/*3 区县*/
+				  FA.TOWN,
+				  (SELECT T4.LABEL_CN
+						FROM DISTRICT T4 
+					   WHERE T4.CUID=FA.TOWN) AS N_TOWN,/*4 镇乡/街道办*/
+				  FA.COMMUNITY,/*5 社区/行政村*/
+                  FA.ROAD,/*6 路/巷/街*/
+                  FA.ROAD_NUMBER,/*7 门牌号码*/
+                  FA.VILLAGES,/*8 小区/公司/单位/学校/自然村/村组*/
+                  FA.VILLAGE_ALIAS,/*9 小区别名*/
+                  FA.BUILDING,/*10 楼栋号*/  
+                  FA.UNIT_NO,/*11 单元*/
+                  FA.FLOOR_NO,/*12 楼层*/
+                  FA.ROOM_NO,/*13 房号/村内编号*/
+                  FA.LONGITUDE,/*经度*/
+                  FA.LATITUDE,/*纬度*/
+                  FA.ABBREVIATION,/*地址简称*/
+                  FA.PINYIN,/*地址拼音*/
+                  FA.POSTCODE,/*邮政编码*/
+                  FA.RELATED_COMMUNITY_CUID,
+                  (SELECT T7.LABEL_CN 
+                       FROM BUSINESS_COMMUNITY T7
+                      WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2) AS N_RELATED_COMMUNITY_CUID,/*所属业务区*/
+                  '新添加' as FLAGINFO
+                  FROM T_ROFH_FULL_ADDRESS FA
+                  WHERE 1=1)
+			]]>
+		</sql>
+	</grid>
 	
+	<grid name="IRMS_GPON_COVER_PTP" title="覆盖范围对应的端口状态">
+	     <plugins>
+			<plugin>checkbox</plugin>
+		</plugins>
+		<columns>
+		    <column dataIndex="DEV_NAME">设备名称</column> 
+			<column dataIndex="LABEL_CN">端口名称</column> 
+			<column dataIndex="PORT_NO">端口号</column> 
+			<column dataIndex="PORT_STATE">状态</column> 
+			<column dataIndex="USERNAME">关联用户</column> 
+		
+	    </columns>
+		<cm>
+			{	
+				CUID : {
+					hidden : true
+				},
+	   			LABEL_CN : {
+	    			width :250
+	    		},
+	   			PORT_STATE: {
+					renderer : 'fn:rendererGponPortState'
+				},
+				USERNAME : {
+	    			width :150,
+	    			hidden : false
+	    		}
+	    		
+    		}
+   	 	</cm>
+		<sql dao="IbatisResDAO">
+			<![CDATA[
+				SELECT DEV_NAME, LABEL_CN,PORT_NO, decode(PORT_STATE,1,'空闲',2,'占用',3,'预占用',4,'坏端口','未知') PORT_STATE,(SELECT TSP.ACCOUNT_NAME FROM T_SF_ROFH_PRODUCT TSP,PTP P
+				WHERE TSP.ACCESS_PORT=P.CUID AND P.LABEL_CN=C.label_cn) as USERNAME,RELATED_ACCESS_POINT FROM COVER_TO_PORT C order by PORT_NO
+				
+			]]>
+		</sql>
+
+	</grid>
+	<grid name="AN_ACCESSPOINT_SELECTED"  sql="AN_ACCESSPOINT_SELECTED" title="资源点选择">
+		<plugins>
+			<plugin>number</plugin>
+			<plugin>checkbox</plugin>
+		</plugins>
+		<columns>
+			<column dataIndex="LABEL_CN">资源点名称</column>
+		</columns>
+		<cm>
+			{	
+			LABEL_CN : {
+				width:200
+			},
+			RELATED_ACCESS_POINT : {
+				width:100,
+				hiden:true
+			}
+		}
+		</cm>
+		<note>
+			资源点选择
+		</note>
+	</grid>
 </tpl>

@@ -479,4 +479,478 @@
 		WHERE 
 		CUID = #CUID#
 	</update>
+	 <!--删除POS信息-->
+	 	<delete id="deletePosInfoByCuid" parameterClass="java.lang.String">
+		DELETE FROM
+		AN_POS
+		WHERE CUID = #CUID#
+	</delete>
+    <!-- 更新POS端口状态 -->
+	<update id="updatePosPtpFree" parameterClass="java.lang.String">
+		 update ptp p
+           set p.port_state = '1'
+         where p.cuid = (select ap.related_upne_port_cuid
+                           from an_pos ap
+                          where ap.cuid = #cuid#)
+	</update>
+	<select id="queryPosByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT A.OBJECTID,
+		       A.GT_VERSION,
+		       A.IS_PERMIT_SYS_DEL,
+		       A.FDN,
+		       A.RELATED_TEMPLATE_NAME,
+		       A.ABBREVIATION,
+		       (SELECT LABEL_CN FROM PTP WHERE CUID = A.RELATED_UPNE_PORT_CUID) AS N_RELATED_UPNE_PORT_CUID,
+		       A.RELATED_UPNE_PORT_CUID,
+		       (SELECT LABEL_CN FROM PTP WHERE CUID = A.RELATED_PORT2_CUID) AS N_RELATED_PORT2_CUID,
+		       A.RELATED_PORT2_CUID,
+		       A.NATIVE_EMS_NAME,
+		       A.LIVE_CYCLE,
+		       A.USE_STATE,
+		       (SELECT F.PRODUCT_MODEL
+		          FROM NE_MODEL_CFG_TYPE F
+		         WHERE F.SIGNAL_TYPE = 9
+		           AND F.CUID = A.MODEL) AS N_MODEL,
+		       A.MODEL,
+		       A.HARD_VERSION,
+		       A.SOFT_VERSION,
+		       A.LOCATION,
+		       (SELECT D.LABEL_CN
+		          FROM DISTRICT D
+		         WHERE D.CUID = A.RELATED_DISTRICT_CUID) AS N_RELATED_DISTRICT_CUID,
+		       A.RELATED_DISTRICT_CUID,
+		       CASE
+		         WHEN A.RELATED_ROOM_CUID IS NOT NULL AND A.RELATED_ROOM_CUID != ' ' THEN
+		          A.RELATED_ROOM_CUID
+		         WHEN A.RELATED_CAB_CUID IS NOT NULL AND
+		              A.RELATED_CAB_CUID != ' ' THEN
+		          A.RELATED_CAB_CUID
+		       END RELATED_SPACE_CUID,
+		       CASE
+		         WHEN A.RELATED_ROOM_CUID IS NOT NULL AND A.RELATED_ROOM_CUID != ' ' THEN
+		          (SELECT R.LABEL_CN AS NAME
+		             FROM ROOM R
+		            WHERE R.CUID = A.RELATED_ROOM_CUID)
+		         WHEN A.RELATED_CAB_CUID IS NOT NULL AND
+		              A.RELATED_CAB_CUID != ' ' THEN
+		          (SELECT AP.LABEL_CN
+		             FROM ACCESSPOINT AP
+		            WHERE AP.CUID = A.RELATED_CAB_CUID)
+		       END N_RELATED_SPACE_CUID,
+		       A.SETUP_TIME,
+		       A.SEQNO,
+		       A.LABEL_CN,
+		       (SELECT D.LABEL_CN
+		          FROM DEVICE_VENDOR D
+		         WHERE D.CUID = A.RELATED_VENDOR_CUID) AS N_RELATED_VENDOR_CUID,
+		       A.RELATED_VENDOR_CUID,
+		       A.RELATED_CAB_CUID,                 
+		       A.REAL_LONGITUDE,
+		       A.REAL_LATITUDE,
+		       A.LONGITUDE,
+		       A.LATITUDE,
+		       A.RATION,
+		       A.CAN_ALLOCATE_TO_USER,
+		       A.OWNERSHIP_MAN,
+		       (SELECT T.LABEL_CN
+		          FROM TRANS_ELEMENT T
+		         WHERE T.CUID = A.RELATED_UPNE_CUID
+		        UNION ALL
+		        SELECT P.LABEL_CN
+		          FROM AN_POS P
+		         WHERE P.CUID = A.RELATED_UPNE_CUID) AS N_RELATED_UPNE_CUID,
+		       A.RELATED_UPNE_CUID,
+		       A.REMARK,
+		       A.CUID,
+		       A.ISDELETE,
+		       A.CREATE_TIME,
+		       A.LAST_MODIFY_TIME,
+		       /*A.related_cab_cuid as RELATED_CAB_CUID,*/
+	          (SELECT LABEL_CN FROM FIBER_CAB_GX WHERE CUID = A.RELATED_CAB_CUID
+		         UNION ALL
+		        SELECT LABEL_CN FROM FIBER_DP_GX WHERE CUID = A.RELATED_CAB_CUID) AS N_RELATED_CAB_CUID,
+		        A.RELATED_CAB_CUID,
+		       A.RELATED_PROJECT_CUID,
+		       A.MAINT_MODE,
+		       A.LAST_MODIFY_USER,
+		       A.CREATOR_NAME,
+		       A.OWNERSHIP,
+		       A.MAINT_PERSON,
+		       A.DATA_QUALITY_PERSON,
+		       A.REPAIR_TIME,
+		       A.PRESERVER,
+		       A.STANDARD_NAME,
+		       A.ACCESS_TYPE,
+		       A.LABEL_DEV
+		  FROM AN_POS A WHERE CUID = #CUID#
+	</select>
+		
+	
+	<select id="getPosTypeByUpDevCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+      SELECT '一级' AS POS_TYPE,CUID, 'OLT' AS UP_DEV_TYPE,LABEL_CN,'' AS RELATED_OLT_CUID,'' AS RELATED_PORT_CUID 
+      		FROM TRANS_ELEMENT WHERE  SIGNAL_TYPE=9 AND CONFIG_TYPE=1 AND CUID= #upNeCuid#
+		UNION ALL 
+	  SELECT '二级' AS POS_TYPE,CUID ,'POS' AS UP_DEV_TYPE ,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID FROM AN_POS WHERE CUID = #upNeCuid#
+    </select>
+    <select id="queryFdnByPosCuid" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT FDN FROM AN_POS WHERE CUID = #CUID#
+	</select>
+	
+	<select id="queryAddLoadPosByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+			SELECT A.CUID,
+			       'AN_POS' AS BM_CLASS_ID,
+			       A.LABEL_CN,
+			       A.STANDARD_NAME,
+			       CASE
+			         WHEN A.RELATED_ROOM_CUID IS NOT NULL AND A.RELATED_ROOM_CUID != ' ' THEN
+			          A.RELATED_ROOM_CUID
+			         WHEN A.RELATED_CAB_CUID IS NOT NULL AND
+			              A.RELATED_CAB_CUID != ' ' THEN
+			          A.RELATED_CAB_CUID
+			       END RELATED_SPACE_CUID,
+			       CASE
+			         WHEN A.RELATED_ROOM_CUID IS NOT NULL AND A.RELATED_ROOM_CUID != ' ' THEN
+			          (SELECT R.LABEL_CN AS NAME
+			             FROM ROOM R
+			            WHERE R.CUID = A.RELATED_ROOM_CUID)
+			         WHEN A.RELATED_CAB_CUID IS NOT NULL AND
+			              A.RELATED_CAB_CUID != ' ' THEN
+			          (SELECT AP.LABEL_CN
+			             FROM ACCESSPOINT AP
+			            WHERE AP.CUID = A.RELATED_CAB_CUID)
+			       END N_RELATED_SPACE_CUID,
+			       A.RELATED_DISTRICT_CUID,
+			       (SELECT D.LABEL_CN AS NAME
+			          FROM DISTRICT D
+			         WHERE D.CUID = A.RELATED_DISTRICT_CUID) AS N_RELATED_DISTRICT_CUID,
+			       A.RELATED_ROOM_CUID,
+			       (SELECT LABEL_CN FROM T_ROFH_FULL_ADDRESS WHERE CUID = A.LOCATION) AS N_LOCATION,
+			       A.LOCATION,
+			       A.RELATED_UPNE_CUID,
+			       (SELECT LABEL_CN
+			          FROM TRANS_ELEMENT
+			         WHERE CUID = A.RELATED_UPNE_CUID
+			           AND SIGNAL_TYPE = 9
+			           AND CONFIG_TYPE = 1
+			        UNION ALL
+			        SELECT LABEL_CN
+			          FROM AN_POS
+			         WHERE CUID = A.RELATED_UPNE_CUID) AS N_RELATED_UPNE_CUID,
+			       (SELECT '一级'
+			          FROM TRANS_ELEMENT
+			         WHERE CUID = A.RELATED_UPNE_CUID
+			           AND SIGNAL_TYPE = 9
+			           AND CONFIG_TYPE = 1
+			        UNION ALL
+			        SELECT '二级'
+			          FROM AN_POS
+			         WHERE CUID = A.RELATED_UPNE_CUID) AS POS_TYPE,
+			       (SELECT LABEL_CN FROM PTP WHERE CUID = A.RELATED_UPNE_PORT_CUID) AS N_RELATED_UPNE_PORT_CUID,
+			       	(SELECT LABEL_CN FROM PTP WHERE CUID = A.RELATED_PORT2_CUID) AS N_RELATED_PORT2_CUID,
+
+			       (SELECT F.PRODUCT_MODEL
+			          FROM NE_MODEL_CFG_TYPE F
+			         WHERE F.SIGNAL_TYPE = 9
+			           AND F.CUID = A.MODEL) AS N_MODEL,
+			       A.MODEL,
+			       (SELECT D.LABEL_CN
+			          FROM DEVICE_VENDOR D
+			         WHERE D.CUID = A.RELATED_VENDOR_CUID) AS N_RELATED_VENDOR_CUID,
+			       RELATED_VENDOR_CUID,
+			      <!-- 不在维护pon_topo_link 表(SELECT (SELECT LABEL_CN FROM PTP WHERE CUID=PL.DEST_PTP_CUID) FROM PON_TOPO_LINK PL WHERE PL.ORIG_NE_CUID=A.CUID AND ROWNUM=1) AS POS_UP_PORT_CUID,-->
+			       A.OWNERSHIP,
+			       A.OWNERSHIP_MAN,
+			       A.SEQNO,
+			       A.REAL_LONGITUDE,
+			       A.REAL_LATITUDE,
+			       A.RELATED_PROJECT_CUID,
+			       A.LIVE_CYCLE,
+			        TO_CHAR(A.SETUP_TIME,  'YYYY-MM-DD') AS SETUP_TIME ,
+			        TO_CHAR(A.BACK_NETWORK_TIME,  'YYYY-MM-DD') AS BACK_NETWORK_TIME ,
+			       A.RATION,
+			       A.ACCESS_TYPE,
+			       A.PRESERVER,
+			       A.MAINT_MODE,
+			       A.CAN_ALLOCATE_TO_USER,
+		          (SELECT LABEL_CN FROM FIBER_CAB_GX WHERE CUID = A.RELATED_CAB_CUID
+		         		UNION ALL
+		           SELECT LABEL_CN FROM FIBER_DP_GX WHERE CUID = A.RELATED_CAB_CUID) AS N_RELATED_CAB_CUID,
+		        	A.RELATED_CAB_CUID,
+			        TO_CHAR(A.CREATTIME,  'YYYY-MM-DD') AS CREATTIME ,
+			       A.RELATED_CAB_CUID,
+			        TO_CHAR(A.REPAIR_TIME,  'YYYY-MM-DD') AS REPAIR_TIME ,
+			       'GPON_COVER.RELATED_NE_CUID=' || A.CUID || '[' ||
+			       (SELECT COUNT(R.CUID)
+			          FROM GPON_COVER R, AN_ONU O
+			         WHERE O.RELATED_POS_CUID = A.CUID
+			           AND R.RELATED_NE_CUID = O.CUID) || ']' AS CONVER_COUNT,
+			       'T_ROFH_CUSTOMER.RELATED_NE_CUID=' || A.CUID || '[' ||
+			       (SELECT COUNT(ACCOUNT_NAME)
+			          FROM PON_WAY_ANMS
+			         WHERE RELATED_LIGHT_CUID = A.CUID) || ']' AS USER_COUNT
+			  FROM AN_POS A WHERE CUID=#CUID#
+	</select>
+	<select id="getPosPortCount" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		 SELECT AP.CUID AS RELATED_NE_CUID,
+		       AP.LABEL_CN,
+		       (SELECT COUNT(1) FROM PTP P WHERE P.RELATED_NE_CUID = AP.CUID) AS PTPNUM,
+		       (SELECT COUNT(1)
+		          FROM PTP P
+		         WHERE P.PORT_SUB_TYPE = 12
+		           AND P.RELATED_NE_CUID = AP.CUID) AS UPPTPNUM,
+		       AP.RATION 
+		  FROM AN_POS AP
+		 WHERE AP.CUID IN ($neCuidStr$)
+    </select>
+     <select id="queryPortNameByOltCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+              SELECT T.CUID, T.LABEL_CN, T.RELATED_NE_CUID
+                  FROM PTP T
+                 WHERE T.PORT_SUB_TYPE  NOT IN (11,12)  
+                 and T.PORT_STATE =1
+                 and T.RELATED_NE_CUID = #cuid#
+    
+    </select>
+	    
+    
+	 
+     <select id="getSpaceInfoByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT 'ROOM' AS SPACE_TYPE,
+		       (SELECT S.RELATED_SPACE_CUID
+		          FROM SITE S
+		         WHERE S.CUID = R.RELATED_SITE_CUID) AS RELATED_DISTRICT_CUID,
+		       R.RELATED_SITE_CUID,
+		       R.CUID AS RELATED_ROOM_CUID,
+		       '' AS RELATED_ACCESS_POINT
+		  FROM ROOM R 
+		 WHERE R.CUID = #cuid#
+		UNION ALL
+		SELECT 'ACCESSPOINT' AS SPACE_TYPE,
+		       A.DISTRICT_CUID AS RELATED_DISTRICT_CUID,
+		       A.SITE_CUID AS RELATED_SITE_CUID,
+               A.ROOM_CUID AS RELATED_ROOM_CUID,
+		       A.CUID AS RELATED_ACCESS_POINT
+		  FROM ACCESSPOINT A
+		 WHERE A.CUID = #cuid#
+    </select>
+    
+	<insert id="insertTRofhAddressInfo" parameterClass="java.util.HashMap">
+		INSERT INTO T_ROFH_FULL_ADDRESS
+		  (CUID,
+		   OBJECT_ID,
+		   LABEL_CN,
+		   PROVINCE,
+		   CITY,
+		   COUNTY,
+		   TOWN,
+		   VILLAGES,
+		   BUILDING,
+		   UNIT_NO,
+		   FLOOR_NO,
+		   RELATED_BMCLASSTYPE_CUID,
+		   RELATED_COMMUNITY_CUID)
+		VALUES
+		  (#CUID#,
+		   get_object_id('T_ROFH_FULL_ADDRESS'),
+		   #LABEL_CN#,
+		   (SELECT CUID FROM DISTRICT WHERE ALIAS = #PROVINCE#),
+		   (SELECT CUID FROM DISTRICT WHERE ALIAS = #CITY#),
+		   (SELECT CUID FROM DISTRICT WHERE ALIAS = #COUNTY#),
+		   #TOWN#,
+		   #VILLAGES#,
+		   #BUILDING#,
+		   #UNIT_NO#,
+		   #FLOOR_NO#,
+		   #RELATED_BMCLASSTYPE_CUID#,
+		   #RELATED_COMMUNITY_CUID#)
+	</insert>
+	<insert id="insertGponCoverInfo1" parameterClass="java.util.HashMap">
+		INSERT INTO GPON_COVER
+		  (CUID,OBJECTID,RELATED_NE_CUID,STANDARD_ADDR,COVER_RANGE,COVER_INFO,DEVICE_NAME)
+		VALUES
+		  (#CUID#,#OBJECTID#,#RELATED_NE_CUID#,#STANDARD_ADDR#,#COVER_RANGE#,#COVER_INFO#,#DEVICE_NAME#)
+	</insert>
+	<insert id="insertBusinessCommunityInfo" parameterClass="java.util.HashMap">
+		INSERT INTO BUSINESS_COMMUNITY
+		  (CUID,
+		   LABEL_CN,
+		   CITY,
+		   ADDRESS,
+		   ACCESS_MODE)
+		VALUES
+		  (#CUID#,
+		   #LABEL_CN#,
+		   #CITY#,
+		   #ADDRESS#,
+		   '2')
+	</insert>
+	<!--业务区-->
+	 <select id="queryBcBylabelcn" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		SELECT * FROM BUSINESS_COMMUNITY T WHERE T.LABEL_CN = #LABEL_CN# AND ACCESS_MODE=2
+	 </select>
+	 <delete id="deleteBusinessCommunity" parameterClass="java.util.HashMap">
+	  DELETE FROM  BUSINESS_COMMUNITY  WHERE  1=1 
+	 <isNotEmpty property="CUID">
+	    AND CUID = #CUID#
+	  </isNotEmpty>
+	  <isEmpty property="CUID">
+	  	AND 1=2
+	  </isEmpty>
+     </delete>
+     <update id="updateBCInfo" parameterClass="java.util.HashMap">
+		UPDATE BUSINESS_COMMUNITY 
+		  SET LABEL_CN =#LABEL_CN#,
+			CITY =	#CITY#,
+			ADDRESS =	#ADDRESS#,
+			BUILDINGS_NUM =	#BUILDINGS_NUM#,
+			UNITS_NUM =	#UNITS_NUM#,
+			HOUSEHOLDS_NUM =	#HOUSEHOLDS_NUM#,
+			MAINTAIN_PERSON =	#MAINTAIN_PERSON#,
+			MAINTAIN_DEPT =	#MAINTAIN_DEPT#,
+			WARNING_VALUE =	#WARNING_VALUE#,
+			CONTACT_NUMBER =	#CONTACT_NUMBER#,
+			CONSTRUCT_DEPT =	#CONSTRUCT_DEPT#,
+			IS_PRIORITY =	#IS_PRIORITY#,
+			IS_LIGHT_CHANGED =	#IS_LIGHT_CHANGED#,
+			IS_OVERLAPP =	#IS_OVERLAPP#,
+			BUILD_TYPE	= #BUILD_TYPE#,
+			EAST_LONGITUDE = #EAST_LONGITUDE#,
+			EAST_LATITUDE  = #EAST_LATITUDE#,
+	        WEST_LONGITUDE = #WEST_LONGITUDE#,
+			WEST_LATITUDE   = #WEST_LATITUDE#,
+			SOUTH_LONGITUDE = #SOUTH_LONGITUDE#,
+			SOUTH_LATITUDE  = #SOUTH_LATITUDE#,
+			NORTH_LONGITUDE = #NORTH_LONGITUDE#,
+			NORTH_LATITUDE  =#NORTH_LATITUDE#
+		WHERE CUID = #CUID# AND ACCESS_MODE=2
+	  </update>
+	  
+	   <insert id="insertBCInfo" parameterClass="java.util.HashMap">
+		INSERT INTO BUSINESS_COMMUNITY
+		(LABEL_CN	,
+			CITY	,
+			ADDRESS	,
+			BUILDINGS_NUM	,
+			UNITS_NUM	,
+			HOUSEHOLDS_NUM	,
+			MAINTAIN_PERSON	,
+			MAINTAIN_DEPT	,
+			WARNING_VALUE	,
+			CONTACT_NUMBER	,
+			CONSTRUCT_DEPT	,
+			IS_PRIORITY	,
+			IS_LIGHT_CHANGED,
+			IS_OVERLAPP	,
+			BUILD_TYPE,
+			ACCESS_MODE,
+EAST_LONGITUDE,  
+EAST_LATITUDE,  	
+WEST_LONGITUDE, 	
+WEST_LATITUDE,  	
+SOUTH_LONGITUDE,	
+SOUTH_LATITUDE, 	
+NORTH_LONGITUDE,	
+NORTH_LATITUDE,  	
+CUID
+			) VALUES 
+		 (#LABEL_CN#,
+			#CITY#,
+			#ADDRESS#,
+			#BUILDINGS_NUM#,
+			#UNITS_NUM#,
+			#HOUSEHOLDS_NUM#,
+			#MAINTAIN_PERSON#,
+			#MAINTAIN_DEPT#,
+			#WARNING_VALUE#,
+			#CONTACT_NUMBER#,
+			#CONSTRUCT_DEPT#,
+			#IS_PRIORITY#,
+			#IS_LIGHT_CHANGED#,
+			#IS_OVERLAPP#,
+			#BUILD_TYPE#,
+			'2',
+#EAST_LONGITUDE#,    
+#EAST_LATITUDE#,     
+#WEST_LONGITUDE#,    
+#WEST_LATITUDE#,     
+#SOUTH_LONGITUDE#,   
+#SOUTH_LATITUDE#,    
+#NORTH_LONGITUDE#,   
+#NORTH_LATIT#,        
+#CUID#
+		)
+	</insert>
+	 <select id="selectBusinessCommunityByCuid" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
+			SELECT LABEL_CN,(SELECT LABEL_CN FROM DISTRICT D WHERE D.CUID = BC.CITY ) AS CITY, ADDRESS, BUILDINGS_NUM, UNITS_NUM, HOUSEHOLDS_NUM,
+			       MAINTAIN_PERSON, (SELECT LABEL_CN
+			                           FROM T_ROFH_MAINTAIN_DEPT MD
+			                          WHERE MD.CUID = BC.MAINTAIN_DEPT) AS MAINTAIN_DEPT,
+			       WARNING_VALUE, CONTACT_NUMBER,
+			       (SELECT LABEL_CN
+			          FROM T_ROFH_MAINTAIN_DEPT MD
+			         WHERE MD.CUID = BC.CONSTRUCT_DEPT) CONSTRUCT_DEPT,CONSTRUCT_DEPT AS CONSTRUCT_DEPT_CUID, decode(IS_PRIORITY,'1','是','2','否') AS IS_PRIORITY,
+			       decode(IS_LIGHT_CHANGED,'1','是','2','否') AS IS_LIGHT_CHANGED, decode(IS_OVERLAPP,'1','是','2','否') AS IS_OVERLAPP,BUILD_TYPE, CUID
+			  FROM BUSINESS_COMMUNITY BC WHERE CUID=#cuid# 
+	 </select>
+	  <select id="selectBusinessCommunityNoTransByCuid" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
+			SELECT LABEL_CN, CITY, ADDRESS, BUILDINGS_NUM, UNITS_NUM, HOUSEHOLDS_NUM,
+			       MAINTAIN_PERSON,  MAINTAIN_DEPT,
+			       WARNING_VALUE, CONTACT_NUMBER,
+			       CONSTRUCT_DEPT,  IS_PRIORITY,
+			       IS_LIGHT_CHANGED,  IS_OVERLAPP, BUILD_TYPE,CUID,
+			       EAST_LONGITUDE,
+			       EAST_LATITUDE,
+			       WEST_LONGITUDE, 
+                   WEST_LATITUDE,  
+                   SOUTH_LONGITUDE,
+                   SOUTH_LATITUDE, 
+                   NORTH_LONGITUDE,
+                   NORTH_LATITUDE  
+
+			  FROM BUSINESS_COMMUNITY BC WHERE CUID=#cuid#
+	 </select>
+	 
+	 <select id="selectBusinessCommunityByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.util.HashMap">
+		SELECT CUID,LABEL_CN	,
+			CITY	,
+			ADDRESS	,
+			BUILDINGS_NUM	,
+			UNITS_NUM	,
+			HOUSEHOLDS_NUM	,
+			MAINTAIN_PERSON	,
+			MAINTAIN_DEPT	,
+			WARNING_VALUE	,
+			CONTACT_NUMBER	,
+			CONSTRUCT_DEPT	,
+			IS_PRIORITY	,
+			IS_LIGHT_CHANGED	,
+			IS_OVERLAPP	,
+			BUILD_TYPE,
+			       EAST_LONGITUDE,
+		           EAST_LATITUDE,
+			       WEST_LONGITUDE, 
+                   WEST_LATITUDE,  
+                   SOUTH_LONGITUDE,
+                   SOUTH_LATITUDE, 
+                   NORTH_LONGITUDE,
+                   NORTH_LATITUDE  	 
+			FROM BUSINESS_COMMUNITY WHERE LABEL_CN=#LABEL_CN# AND CITY =#CITY# AND ACCESS_MODE=2
+	 </select>
+	 
+	 <select id="selectDistrictByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
+		SELECT CUID,LABEL_CN FROM DISTRICT WHERE LABEL_CN=#labelCn#
+	 </select>
+	 
+	 <select id="selectMaintainDeptByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
+		 SELECT CUID,LABEL_CN FROM T_ROFH_MAINTAIN_DEPT MD WHERE LABEL_CN=#labelCn#
+	 </select>
+	
+	 <select id="selectBooleanByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
+		SELECT CUID, LABEL_CN
+	  FROM (SELECT '1' AS CUID, '是' AS LABEL_CN
+	          FROM DUAL
+	        UNION ALL
+	        SELECT '2' AS CUID, '否' AS LABEL_CN
+	          FROM DUAL)
+	 WHERE LABEL_CN =#labelCn#
+	 </select>
 </sqlMap>

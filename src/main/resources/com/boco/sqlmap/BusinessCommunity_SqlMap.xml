@@ -2,10 +2,10 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
 <sqlMap namespace="BUSINESSCOMMUNITY">
 	 <select id="queryBcBylabelcn" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT * FROM BUSINESS_COMMUNITY T WHERE T.LABEL_CN = #LABEL_CN# AND ACCESS_MODE=2
+		SELECT * FROM  T_attemp_BUSINESS_COMMUNITY T WHERE T.LABEL_CN = #LABEL_CN# AND ACCESS_MODE=2
 	 </select>
 	 <delete id="deleteBusinessCommunity" parameterClass="java.util.HashMap">
-	  DELETE FROM  BUSINESS_COMMUNITY  WHERE  1=1 
+	  DELETE FROM   T_attemp_BUSINESS_COMMUNITY  WHERE  1=1 
 	 <isNotEmpty property="CUID">
 	    AND CUID = #CUID#
 	  </isNotEmpty>
@@ -60,18 +60,18 @@
 			IS_OVERLAPP	,
 			BUILD_TYPE,
 			ACCESS_MODE,
-EAST_LONGITUDE,  
-EAST_LATITUDE,  	
-WEST_LONGITUDE, 	
-WEST_LATITUDE,  	
-SOUTH_LONGITUDE,	
-SOUTH_LATITUDE, 	
-NORTH_LONGITUDE,	
-NORTH_LATITUDE,  	
-CUID,
-RELATED_PROJECT_CUID
+			EAST_LONGITUDE,  
+			EAST_LATITUDE,  	
+			WEST_LONGITUDE, 	
+			WEST_LATITUDE,  	
+			SOUTH_LONGITUDE,	
+			SOUTH_LATITUDE, 	
+			NORTH_LONGITUDE,	
+			NORTH_LATITUDE,  	
+			CUID,
+			RELATED_PROJECT_CUID
 			) VALUES 
-		 (#LABEL_CN#,
+		 (  #LABEL_CN#,
 			#CITY#,
 			#ADDRESS#,
 			#BUILDINGS_NUM#,
@@ -87,17 +87,17 @@ RELATED_PROJECT_CUID
 			#IS_OVERLAPP#,
 			#BUILD_TYPE#,
 			'2',
-#EAST_LONGITUDE#,    
-#EAST_LATITUDE#,     
-#WEST_LONGITUDE#,    
-#WEST_LATITUDE#,     
-#SOUTH_LONGITUDE#,   
-#SOUTH_LATITUDE#,    
-#NORTH_LONGITUDE#,   
-#NORTH_LATIT#,        
-#CUID#,
-#RELATED_PROJECT_CUID#
-		)
+			#EAST_LONGITUDE#,    
+			#EAST_LATITUDE#,     
+			#WEST_LONGITUDE#,    
+			#WEST_LATITUDE#,     
+			#SOUTH_LONGITUDE#,   
+			#SOUTH_LATITUDE#,    
+			#NORTH_LONGITUDE#,   
+			#NORTH_LATIT#,        
+			#CUID#,
+			#RELATED_PROJECT_CUID#
+					)
 	</insert>
 	 <select id="selectBusinessCommunityByCuid" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
 			SELECT LABEL_CN,(SELECT LABEL_CN FROM DISTRICT D WHERE D.CUID = BC.CITY ) AS CITY, ADDRESS, BUILDINGS_NUM, UNITS_NUM, HOUSEHOLDS_NUM,
@@ -109,7 +109,7 @@ RELATED_PROJECT_CUID
 			          FROM T_ROFH_MAINTAIN_DEPT MD
 			         WHERE MD.CUID = BC.CONSTRUCT_DEPT) CONSTRUCT_DEPT,CONSTRUCT_DEPT AS CONSTRUCT_DEPT_CUID, decode(IS_PRIORITY,'1','是','2','否') AS IS_PRIORITY,
 			       decode(IS_LIGHT_CHANGED,'1','是','2','否') AS IS_LIGHT_CHANGED, decode(IS_OVERLAPP,'1','是','2','否') AS IS_OVERLAPP,BUILD_TYPE, CUID
-			  FROM BUSINESS_COMMUNITY BC WHERE CUID=#cuid# 
+			  FROM t_attemp_BUSINESS_COMMUNITY BC WHERE CUID=#cuid# 
 	 </select>
 	  <select id="selectBusinessCommunityNoTransByCuid" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">
 			SELECT LABEL_CN, CITY, ADDRESS, BUILDINGS_NUM, UNITS_NUM, HOUSEHOLDS_NUM,
@@ -126,7 +126,7 @@ RELATED_PROJECT_CUID
                    NORTH_LONGITUDE,
                    NORTH_LATITUDE  
 
-			  FROM BUSINESS_COMMUNITY BC WHERE CUID=#cuid#
+			  FROM t_attemp_BUSINESS_COMMUNITY BC WHERE CUID=#cuid#
 	 </select>
 	 
 	 <select id="selectBusinessCommunityByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.util.HashMap">

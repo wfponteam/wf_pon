@@ -4,12 +4,10 @@ $importjs(ctx + "/dwr/interface/RoleAuthorityAction.js");
 $importjs(ctx + "/jsp/anms/common/AnmsOverride.js");
 $importjs(ctx + "/commons/utils/FrameHelper.js");
 $importjs(ctx + "/jsp/anms/common/Util.js");
-$importjs(ctx + "/jsp/anms/gpon/GponDeviceLinkManage.js");
+$importjs(ctx + "/jsp/network/space/cover/cover_Panel.js");
 $importjs(ctx + "/dwr/interface/GponCoverManageAction.js");
-$importjs(ctx + "/jsp/anms/gponcover/plugins/tbar/GponCoverFormPanel.js");
-$importjs(ctx + "/jsp/anms/gponcover/plugins/tbar/GponCoverPTPQueryFormPanel.js");
 
-Frame.grid.plugins.tbar.GponCoverCreateTBar = Ext.extend(Object,{
+Frame.grid.plugins.tbar.cover_tbar = Ext.extend(Object,{
 		constructor : function(grid){
 			this.grid = grid;
 			var oltCuid = grid.oltCuid;
@@ -22,25 +20,25 @@ Frame.grid.plugins.tbar.GponCoverCreateTBar = Ext.extend(Object,{
 	    		}
 				this.grid.doQuery(whereParams);
 			}
-			Frame.grid.plugins.tbar.GponCoverCreateTBar.superclass.constructor.call(this);
+			Frame.grid.plugins.tbar.cover_tbar.superclass.constructor.call(this);
 			var returnCfg =  [
 			        {
 						text : '新增',
 						iconCls : 'c_add',
 						scope : this,
-						id	: 'GponCoverCreateTBar.add',
+						id	: 'cover_tbar.add',
 						handler : this.addGponCover.createDelegate(this)
 					}, {
 						text : '修改',
 						iconCls : 'c_pencil',
 						scope : this,
-						id	: 'GponCoverCreateTBar.modify',
+						id	: 'cover_tbar.modify',
 						handler : this.modifyGponCover.createDelegate(this)
 					}, {
 						text : '删除',
 						iconCls : 'c_delete',
 						scope : this,
-						id	: 'GponCoverCreateTBar.delete',
+						id	: 'cover_tbar.delete',
 						handler : function() {
 							var selections = this.grid.getSelectionModel()
 									.getSelections();
@@ -71,36 +69,17 @@ Frame.grid.plugins.tbar.GponCoverCreateTBar = Ext.extend(Object,{
 								return;
 							}
 						}
-					}, {
-						text : '批量导入',
-						iconCls : 'c_page_excel',
-						scope : this,
-						id	: 'GponCoverCreateTBar.import',
-						handler : function() {
-							var scope = this;
-							FrameHelper.openUrl("$(WEBAN_SERVER)/jsp/anms/importres/ImportBasicData.jsp?fileName=gponCoverTemplet",'覆盖范围导入');
-							return;
-						}
-					}, {
-						text : '端口状态',
-						iconCls : 'c_chart_organisation',
-						scope : this,
-						id	: 'GponCoverCreateTBar.state',
-						handler : this.listGponCover.createDelegate(this)
 					}
-					
 					];
 			
-			FilterTbarBtnNode.filterTbarBtn(returnCfg,true);
 			
 			return [returnCfg];
 		},
 		addGponCover:function(){
 			var GponCoverCuid = "";
-			this.ManageFormPanel = new TNMS.maintain.number.GponCoverFormPanel({
+			this.ManageFormPanel = new NETWORK.cover_panel({
 				GponCoverCuid : GponCoverCuid
 			});
-			
 			var  winSvlan = WindowHelper.openExtWin(this.ManageFormPanel,{
 					width:900,
 					title:"覆盖范围新增",
@@ -159,7 +138,7 @@ Frame.grid.plugins.tbar.GponCoverCreateTBar = Ext.extend(Object,{
 			}
 			var relatedNeCuid = sels[0].json.RELATED_NE_CUID;
 			var coverInfo = sels[0].json.COVER_INFO;
-			this.ManageFormPanel = new TNMS.maintain.number.GponCoverFormPanel({
+			this.ManageFormPanel = new  NETWORK.cover_panel({
 				relatedNeCuid : relatedNeCuid,
 				coverInfo   : coverInfo
 			});
@@ -222,26 +201,6 @@ Frame.grid.plugins.tbar.GponCoverCreateTBar = Ext.extend(Object,{
 					}]
 				});
 			    winSvlan.show();
-		},
-		listGponCover:function(){
-			var scope = this;
-			var sels = scope.grid.getSelectionModel().getSelections();
-			if(sels.length!=1){
-				Ext.Msg.alert("温馨提示","请先选择一条记录");
-				return;
-			}
-			var relatedNeCuid = sels[0].json.RELATED_NE_CUID;
-			
-			this.ManageFormPanel = new TNMS.maintain.number.GponCoverPTPQueryFormPanel({
-				neCuid : relatedNeCuid,
-				columnWidth: .9
-		    });
-			
-			var  winSvlan = WindowHelper.openExtWin(this.ManageFormPanel,{
-					width:900,
-					title:"覆盖范围端口状态",
-					closeAction: 'close',
-			});
-			winSvlan.show();
 		}
+
 	});

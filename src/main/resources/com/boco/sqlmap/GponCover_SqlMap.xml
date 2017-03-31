@@ -2,20 +2,22 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
 <sqlMap namespace="GPONCOVER">
 	 <insert id="insertGponCover" parameterClass="java.util.HashMap">
-		INSERT INTO GPON_COVER
-		(CUID,STANDARD_ADDR,RELATED_NE_CUID,DEVICE_NAME,COVER_INFO,REGIONTYPE1,REGIONTYPE2,BUSINESS_TYPE) VALUES 
+		INSERT INTO t_attemp_gpon_cover
+		(CUID,STANDARD_ADDR,RELATED_NE_CUID,DEVICE_NAME,COVER_INFO,REGIONTYPE1,REGIONTYPE2,BUSINESS_TYPE,OBJECTID,RELATED_PROJECT_CUID) VALUES 
 		 (#CUID#,
 		  #STANDARD_ADDR#,
 		  #RELATED_NE_CUID#,
 		  #DEVICE_NAME#,
-		#COVER_INFO#,
-		#REGIONTYPE1#,
-		#REGIONTYPE2#,
-		#BUSINESS_TYPE#
+		  #COVER_INFO#,
+		  #REGIONTYPE1#,
+		  #REGIONTYPE2#,
+		  #BUSINESS_TYPE#,
+		  get_object_id('GPON_COVER'),
+		  #RELATED_PROJECT_CUID#
 		)
 	</insert>
 	 <delete id="deleteGponCover" parameterClass="java.util.HashMap">
-	  DELETE FROM  GPON_COVER  WHERE  1=1
+	  DELETE FROM  t_attemp_gpon_cover  WHERE  1=1
 	 <isNotEmpty property="CUID">
 	    AND CUID = #CUID#
 	  </isNotEmpty>
@@ -24,11 +26,13 @@
 	  </isEmpty>
      </delete>
      <update id="updateGponCover" parameterClass="java.util.HashMap">
-		UPDATE GPON_COVER 
+		UPDATE t_attemp_gpon_cover 
 		SET COVER_INFO = #COVER_INFO#,
 			REGIONTYPE1 = #REGIONTYPE1#,
 			REGIONTYPE2 = #REGIONTYPE2#,
-			BUSINESS_TYPE=#BUSINESS_TYPE#
+			BUSINESS_TYPE=#BUSINESS_TYPE#,
+			REMARK = #REMARK# ,
+			RELATED_PROJECT_CUID = #RELATED_PROJECT_CUID#
 		WHERE CUID = #CUID#
 	  </update>
 	  

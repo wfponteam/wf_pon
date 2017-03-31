@@ -32,7 +32,7 @@ NETWORK.address= Ext.extend(Ext.Panel,{
 				}
 			},
 			queryPlugin : 'address_query',
-		//	tbarPlugin : 'address_tbar',
+			tbarPlugin : 'address_tbar',
 			view : new Ext.grid.GridView({
 				forceFit : true
 			}),

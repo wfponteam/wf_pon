@@ -32,7 +32,7 @@ NETWORK.cover= Ext.extend(Ext.Panel,{
 				}
 			},
 			queryPlugin : 'cover_query',
-			tbarPlugin : '',
+			tbarPlugin : 'cover_tbar',
 			view : new Ext.grid.GridView({
 				forceFit : true
 			}),

@@ -7,32 +7,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
 import com.boco.core.ibatis.dao.IbatisDAO;
 import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.workflow.webservice.dao.utils.BoUtil;
+@Service
 public class AnPosManageBO {
+	@Autowired
 	protected static IbatisDAO IbatisDAO;
 	private static final String EQUIP_SQL_MAP = "EQUIP";
-	protected Integer objectIdNum = 0;
-	public IbatisDAO getIbatisDAO() {
-		return IbatisDAO;
-	}
-	public void setIbatisDAO(IbatisDAO ibatisDAO) {
-		IbatisDAO = ibatisDAO;
-	}
 
-	/**
-	 * 获取AnPosManageBO
-	 * @return
-	 */
-	private static AnPosManageBO getAnPosManageBO() {
-		return (AnPosManageBO) SpringContextUtil.getBean("AnPosManageBO");
-	}
+
 	/**
 	 * 根据传入的CUID的集合删除网元POS信息
 	 * 
@@ -108,18 +101,9 @@ public class AnPosManageBO {
 	public String addPosInfo(Map<Object,Object> map,boolean isRelSystemIrms) throws Exception{
 		
 		String cuid = CUIDHexGenerator.getInstance().generate("TRANS_ELEMENT");
-		Long objectId = 0L;
-		try {
-			objectId = getAnPosManageBO().getObjectId("AN_POS");
-		}catch(Exception e){
-			objectId = System.currentTimeMillis();
-			//e.printStackTrace();
-			LogHome.getLog().error("", e);
-		}
 		//插入的时候加入了一些定值
 		map.put("DEV_CUID", "AN_POS" + "-" + cuid);
 		map.put("CUID", cuid);
-		map.put("OBJECTID", objectId);
 		map.put("GT_VERSION", 0);
 		map.put("ISDELETE", 0);
 		if(map.get("CREATE_TIME") == null){
@@ -159,42 +143,12 @@ public class AnPosManageBO {
 			}
 		}
 		setPosFdnAndEms(map);
-		Object locationObj = map.get("LOCATION");
-		boolean isAddGponCover = false;
 		String canallocatetouser = map.get("CAN_ALLOCATE_TO_USER").toString();
-		if("1".equals(canallocatetouser) && map.get("ACCESS_TYPE")!=null && ("2".equals(map.get("ACCESS_TYPE").toString())
-				||"3".equals(map.get("ACCESS_TYPE").toString())||"5".equals(map.get("ACCESS_TYPE").toString()))){
-			isAddGponCover = true;
-		}
-	if(locationObj != null && !StringUtils.isEmpty(locationObj.toString())){
-		getAnPosManageBO().checkTRofhFullAddress((String) map.get("LOCATION"),(String) map.get("RELATED_NE_CUID"),isAddGponCover);
-				String sql = "SELECT * FROM T_ROFH_FULL_ADDRESS WHERE LABEL_CN = '"+map.get("LOCATION")+"'";
-				List list = this.IbatisDAO.querySql(sql);
-				if(list.isEmpty()){
-					addTRofhFullAddress((String) map.get("LOCATION"),(String) map.get("RELATED_NE_CUID"),isAddGponCover);
-					
-					Map addressmap = getTRofhFullAddressParams((String) map.get("LOCATION"),(String) map.get("RELATED_NE_CUID"),isAddGponCover);
-					this.IbatisDAO.getSqlMapClientTemplate().insert(EQUIP_SQL_MAP + ".insertTRofhAddressInfo", map);
-				}else{
-					//如果标准地址存在，单独生成覆盖范围
-					String cuid1 = ((Map)list.get(0)).get("CUID").toString();
-					if(isAddGponCover){
-						//生成覆盖范围
-						this. addGponCover((String) map.get("LOCATION"),(String) map.get("RELATED_NE_CUID"),cuid1);
-					}
-				}
-		}
 		String districtCuid = map.get("RELATED_DISTRICT_CUID")+"";
 		if(districtCuid == null || districtCuid.length()<1){
-			String addressCuid = map.get("LOCATION")==null?"":map.get("LOCATION").toString();
-			if(addressCuid!=null && addressCuid.length()>1){
-				//从标准地址中获取所属地市CUID
-				map.put("RELATED_DISTRICT_CUID", getAnPosManageBO().getCityCuidByFullAddresCuid(addressCuid));
-			} else {
 				String cabCuid = map.get("RELATED_CAB_CUID").toString();
-				String relatedDistrictCuid = getAnPosManageBO().getRelatedDistrictCuidByCabCuid(cabCuid);
+				String relatedDistrictCuid = getRelatedDistrictCuidByCabCuid(cabCuid);
 				map.put("RELATED_DISTRICT_CUID", relatedDistrictCuid);
-			}
 		}
         String upNeCuid = map.get("RELATED_UPNE_CUID")+"";
         if(upNeCuid != null && upNeCuid.length()>1){
@@ -208,7 +162,7 @@ public class AnPosManageBO {
       this.IbatisDAO.updateSql(updatePtpState);
 		this.IbatisDAO.getSqlMapClientTemplate().insert(EQUIP_SQL_MAP + ".insertPosInfo", map);
 		String neFdn = ObjectUtils.toString(map.get("FDN"));
-		getAnPosManageBO().createCardInfo(cuid, neFdn, "POS", 3);
+		createCardInfo(cuid, neFdn, "POS", 3);
 		return "R"+cuid;
 	}
 	private String getPosTypeByUpDevCuid(String upNeCuid){
@@ -350,7 +304,7 @@ public class AnPosManageBO {
 				java.text.SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd ");
 				Date date =  formatter.parse((String) map.get("SETUP_TIME") );
 				map.put("SETUP_TIME", date);
-			getAnPosManageBO().setRelatedMapValuesNew(map, "AN_POS");
+			setRelatedMapValuesNew(map, "AN_POS");
 			map.put("modify", "true");
 			String updevCuid = ObjectUtils.toString(map.get("RELATED_UPNE_CUID"));
 			String updevPtpCuid = ObjectUtils.toString(map.get("RELATED_UPNE_PORT_CUID"));
@@ -364,41 +318,24 @@ public class AnPosManageBO {
 					map.put("RELATED_PORT_CUID",updevPtpCuid);
 				}else{
 					//获取上联设备
-					Map OLtMap = getAnPosManageBO().getPosUpDevByName(LABEL_CN);
+					Map OLtMap = getPosUpDevByName(LABEL_CN);
 					String OltCuid = (String)map.get("RELATED_OLT_CUID");
 					String OltPortCuid = (String)map.get("RELATED_PORT_CUID");
 					map.put("RELATED_OLT_CUID",OltCuid);
 					map.put("RELATED_PORT_CUID",OltPortCuid);
 				}
 			}
-			Object locationObj = map.get("LOCATION");
-			boolean isAddGponCover = false;
 			String canallocatetouser = "";
 			if(map.get("CAN_ALLOCATE_TO_USER") != null){
 				canallocatetouser = map.get("CAN_ALLOCATE_TO_USER").toString();
 			}
-			if("1".equals(canallocatetouser) && map.get("ACCESS_TYPE")!=null && ("2".equals(map.get("ACCESS_TYPE").toString())||"3".equals(map.get("ACCESS_TYPE").toString())
-					||"5".equals(map.get("ACCESS_TYPE").toString()))){
-				isAddGponCover = true;
-			}
-			String location = null;
 		    String related_ne_cuid =null;
-		    location =(String) map.get("LOCATION");
 		    related_ne_cuid = (String) map.get("RELATED_NE_CUID");
-			if(locationObj != null && !StringUtils.isEmpty(locationObj.toString())){
-				getAnPosManageBO().checkTRofhFullAddress(location ,related_ne_cuid , isAddGponCover);
-			}
 			String districtCuid = map.get("RELATED_DISTRICT_CUID")+"";
 			if(districtCuid != null && districtCuid.length()>1){
-				String addressCuid = map.get("LOCATION")==null?"":map.get("LOCATION").toString();
-				if(addressCuid != null && addressCuid.length()>1){
-					//从标准地址中获取所属地市CUID
-					map.put("RELATED_DISTRICT_CUID", getAnPosManageBO().getCityCuidByFullAddresCuid(addressCuid));
-				} else {
 					String cabCuid = map.get("RELATED_CAB_CUID").toString();
-					String relatedDistrictCuid = getAnPosManageBO().getRelatedDistrictCuidByCabCuid(cabCuid);
+					String relatedDistrictCuid = getRelatedDistrictCuidByCabCuid(cabCuid);
 					map.put("RELATED_DISTRICT_CUID", relatedDistrictCuid);
-				}
 			}
 			String oldPort = IbatisDAOHelper.getStringValue(map, "oldPort");
 			String newPort = IbatisDAOHelper.getStringValue(map,"RELATED_UPNE_PORT_CUID");
@@ -416,7 +353,7 @@ public class AnPosManageBO {
 			this.IbatisDAO.getSqlMapClientTemplate().update(EQUIP_SQL_MAP + ".updatePosInfo", map);
 			String neFdn = ObjectUtils.toString(map.get("FDN"));
 			String neCuid = ObjectUtils.toString(map.get("CUID"));
-			getAnPosManageBO().createCardInfo(neCuid, neFdn, "POS", 3);
+			createCardInfo(neCuid, neFdn, "POS", 3);
 			
 			///更新板卡和端口的名称
 			this.IbatisDAO.updateSql("update card c set c.label_cn = ( " 
@@ -531,17 +468,10 @@ public class AnPosManageBO {
 						this.IbatisDAO.getSqlMapClientTemplate().update(EQUIP_SQL_MAP + ".updateCardInfoByNe", res);
 					}else{
 						Map<String,Object> cardmap=new HashMap<String,Object>();
-						cardCuid = getAnPosManageBO().getCuidByClassName("CARD");
+						cardCuid = getCuidByClassName("CARD");
 						cardmap.put("CUID", cardCuid);
 						res.put("CUID", cardCuid);
 						res.put("FDN", cardFdn);
-						Long objectId = 0L;
-						try {
-							objectId = getAnPosManageBO().getObjectId("CARD");
-						} catch (Exception e) {
-							objectId = System.currentTimeMillis();
-						}
-						cardmap.put("OBJECTID",objectId);
 						cardmap.put("LABEL_CN", _devType.toUpperCase()+"无板卡");
 						cardmap.put("RELATED_DEVICE_CUID", neCuid);
 						cardmap.put("FDN", cardFdn);
@@ -614,16 +544,7 @@ public class AnPosManageBO {
 		public static  String getCuidByClassName(String className) {
 			return CUIDHexGenerator.getInstance().generate(className);
 		}
-		public static long getObjectId(String className) throws Exception {
-			
-			try {
-				return ((Long) IbatisDAO.getSqlMapClientTemplate().queryForObject(
-						"COMMON_OBJECT.getObjectID", className)).longValue();
-			} catch (Exception e) {
-				LogHome.getLog().error("获取ObjectId失败", e);
-				throw e;
-			}
-		}
+
 		/*
 		 * 根据设备CUID，判断端口是否存在
 		 */
@@ -694,29 +615,11 @@ public class AnPosManageBO {
 					}
 				return null;
 			}
-			public void checkTRofhFullAddress(String location,String related_ne_cuid,boolean isAddGponCover){
-				try{
-					String sql = "SELECT * FROM T_ROFH_FULL_ADDRESS WHERE LABEL_CN = '"+location+"'";
-					List list = this.IbatisDAO.querySql(sql);
-					if(list.isEmpty()){
-						addTRofhFullAddress(location,related_ne_cuid,isAddGponCover);
-					}else{
-						//如果标准地址存在，单独生成覆盖范围
-						String cuid = ((Map)list.get(0)).get("CUID").toString();
-						if(isAddGponCover){
-							//生成覆盖范围
-							this. addGponCover(location,related_ne_cuid,cuid);
-						}
-					}
-				}catch(Exception ex){
-					LogHome.getLog().error("",ex);
-				}	
-			}
-			public void addTRofhFullAddress(String location,String related_ne_cuid,boolean isAddGponCover){
-				Map map = getTRofhFullAddressParams(location,related_ne_cuid,isAddGponCover);
+			public void addTRofhFullAddress(String location,String related_ne_cuid){
+				Map map = getTRofhFullAddressParams(location,related_ne_cuid);
 				this.IbatisDAO.getSqlMapClientTemplate().insert(EQUIP_SQL_MAP + ".insertTRofhAddressInfo", map);
 			}
-			private Map getTRofhFullAddressParams(String location,String related_ne_cuid,boolean isAddGponCover){
+			private Map getTRofhFullAddressParams(String location,String related_ne_cuid){
 				Map map = new HashMap();
 				String cuid = AnPosManageBO.getCuidByClassName("T_ROFH_FULL_ADDRESS");
 				map.put("CUID",cuid);
@@ -725,10 +628,6 @@ public class AnPosManageBO {
 				try{		
 					String[] locationArray = location.split("\\|");
 					if(locationArray != null && locationArray.length > 0){
-						if(isAddGponCover){
-							//生成覆盖范围
-							this. addGponCover(location,related_ne_cuid,cuid);
-						}
 						//生成业务区域
 						map.put("RELATED_COMMUNITY_CUID", this.businessCommunity(location));
 						map.put("PROVINCE",locationArray[0]);
@@ -745,19 +644,6 @@ public class AnPosManageBO {
 					LogHome.getLog().warn("设备安装地址非标准地址格式,LOCATION:" + location,ex);
 				}
 				return map;
-			}
-			private void addGponCover(String location,String related_ne_cuid,String standard_addr){
-				Map map = new HashMap();
-				try {
-					map.put("CUID", AnPosManageBO.getCuidByClassName("GPON_COVER"));
-					map.put("OBJECTID",AnPosManageBO.getObjectId("GPON_COVER"));
-					map.put("RELATED_NE_CUID", related_ne_cuid);
-					map.put("COVER_RANGE", location);
-					map.put("STANDARD_ADDR",standard_addr);
-					this.IbatisDAO.getSqlMapClientTemplate().insert(EQUIP_SQL_MAP + ".insertGponCoverInfo", map);
-				} catch (Exception e) {
-					LogHome.getLog().error("自动生成覆盖范围报错：" + e);
-				}
 			}
 			/*
 			 * 业务区域生成

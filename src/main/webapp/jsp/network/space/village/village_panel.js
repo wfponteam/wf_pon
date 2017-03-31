@@ -538,6 +538,7 @@ NETWORK.village_panel = Ext.extend(
 												if (!Ext.isEmpty(_data)){
 													scope._returnJson = _data;
 													if (scope.parent != null) {
+														Ext.Msg.alert('提示','添加成功')
 														scope.parent.close();
 													}
 												} else {
@@ -600,6 +601,7 @@ NETWORK.village_panel = Ext.extend(
 								IS_OVERLAPP : IS_OVERLAPP,
 								BUILD_TYPE	: BUILD_TYPE,
 								CUID : CUID,
+								RELATED_PROJECT_CUID   :Ext.getCmp('NETWORK.resource').cuid,
 		                          EAST_LONGITUDE     :     EAST_LONGITUDE,                                                   
 		                          EAST_LATITUDE      :     EAST_LATITUDE,  
 		                          WEST_LONGITUDE     :     WEST_LONGITUDE, 
