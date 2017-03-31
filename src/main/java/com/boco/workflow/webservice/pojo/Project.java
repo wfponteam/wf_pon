@@ -14,7 +14,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("info")
 public class Project {
 
+	@XStreamAlias("id")
 	private String cuid;
+	
+	/**
+	 * 操作类型
+	 */
+	@XStreamAlias("actiontype")
+	private String actionType;
 	/**
 	 * 立项文件名称
 	 */
@@ -258,6 +265,16 @@ public class Project {
 
 	public void setPrjStatus(String prjStatus) {
 		this.prjStatus = prjStatus;
+	}
+	
+	
+
+	public String getActionType() {
+		return actionType;
+	}
+
+	public void setActionType(String actionType) {
+		this.actionType = actionType;
 	}
 
 	@Override

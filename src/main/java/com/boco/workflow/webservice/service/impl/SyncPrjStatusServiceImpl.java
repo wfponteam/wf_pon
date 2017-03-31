@@ -26,35 +26,42 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 	private ProjectDAO dao;
 	
 	@Override
-	protected void doBusiness(PrjStatus prjStatus) throws Exception {
+	public void doBusiness(PrjStatus prjStatus) throws Exception {
 		
 		logger.info("SyncPrjStatusServiceImpl.doBusiness");
+		
+		String cuid = dao.getIdByCode(prjStatus);
+		
+		if(null == cuid){
+			
+			throw new Exception("工程不存在！");
+		}
+		
+		prjStatus.setCuid(cuid);
 		
 		String status = prjStatus.getPrjStatus();
 		if("归档".equals(status)){
 			//归档
-			String prjcode = prjStatus.getPrjCode();
 			
 			ProjectNameSpace ns = new ProjectNameSpace();
-			ns.setPrjcode(prjcode);
+			ns.setPrjcode(cuid);
 			ns.setNs(NameSpace.NM.getName());
 			
 			this.dao.moveResourse(ns);
 			ns.setNs(NameSpace.HIS.getName());
 			this.dao.moveResourse(ns);
 			
-			this.dao.removeResourse(prjcode);
+			this.dao.removeResourse(cuid);
 				
 		}else if("作废".equals(status)){
 			
 			//TODO:释放端口
-			String prjcode = prjStatus.getPrjCode();
 			
 			ProjectNameSpace ns = new ProjectNameSpace();
-			ns.setPrjcode(prjcode);
+			ns.setPrjcode(cuid);
 			ns.setNs(NameSpace.HIS.getName());
 			this.dao.moveResourse(ns);		
-			this.dao.removeResourse(prjcode);
+			this.dao.removeResourse(cuid);
 		}
 		
 		dao.updateProjectStatus(prjStatus);

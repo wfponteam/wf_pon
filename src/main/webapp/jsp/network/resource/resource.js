@@ -16,24 +16,34 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 	username : '',
 	prjcode  : '',
 	parentprjcode : '',
+	cuid	:'',
 	initComponent : function() {
 		NETWORK.resource.superclass.initComponent.call(this);
 		this._initItems();
 		this.initData();
 	},
 	_initItems : function() {
+		
+		this.parentprjcode = this.parentprjcode == 'null' ? '' : this.parentprjcode;
+		var scope = this;
+		DWREngine.setAsync(false);
+		ProjectAction.queryIdByCode(this.prjcode,this.parentprjcode,
+				function(date) {			
+				scope.cuid = date;
+			});
+		DWREngine.setAsync(true);
+		
 		this.project=new NETWORK.project( {
    			title: '工程信息',
    			username : this.username,
-   			prjcode  : this.prjcode,
-   			parentprjcode : this.parentprjcode
+   			cuid  : this.cuid
 		});
 		this.attach=new NETWORK.attach( {
 			title: '附件信息'
 		});
 		
 		this.equip=new NETWORK.equip( {
-			prjcode  : this.prjcode,
+			cuid  : this.cuid,
 			title: '资源信息'
 		});
 		
@@ -65,11 +75,10 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 						   	 		 {
 						   	 		 	mk.show(); //显示  
 										Ext.Ajax.request({
-										        url: ctx+'/webServiceAction/syncHangingResult.do',
+										        url: ctx+'/webServiceAction/syncHangingResult1.do',
 										        method: 'POST',
 										        params: {
-										        	parentPrjCode:Ext.getCmp("customPanel").getForm().getValues().PARENT_PRJ_CODE,
-										        	prjCode: Ext.getCmp("customPanel").getForm().getValues().PRJ_CODE
+										        	cuid: scope.cuid
 										        },
 										        success: function(response) {
 										            var result = JSON.parse(response.responseText);
@@ -94,8 +103,9 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 	initData : function() {
 
 		var scope = this;
+		
 		DWREngine.setAsync(false);
-		ProjectAction.queryProjectByCode(this.prjcode, function(data) {
+		ProjectAction.queryProjectByCode(this.cuid, function(data) {
 			var record = Ext.data.Record.create([]);
 			var _data = new record(data);
 			Ext.getCmp("customPanel").getForm().loadRecord(_data);

@@ -408,7 +408,7 @@
 	</combo>
 	<combo name="RELATED_POS_NAME">
 		<sql dao="IbatisResDAO">
-			(SELECT CUID,LABEL_CN,RELATED_OLT_CUID FROM AN_POS WHERE RELATED_DISTRICT_CUID LIKE '{USERDISTRICT}%') UNION (SELECT A.CUID,A.LABEL_CN,Z.RELATED_OLT_CUID FROM AN_POS A,AN_POS Z WHERE A.RELATED_OLT_CUID=Z.CUID AND A.RELATED_DISTRICT_CUID LIKE '{USERDISTRICT}%')
+			(SELECT CUID,LABEL_CN,RELATED_OLT_CUID FROM AN_POS WHERE RELATED_DISTRICT_CUID LIKE '{USERDISTRICT}%') UNION (SELECT CUID,LABEL_CN,RELATED_OLT_CUID FROM t_attemp_AN_POS WHERE RELATED_DISTRICT_CUID LIKE '{USERDISTRICT}%')
 		</sql>
 	</combo>
 	<combo name="RELATED_OLT_NAME">
@@ -430,7 +430,9 @@ UNION
 	</combo>
 	<combo name="RELATED_POS_PORT_CUID">
 		<sql dao="IbatisResDAO">
-			SELECT CUID,LABEL_CN,RELATED_NE_CUID FROM PTP WHERE RELATED_DISTRICT_CUID LIKE '{USERDISTRICT}%'
+			SELECT CUID,LABEL_CN,RELATED_NE_CUID FROM PTP WHERE PORT_STATE = '1'
+			union all 
+			SELECT CUID,LABEL_CN,RELATED_NE_CUID FROM t_attemp_PTP WHERE PORT_STATE = '1'
 		</sql>
 	</combo>
 	<combo name="ONU_SELECT_QUERY">
@@ -461,6 +463,8 @@ UNION
 	<combo name="RELATED_CARD_NAME">
 		<sql dao="IbatisResDAO">
 			SELECT T.CUID,T.LABEL_CN,T.RELATED_DEVICE_CUID FROM CARD T
+			union all
+			SELECT T.CUID,T.LABEL_CN,T.RELATED_DEVICE_CUID FROM t_attemp_CARD T
 		</sql>
 	</combo>
 	
@@ -869,8 +873,13 @@ UNION
 			<![CDATA[
 			  select ao.cuid, ao.label_cn ,'onu' type
 			   from an_onu ao
+			   union all
+			   select ao.cuid, ao.label_cn ,'onu' type
+			   from t_attemp_an_onu ao
 			 union all
 			 select ap.cuid, ap.label_cn,'pos' type from an_pos ap
+			 union all
+			 select ap.cuid, ap.label_cn,'pos' type from t_attemp_an_pos ap
 			]]>
 		</sql>
 	</combo>

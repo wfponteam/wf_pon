@@ -113,7 +113,7 @@ NETWORK.import = Ext.extend(Ext.Panel, {
     importExcel : function() {
     	this.setImportMsg('');
          
-	     var url =   "$(WEBAN_SERVER)/ImportServlet?prjcode="+this.prjcode ;
+	     var url =   "$(WEBAN_SERVER)/ImportServlet?cuid="+this.prjcode ;
 	     url = UrlHelper.replaceUrlArguments(url, "");
 		 this.uploadForm.getForm().submit({
 			waitMsg : '正在提交请稍后...',
@@ -123,7 +123,7 @@ NETWORK.import = Ext.extend(Ext.Panel, {
 			 	DWREngine.setAsync(false);
 				var msg = "";			 
 			 	if(!Ext.isEmpty(action.result.errorFileDownLoadUrl)) {
-			 		msg += "<BR><a href='"+action.result.errorFileDownLoadUrl+"'>下载结果文件</a><BR><BR><P></P>";
+			 		msg += "<a href='"+action.result.errorFileDownLoadUrl+"'>下载结果文件</a>";
 			 	}
 			 	msg += action.result.showMessage;
 			 	this.setImportMsg(msg);

@@ -73,56 +73,6 @@ Frame.grid.plugins.tbar.onu_tbar = Ext.extend(Object, {
 									return;
 								}
 							}
-						},
-						{
-							text : '关联端口',
-							iconCls : 'c_chart_organisation',
-							id	:	'OnuTBar.relatedPtp',
-							scope : this,
-							handler : function() {
-								var record = this.grid.getSelectionModel().getSelected();
-								if (!Ext.isEmpty(record)) {
-									if(this.grid.getSelectionModel().selections.length > 1){
-										Ext.Msg.alert('提示', '只能选择一条数据!');
-										return;
-									}else{
-										var param = "devCuid="+record.json.CUID+"&devName="+record.json.LABEL_CN+"&devTable=onu";
-										param = param.replace(/\#/g,"*");
-										FrameHelper.openUrl("$(WEBAN_SERVER)/jsp/network/equip/ptp/ptp.jsp?"+param,'ONU关联端口');
-										return;
-									}
-								} else {
-									var param = "devName=1&cardName=1&devTable=onu";
-									param = param.replace(/\#/g,"*");
-									FrameHelper.openUrl("$(WEBAN_SERVER)/jsp/network/equip/ptp/ptp.jsp?"+param,'ONU关联端口');
-									return;
-								}
-							}
-						},
-						{
-							text : '上联链路',
-							iconCls : 'c_chart_organisation',
-							id	: 'OnuTBar.relatedTopo',
-							scope : this,
-							handler : function() {
-								var record = this.grid.getSelectionModel().getSelected();
-								if (!Ext.isEmpty(record)) {
-									if(this.grid.getSelectionModel().selections.length > 1){
-										Ext.Msg.alert('提示', '只能选择一条数据!');
-										return;
-									}else{
-										var origName = record.json.LABEL_CN;
-										var origCuid = record.json.CUID;
-										var param = "&ponType=POS-ONU&origName="+origName+"&origCuid="+origCuid;
-										param = param.replace(/\#/g,"*");
-										FrameHelper.openUrl("$(WEBAN_SERVER)//cmp_res/grid/ResGridPanel.jsp?code=service_dict_maintain.PON_TOPO_MANAGE&amp;menuId=PON_TOPO_MANAGE&amp;userId={userId}&amp;source=IRMS"+param,'ONU上联链路');
-										return;
-									}
-								} else {
-									FrameHelper.openUrl("$(WEBAN_SERVER)//cmp_res/grid/ResGridPanel.jsp?code=service_dict_maintain.PON_TOPO_MANAGE&amp;menuId=PON_TOPO_MANAGE&amp;userId={userId}&amp;source=IRMS",'ONU上联链路');
-									return;
-								}
-							}
 						}
 						];
 		return [returnCfg];

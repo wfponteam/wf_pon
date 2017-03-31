@@ -26,16 +26,17 @@
 				prjcode= prjcode.replace(/\*/g,"#");
 				prjcode =prjcode.replace(/\%/g,"=");
 			}
+			
 			var parentprjcode = param.parentprjcode;
 			if(!Ext.isEmpty(parentprjcode)){
 				parentprjcode= parentprjcode.replace(/\*/g,"#");
 				parentprjcode =parentprjcode.replace(/\%/g,"=");
 			}
+
 			var panel = new NETWORK.resource({
 				username : username,
 				prjcode  : prjcode,
 				parentprjcode : parentprjcode
-				
 			});
 			var view = new Ext.Viewport({
                 layout : 'fit',

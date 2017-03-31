@@ -27,6 +27,18 @@ public class PrjStatus {
 	//工程状态
 	@XStreamAlias("prjstatus")
 	private String prjStatus;
+	
+	private String cuid;
+	
+	
+
+	public String getCuid() {
+		return cuid;
+	}
+
+	public void setCuid(String cuid) {
+		this.cuid = cuid;
+	}
 
 	public String getPrjCode() {
 		return prjCode;

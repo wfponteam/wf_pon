@@ -25,10 +25,10 @@ import com.boco.workflow.webservice.upload.servlet.ImportResultDO;
 
 
 public class ImportPonCardPortExcel {
-	Map cardKindMap;
+
 	//初始化这些值，因为这样校验才更加方便
-	public ImportPonCardPortExcel( Map cardKindMap) {		
-		this.cardKindMap = cardKindMap;
+	public ImportPonCardPortExcel() {		
+
 	}	
 	
 	public OnuManageBO getOnuManageBO(){

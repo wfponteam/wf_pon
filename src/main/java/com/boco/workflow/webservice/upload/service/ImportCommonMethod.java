@@ -224,12 +224,7 @@ public class ImportCommonMethod {
 			List<Map<String, String>> vlanList = new ArrayList<Map<String, String>>();
 			for (int k = 0; k < originalList.size(); k++) {
 				Map map = (Map) originalList.get(k);
-				if (map.get("VLAN") != null
-						&& !StringUtils.isEmpty(map.get("VLAN")
-								.toString())) {
-					// map.put(Ptp.AttrName.vlan,getValue(map.get(Ptp.AttrName.vlan).toString()));
-					// map.put(Ptp.AttrName.vlan,ObjectUtils.toString(Ptp.AttrName.vlan));
-				}
+				
 				String cuid = (String) map.get("CUID");
 				if (cuid != null &&  !StringUtils.isEmpty(cuid.toString())) {
 					updateList.add(map);
@@ -255,13 +250,13 @@ public class ImportCommonMethod {
 					for (int i = 0; i < addList.size(); i++) {
 						Map map = (Map) addList.get(i);
 						String neCuid = ObjectUtils.toString(map.get("CUID"));
-						String neFdn = ObjectUtils.toString(map.get("FDN"));
+
 						if (excelName.equals(Constant.ONUNAME)) {
-							getOnuManageBO().createCardInfo(neCuid, neFdn, "ONU", 2);
+							getOnuManageBO().createCardInfo(neCuid, 2);
 							newPortList.add(ObjectUtils.toString(map.get("RELATED_POS_PORT_CUID")));
 						}
 						if (excelName.equals(Constant.POSNAME)) {
-							getOnuManageBO().createCardInfo(neCuid, neFdn, "POS", 3);
+							getOnuManageBO().createCardInfo(neCuid,  3);
 							newPortList.add(ObjectUtils.toString(map.get("RELATED_UPNE_PORT_CUID")));
 						}
 						
@@ -289,10 +284,10 @@ public class ImportCommonMethod {
 						String neFdn = ObjectUtils.toString(map.get("FDN"));
 						// 根据需求，在页面新增onu的时候，不新建板卡
 						if (excelName.equals(Constant.ONUNAME)) {
-							getOnuManageBO().createCardInfo(neCuid, neFdn, "ONU", 2);
+							getOnuManageBO().createCardInfo(neCuid,  2);
 						}
 						if (excelName.equals(Constant.POSNAME)) {
-							getOnuManageBO().createCardInfo(neCuid, neFdn, "POS", 3);
+							getOnuManageBO().createCardInfo(neCuid,  3);
 						}
 						
 						//更新端口状态

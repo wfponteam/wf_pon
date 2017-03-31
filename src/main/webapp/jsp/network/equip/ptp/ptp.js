@@ -26,6 +26,7 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
 			panelType = "POS_PTP_MANAGE";
 		}
 		var _scope = this;
+		var _devTable = this.devTable;
 
 		var baseQueryItem = [{
              items:[{
@@ -86,8 +87,8 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
      			//监听事件,在查询之前得到已选OLT的值,根据OLT的端口
      			listeners:{
      				"beforequery" : function(_this,newValue,oldValue){
-     				    Ext.getCmp(this.devTable + 'devSelectCardCombo').clearValue();
-     					var neCuid = Ext.getCmp(this.devTable + 'devSelectNeCombo').value;
+     				    this.clearValue();
+     					var neCuid = Ext.getCmp(_devTable + 'devSelectNeCombo').value;
      					var whereParams = {};
      					if(Ext.isEmpty(neCuid)){
      						
@@ -144,14 +145,16 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
             text       	: '新增',
             iconCls    	: 'c_add',
             id			: this.devTable +  'AnPtp.add',
-            handler    	: this.doAdd
+            handler    	: this.doAdd,
+            hidden		: this.devTable == 'onu' ? false : true
 		},{
 			xtype		:'button',
             scope      	: this,
             text       	: '修改',
             iconCls    	: 'c_pencil',
             id			: this.devTable +  'AnPtp.modify',
-            handler    	: this.doUpdate
+            handler    	: this.doUpdate,
+            hidden		: this.devTable == 'onu' ? false : true
 		},{
 			xtype		:'button',
 			id			: this.devTable +  'AnPtp.delete',
@@ -159,7 +162,8 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
             text       	: '删除',
             iconCls    	: 'c_delete',
             id			: this.devTable +  'AnPtp.delete',
-            handler    	: this.doDelete
+            handler    	: this.doDelete,
+            hidden		: this.devTable == 'onu' ? false : true
 		});
 
 		bbarArray.push('->',{
@@ -347,12 +351,12 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
 			var flag = true;
 			Ext.each(selections, function(item) {
 				
-				if(item.json.PORT_STATE != '1'){
+				/*if(item.json.PORT_STATE != '1'){
 					
 					Ext.Msg.alert('提示',item.json.LABEL_CN + " 不是空闲端口，不能删除！" );
 					flag = false;
 					return ;
-				}
+				}*/
 				cuids.push(item.json);
 			});
 			if(!flag){

@@ -2,6 +2,7 @@ package com.boco.workflow.webservice.equip.bo;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +13,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.boco.core.bean.SpringContextUtil;
 import com.boco.core.ibatis.dao.IbatisDAO;
 import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.core.ibatis.vo.ResultMap;
 import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.workflow.webservice.constants.NetWorkConstant;
 import com.boco.workflow.webservice.dao.utils.BoUtil;
+import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
 import com.boco.workflow.webservice.upload.service.ImportCommonMethod;
 
 /**
@@ -44,10 +47,13 @@ public class OnuManageBO {
 		BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),NetWorkConstant.EQUIP_SQL_MAP + ".deleteCardByNeCuid", cuids);
 		//释放上联端口
 		BoUtil.batchUpdate(this.IbatisDAO.getSqlMapClient(),NetWorkConstant.EQUIP_SQL_MAP + ".updateOnuPtpFree", cuids);
+		
+		BoUtil.batchUpdate(this.IbatisDAO.getSqlMapClient(),NetWorkConstant.EQUIP_SQL_MAP + ".updateOnuPtpFreeAtte", cuids);
+		
 		//删除onu
 		BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),NetWorkConstant.EQUIP_SQL_MAP + ".deleteOnuByCuid", cuids);
 		//删除覆盖范围
-		BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),NetWorkConstant.EQUIP_SQL_MAP + ".deleteGponCoverbyNeCuid", cuids);
+	//	BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),NetWorkConstant.EQUIP_SQL_MAP + ".deleteGponCoverbyNeCuid", cuids);
 	}
 
 	
@@ -134,6 +140,7 @@ public class OnuManageBO {
 		ptpManageBO.updatePortState("2", IbatisDAOHelper.getStringValue(map,"RELATED_POS_PORT_CUID"));
 		  
 		this.IbatisDAO.getSqlMapClient().insert(NetWorkConstant.EQUIP_SQL_MAP + ".insertOnuInfo", map);
+		this.createCardInfo(cuid, 2);
 	
 	}
 
@@ -186,36 +193,43 @@ public class OnuManageBO {
 	/**
 	 * POS或ONU，初始化板卡 
 	 */
-	public Map createCardInfo(String neCuid,String neFdn,String _devType,int devType){
-		Map res = null;
+	public void createCardInfo(String neCuid,int devType){
+
 		try {
-			if(!ImportCommonMethod.isEmpty(neCuid)&&!ImportCommonMethod.isEmpty(_devType)){
-				if(ImportCommonMethod.isEmpty(neFdn)){
-					neFdn = getDevFdnByCuid(neCuid);
-				}
-				res = new HashMap<String,Object>();
-				String cardFdn = neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1";
-				List<Map> cardList = getCardByFdnAndNeCuid(cardFdn, neCuid);
+			Map<String,Object> map = getDevByCuid(neCuid);
+			if(map != null){
+
+				
+				String neFdn = IbatisDAOHelper.getStringValue(map, "FDN");
+				String labelCn = IbatisDAOHelper.getStringValue(map, "LABEL_CN");
+				String ration = IbatisDAOHelper.getStringValue(map, "RATION");
+				
+			//	String cardFdn = neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1";
+				List<Map> cardList = getCardByNeCuid(neCuid);
 				String cardCuid = "";
-				if(cardList!=null&&cardList.size()>0){
-					Map cardMap = cardList.get(0);
-					cardCuid = ObjectUtils.toString(cardMap.get("CUID"));
-					res.put("CUID", cardCuid);
-					res.put("LABEL_CN", _devType.toUpperCase()+"无板卡");
-					res.put("FDN", cardFdn);
-					res.put("DEV_TYPE", devType);
-					res.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
-					this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updateCardInfoByNe", res);
+				if(cardList != null && cardList.size() > 0){
+					for(Map cardMap : cardList){
+						cardCuid = ObjectUtils.toString(cardMap.get("CUID"));
+						String fdn = IbatisDAOHelper.getStringValue(cardMap, "FDN");
+						Map<String,Object> cardmap=new HashMap<String,Object>();
+						cardmap.put("CUID", cardCuid);
+						cardmap.put("FDN", fdn.contains("slot=1") ? neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1" : neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2:Equipment=1");
+						cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
+						this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updateCardInfoByNe", cardmap);
+						
+						//更新ONU端口或POS端口所属板卡和FDN
+
+						this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updatePtpInfoByCard", neCuid);
+							
+						
+					}
 				}else{
 					Map<String,Object> cardmap=new HashMap<String,Object>();
 					cardCuid = CUIDHexGenerator.getInstance().generate("CARD");
 					cardmap.put("CUID", cardCuid);
-					res.put("CUID", cardCuid);
-					res.put("FDN", cardFdn);
-
-					cardmap.put("LABEL_CN", _devType.toUpperCase()+"无板卡");
+					cardmap.put("LABEL_CN", labelCn + "-1-VBoard");
 					cardmap.put("RELATED_DEVICE_CUID", neCuid);
-					cardmap.put("FDN", cardFdn);
+					cardmap.put("FDN", neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1");
 					cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
 					cardmap.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
 					cardmap.put("GT_VERSION", 0);
@@ -231,57 +245,181 @@ public class OnuManageBO {
 					cardmap.put("PHOTOELECTRICITY", 1);
 					cardmap.put("DEV_TYPE", devType);
 					this.IbatisDAO.getSqlMapClient().insert(NetWorkConstant.EQUIP_SQL_MAP + ".insertCardInfo", cardmap);
-				}
-				//更新ONU端口或POS端口所属板卡和FDN
-				List<Map> ptpList = getPtpByAndNeCuid(neCuid);
-				if(ptpList!=null&&ptpList.size()>0){
-					for(Map m:ptpList){
-						String portNo = ObjectUtils.toString(m.get("PORT_NO"));
-						Map<String,Object> paramPtp=new HashMap<String,Object>();
-						paramPtp.put("CUID", m.get("CUID"));
-						paramPtp.put("RELATED_CARD_CUID",cardCuid);
-						paramPtp.put("FND", neFdn+":PTP=/rack=1/shelf=1/slot=1/port="+portNo);
-						paramPtp.put("SYS_NO", "1-1-1-"+portNo);
-						paramPtp.put("DEV_TYPE", devType);
-						this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updatePtpInfoByCard", paramPtp);
+					
+					List<Map<String,Object>> insertPtpList = new ArrayList<Map<String,Object>>();
+					Map<String,Object> mapPort = null;
+					//新增下联口
+					if(!"0".equals(ration)){
+						
+						int num = Integer.parseInt(ration.substring(ration.indexOf(":") + 1, ration.length()));
+						
+						for(int portNum = 1 ; portNum <= num ; portNum ++ ){
+							
+							mapPort = new HashMap<String,Object>();
+							mapPort.put("LABEL_CN",labelCn + "-1-VBoard-" + String.format("%02d", portNum));
+							mapPort.put("PORT_NO", portNum);
+							mapPort.put("RELATED_NE_CUID", neCuid);
+							mapPort.put("RATION", ration);
+							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=1/port=" + portNum);
+							mapPort.put("SYS_NO", "1-1-1-"+portNum);
+							mapPort.put("DEV_TYPE", devType);
+							mapPort.put("RELATED_CARD_CUID", cardCuid);
+							mapPort.put("PORT_SUB_TYPE",13);
+							mapPort.put("PORT_TYPE",2);
+							mapPort.put("PORT_STATE",1);
+							String cuidPort = CUIDHexGenerator.getInstance().generate("PTP");
+							mapPort.put("CUID", cuidPort);
+							mapPort.put("GT_VERSION", 0);
+							mapPort.put("ISDELETE", 0);
+							mapPort.put("PROJECT_STATE", 0);
+							mapPort.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
+							mapPort.put("IS_CHANNEL", 0);
+							mapPort.put("TERMINATION_MODE", 1);
+							mapPort.put("DIRECTIONALITY", 2);
+							mapPort.put("MSTP_NANFCMODE", 1);
+							mapPort.put("MSTP_PORT_TYPE", 1);
+							mapPort.put("IS_PERMIT_SYS_DEL", 0);
+							mapPort.put("MSTP_FLOWCTRL", 1);
+							mapPort.put("MSTP_ANFCMODE", 1);
+							mapPort.put("MSTP_LCAS_FLAG", 1);
+							mapPort.put("MSTP_PPTENABLE", 1);
+							mapPort.put("MSTP_EDETECT", 1);
+							mapPort.put("MSTP_TAG_FLAG", 1);
+							mapPort.put("MSTP_ENCAPFORMAT", 1);
+							mapPort.put("MSTP_ENCAPPROTOCOL", 1);
+							mapPort.put("MSTP_CFLEN", 1);
+							mapPort.put("MSTP_BMSGSUPPRESS", 1);
+							mapPort.put("MSTP_FCSCALSEQ", 1);
+							mapPort.put("LOOP_STATE", 1);
+							mapPort.put("MSTP_PORTENABLE", 1);
+							mapPort.put("DOMAIN", 0);
+							mapPort.put("MSTP_WORKMODE", 1);
+							mapPort.put("MSTP_PORT_SERVICETYPE", 1);
+							mapPort.put("MSTP_SCRAMBEL", 1);
+							mapPort.put("LINE_BRANCH_TYPE", 1);
+							mapPort.put("OBJECT_TYPE_CODE", 15013);
+							mapPort.put("MSTP_EXTENDEADER", 1);
+							mapPort.put("LIVE_CYCLE",2);
+							mapPort.put("USE_STATE", 1);
+							mapPort.put("LAST_MODIFY_TIME", new Timestamp(System.currentTimeMillis()));
+							insertPtpList.add(mapPort);
+						}
 					}
+						
+						
+						//上联口
+						cardmap=new HashMap<String,Object>();
+						cardCuid = CUIDHexGenerator.getInstance().generate("CARD");
+						cardmap.put("CUID", cardCuid);
+						cardmap.put("LABEL_CN", labelCn + "-2-VBoard");
+						cardmap.put("RELATED_DEVICE_CUID", neCuid);
+						cardmap.put("FDN", neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2:Equipment=1");
+						cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2");
+						cardmap.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
+						cardmap.put("GT_VERSION", 0);
+						cardmap.put("ISDELETE", 0);
+						cardmap.put("LAST_MODIFY_TIME", new Timestamp(System.currentTimeMillis()));
+						cardmap.put("PROJECT_STATE", 0);
+						cardmap.put("IS_PERMIT_SYS_DEL", 0);
+						cardmap.put("SERVICE_STATE", 1);
+						cardmap.put("USE_TYPE", 1);
+						cardmap.put("OBJECT_TYPE_CODE", "5000");
+						cardmap.put("LIVE_CYCLE", 1);
+						cardmap.put("USE_STATE", 1);
+						cardmap.put("PHOTOELECTRICITY", 1);
+						cardmap.put("DEV_TYPE", devType);
+						this.IbatisDAO.getSqlMapClient().insert(NetWorkConstant.EQUIP_SQL_MAP + ".insertCardInfo", cardmap);
+						
+					//	if(!"0".equals(ration)){
+							
+							mapPort = new HashMap<String,Object>();
+							mapPort.put("LABEL_CN",labelCn + "-2-VBoard-01");
+							mapPort.put("PORT_NO", "01");
+							mapPort.put("RELATED_NE_CUID", neCuid);
+							mapPort.put("RATION", ration);
+							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=2/port=01");
+							mapPort.put("SYS_NO", "1-1-1-01");
+							mapPort.put("DEV_TYPE", devType);
+							mapPort.put("RELATED_CARD_CUID", cardCuid);
+							mapPort.put("PORT_SUB_TYPE","0".equals(ration) ? 14 : 12);
+							mapPort.put("PORT_TYPE",2);
+							mapPort.put("PORT_STATE",2);
+							String cuidPort = CUIDHexGenerator.getInstance().generate("PTP");
+							mapPort.put("CUID", cuidPort);
+							mapPort.put("GT_VERSION", 0);
+							mapPort.put("ISDELETE", 0);
+							mapPort.put("PROJECT_STATE", 0);
+							mapPort.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
+							mapPort.put("IS_CHANNEL", 0);
+							mapPort.put("TERMINATION_MODE", 1);
+							mapPort.put("DIRECTIONALITY", 2);
+							mapPort.put("MSTP_NANFCMODE", 1);
+							mapPort.put("MSTP_PORT_TYPE", 1);
+							mapPort.put("IS_PERMIT_SYS_DEL", 0);
+							mapPort.put("MSTP_FLOWCTRL", 1);
+							mapPort.put("MSTP_ANFCMODE", 1);
+							mapPort.put("MSTP_LCAS_FLAG", 1);
+							mapPort.put("MSTP_PPTENABLE", 1);
+							mapPort.put("MSTP_EDETECT", 1);
+							mapPort.put("MSTP_TAG_FLAG", 1);
+							mapPort.put("MSTP_ENCAPFORMAT", 1);
+							mapPort.put("MSTP_ENCAPPROTOCOL", 1);
+							mapPort.put("MSTP_CFLEN", 1);
+							mapPort.put("MSTP_BMSGSUPPRESS", 1);
+							mapPort.put("MSTP_FCSCALSEQ", 1);
+							mapPort.put("LOOP_STATE", 1);
+							mapPort.put("MSTP_PORTENABLE", 1);
+							mapPort.put("DOMAIN", 0);
+							mapPort.put("MSTP_WORKMODE", 1);
+							mapPort.put("MSTP_PORT_SERVICETYPE", 1);
+							mapPort.put("MSTP_SCRAMBEL", 1);
+							mapPort.put("LINE_BRANCH_TYPE", 1);
+							mapPort.put("OBJECT_TYPE_CODE", 15013);
+							mapPort.put("MSTP_EXTENDEADER", 1);
+							mapPort.put("LIVE_CYCLE",2);
+							mapPort.put("USE_STATE", 1);
+							mapPort.put("LAST_MODIFY_TIME", new Timestamp(System.currentTimeMillis()));
+							insertPtpList.add(mapPort);
+					//	}
+						
+						
+						((ImportBasicDataBO)(SpringContextUtil.getBean("importBasicDataBO"))).importPtpBatchInsert(insertPtpList,
+								"自动生成pos端口");
+					
+					
+					
 				}
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return res;
 	}
 	
 	
-	public String getDevFdnByCuid(String neCuid){
-		String devType = "";
+	public Map<String,Object> getDevByCuid(String neCuid){
+	
 		if(StringUtils.isNotEmpty(neCuid)){
-			String sql = "SELECT("
-					+ "  SELECT FDN FROM t_attemp_AN_POS T WHERE T.CUID = '"+neCuid+"'"+
+			String sql = "select * from(  SELECT FDN ,label_cn ,ration FROM t_attemp_AN_POS T WHERE T.CUID = '"+neCuid+"'"+
 					" UNION ALL "
-					+ " SELECT FDN FROM t_attemp_AN_ONU T WHERE T.CUID = '"+neCuid+"') AS FDN "
-					+ " FROM DUAL ";
-			List<Map> resList =  this.IbatisDAO.querySql(sql);
+					+ " SELECT FDN,label_cn ,'0' ration FROM t_attemp_AN_ONU T WHERE T.CUID = '"+neCuid+"' )";
+			List<Map<String,Object>> resList =  this.IbatisDAO.querySql(sql);
 			if(resList!=null&&resList.size()>0){
-				Map temp = resList.get(0);
-				if(temp!=null){
-					devType = temp.get("FDN")==null?"":temp.get("FDN").toString();
-				}
+				
+				return resList.get(0);
+
 			}
 		}
-		return devType;
+		return null;
 	}
 	
 	/*
 	 * 根据设备CUID，板块FDN，判断板卡是否存在
 	 */
-	public List getCardByFdnAndNeCuid(String cardFdn,String neCuid){
-		if(cardFdn!=null&&cardFdn.length()>0){
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_card WHERE FDN='"+cardFdn+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
-		}else{
-			return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM t_attemp_card WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
-		}
+	public List getCardByNeCuid(String neCuid){
+		
+		return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN,fdn FROM t_attemp_card WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+		
 	}
 	
 	/*
@@ -289,8 +427,7 @@ public class OnuManageBO {
 	 */
 	public List getPtpByAndNeCuid(String neCuid){
 		if(!ImportCommonMethod.isEmpty(neCuid)){
-			String sql = "SELECT P.CUID,P.PORT_NO FROM t_attemp_PTP P WHERE  RELATED_NE_CUID='"+neCuid+"'"
-					+ " AND NOT EXISTS (SELECT 1 FROM t_attemp_CARD C WHERE C.CUID = P.RELATED_CARD_CUID) ";
+			String sql = "SELECT P.CUID,P.PORT_NO FROM t_attemp_PTP P WHERE  RELATED_NE_CUID='"+neCuid+"'";
 			return this.IbatisDAO.querySql(sql);
 		}else{
 			return null;

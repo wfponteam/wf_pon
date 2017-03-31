@@ -1,6 +1,7 @@
 package com.boco.workflow.webservice.dao;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
@@ -24,6 +25,16 @@ public class ProjectDAO extends AbstractDAO{
 		
 		this.getBaseDAO().getSqlMapClient().insert(NetWorkConstant.PROJECT_SQL_MAP + ".insertProject", project);
 		
+	}
+	
+	public void deleteProject(String id) throws SQLException{
+		
+		this.getBaseDAO().getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".deleteProject", id);
+	}
+	
+	public void updateProject(Project project) throws SQLException{
+		
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateProject", project);
 	}
 
 	/**
@@ -60,5 +71,16 @@ public class ProjectDAO extends AbstractDAO{
 		this.getBaseDAO().getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".deleteAttempAddress",prjcode);
 		this.getBaseDAO().getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".deleteAttempCover",prjcode);
 		
+	}
+	
+	public String getIdByCode(PrjStatus prjStatus) throws SQLException{
+		
+		List<String> list = this.getBaseDAO().getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".getIdByCode",prjStatus);
+		if(list != null && list.size() > 0){
+			
+			return list.get(0);
+		}
+		
+		return null;
 	}
 }

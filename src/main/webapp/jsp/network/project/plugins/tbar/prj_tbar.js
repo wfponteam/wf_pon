@@ -19,7 +19,7 @@ Frame.grid.plugins.tbar.prj_tbar = Ext.extend(Object, {
 										Ext.Msg.alert('提示', '只能选择一条数据!');
 										return;
 									}else{
-										var param = "username="+ 'admin' +"&prjcode="+ record.json.PRJ_CODE +"&parentprjcode="+ record.json.PARENT_PRJ_CODE;
+										var param = "username="+ 'admin' +"&prjcode="+ record.json.PRJ_CODE + "&parentprjcode=" + record.json.PARENT_PRJ_CODE;
 										param = param.replace(/\#/g,"*");
 										FrameHelper.openUrl("$(WEBAN_SERVER)/jsp/network/resource/resource.jsp?"+param,'资源信息');
 										return;

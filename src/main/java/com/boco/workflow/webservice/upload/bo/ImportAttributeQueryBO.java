@@ -243,9 +243,10 @@ public class ImportAttributeQueryBO {
 	/**
 	 * 获取POS上联设备-OLT的FDN信息
 	 * by lichao
+	 * @throws SQLException 
 	 */
-	public Map getOltByLabelCuid(String nameValue) {
-			List<Map> list = this.IbatisDAO.getSqlMapClientTemplate()
+	public Map getOltByLabelCuid(String nameValue) throws SQLException {
+			List<Map> list = this.IbatisDAO.getSqlMapClient()
 					.queryForList(EQUIP_SQL_MAP + ".queryOltBylabelCuid",
 							nameValue);
 			if (list != null && list.size() > 0) {

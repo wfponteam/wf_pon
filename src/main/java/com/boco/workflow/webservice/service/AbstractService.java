@@ -81,6 +81,8 @@ public abstract class AbstractService<T extends AbstractBuilder<E>, E> implement
 			//验证未通过
 			result = this.buildResult(ResultEnum.VALIDERROR,"");
 		}
+		
+		logger.info("返回消息为：" + result);
 		return result;
 	}
 	 

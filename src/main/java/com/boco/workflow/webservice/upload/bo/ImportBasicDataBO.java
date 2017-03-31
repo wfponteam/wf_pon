@@ -164,23 +164,6 @@ public class ImportBasicDataBO {
 		this.IbatisDAO.getSqlMapClient().update(IMPROT_BASIC_DATA_SQL_MAP1+"." + sql + "Att"  , ports);
 	}
 	
-	/**
-	 * 得到机盘类型
-	 * 
-	 * @return 网元型号 map结合
-	 */
-	public Map<String,String>  getCardKind() {
-		Map<String,String> cardNodelMap  = new HashMap<String,String> ();
-		List<Map<String,String>> list = this.IbatisDAO.querySql("SELECT CUID,CARDTYPE_NAME,PUBLIC_NAME FROM CARD_KIND");
-		for (int i = 0; i < list.size(); i++) {
-			Map<String,String>  mapSub = list.get(i);
-			String productmodel =  mapSub.get("CARDTYPE_NAME");
-			String publicName = mapSub.get("PUBLIC_NAME");
-			String cuidAndPublicName =  mapSub.get("CUID")+"|"+publicName;
-			cardNodelMap.put(productmodel, cuidAndPublicName);
-		}
-		return cardNodelMap;
-	}
 	
 	
 	/**

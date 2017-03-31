@@ -64,6 +64,59 @@ public class PtpManageAction {
 		
 		return getPtpManageBO().queryPtpByCuid(cuid);
 	}
-	 
+	
+	/**
+	 * 新增端口信息
+	 * 
+	 * @param request
+	 * @param map
+	 * @throws Exception
+	 */
+	public void addPtpInfo(HttpServletRequest request, Map map,String devTable) throws Exception {
+	
+	
+		getPtpManageBO().addPtpInfo(request,map,devTable);
+	
+	}	
+	
+	/**
+	 * 修改端口数据信息
+	 * 
+	 * @param request
+	 * @param map
+	 * @throws Exception
+	 */
+	public void modifyPtpInfo(HttpServletRequest request, Map map,String devTable) throws Exception {
+		
+		getPtpManageBO().modifyPtpInfo(map,devTable);
+	}
+	
+	/**
+	 * 查询端口编号是否存在
+	 * 
+	 * @param request
+	 * @param portNo
+	 * @param relatedCardCuid
+	 */
+	public String isPtpNoExist(HttpServletRequest request, String portNo,String relatedNeCuid,String ptpCuid)throws Exception {
+		return getPtpManageBO().isPtpNoExist(portNo,relatedNeCuid,ptpCuid);
+	}
+	
+	/**
+	 * 查询端口名称是否存在(以端口名称，所属设备CUID联合唯一)
+	 * @param request
+	 * @param name
+	 * @param equiptCuid
+	 * @param cardCuid
+	 * @return
+	 * @throws Exception
+	 * @since 2016-05-14
+	 * @author flp
+	 */
+	public String isPtpNameExist2(HttpServletRequest request, String name,String relatedNeCuid,String cuid)throws Exception {
+		return getPtpManageBO().isPtpNameExist2(name,relatedNeCuid,cuid);
+	}
+			
+
 	
 }

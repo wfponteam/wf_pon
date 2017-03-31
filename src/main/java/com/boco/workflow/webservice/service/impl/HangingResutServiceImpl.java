@@ -1,6 +1,7 @@
 package com.boco.workflow.webservice.service.impl;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.boco.workflow.webservice.builder.ResultBuilder;
 import com.boco.workflow.webservice.builder.ValidationBuilder;
@@ -17,6 +18,7 @@ import com.boco.workflow.webservice.service.IService;
  * @author gaoyang 2017年3月16日
  *
  */
+@Service
 public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,Validation> implements IService{
 
 	private static final Logger logger = Logger.getLogger(HangingResutServiceImpl.class);

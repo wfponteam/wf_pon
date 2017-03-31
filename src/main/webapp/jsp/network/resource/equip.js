@@ -11,7 +11,7 @@ NETWORK.equip = Ext.extend(Ext.Panel, {
 	id 	: 'equip',
 	border : false,
 	autoScroll : true,
-	prjcode  : '',
+	cuid  : '',
 	initComponent : function() {
 		this._initItems();
 		NETWORK.equip.superclass.initComponent.call(this);
@@ -19,13 +19,13 @@ NETWORK.equip = Ext.extend(Ext.Panel, {
 	_initItems : function() {
 		var scope = this;
 		var items = []; 
-		var onu = new NETWORK.onu({prjcode : this.prjcode});
-		var onuPtp = new NETWORK.ptp({id:'onuPtp',devTable:'onu',prjcode : this.prjcode});
-		var pos = new NETWORK.pos({prjcode : this.prjcode});
-		var posPtp = new NETWORK.ptp({id:'posPtp',devTable:'pos',prjcode : this.prjcode});
-		var address = new NETWORK.address({prjcode : this.prjcode});
-		var village = new NETWORK.village({prjcode : this.prjcode});
-		var cover = new NETWORK.cover({prjcode : this.prjcode});
+		var onu = new NETWORK.onu({prjcode : this.cuid});
+		var onuPtp = new NETWORK.ptp({id:'onuPtp',devTable:'onu',prjcode : this.cuid});
+		var pos = new NETWORK.pos({prjcode : this.cuid});
+		var posPtp = new NETWORK.ptp({id:'posPtp',devTable:'pos',prjcode : this.cuid});
+		var address = new NETWORK.address({prjcode : this.cuid});
+		var village = new NETWORK.village({prjcode : this.cuid});
+		var cover = new NETWORK.cover({prjcode : this.cuid});
 
 		
 		this.equipPanel = new Ext.TabPanel({
@@ -47,7 +47,7 @@ NETWORK.equip = Ext.extend(Ext.Panel, {
 		
 		});
 		
-		this.import_res = new NETWORK.import({prjcode : this.prjcode});
+		this.import_res = new NETWORK.import({prjcode : this.cuid});
 		items.push(this.import_res,this.equipPanel);
 		this.items = items;
 		return this.items;

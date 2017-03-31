@@ -128,12 +128,19 @@ NETWORK.ptp_onu = Ext.extend(Ext.Panel, {
 			hideTrigger1 	: true,
 			disabled   		: this._disabled,
 			allowBlank  : false,
-			comboxCfg  : {
-				boName 	  : 'XmlTemplateComboxBO',
-				cfgParams : {
-					code : 'PORTTYPE'//TODO:
-				}
-			}
+			comboxCfg  : {	
+  				boName : 'XmlTemplateComboxBO',
+  				cfgParams : {
+  					code : 'DEV_NE_SELECT'   
+  				},
+  				queryParams : {
+  					TYPE : {
+  						key : 'TYPE',
+  						value : 'onu',
+  						relation : '='
+  					}
+  				}
+  			}
 		});
 		this.portstate = new  IRMS.combo.AsynCombox( {
 			fieldLabel 		: '端口状态',
@@ -331,35 +338,18 @@ NETWORK.ptp_onu = Ext.extend(Ext.Panel, {
 						var ptpInfo = scope.getPtpInfoData();
 						if(this._type=='modify'){
 							ptpInfo.CUID = ptpCuid;
-							PtpManageAction.modifyPtpInfo(ptpInfo,scope._devTable, function(_data) {
-								if (_data != null) {
-									if(Ext.isEmpty(_data.ERROR)){
+							PtpManageAction.modifyPtpInfo(ptpInfo,scope._devTable, function() {
+								
 										Ext.Msg.alert('温馨提示','修改成功');
-										scope._returnJson = _data;
 										scope.parent.close();
-									}else{
-										Ext.Msg.alert('温馨提示',_data.ERROR);
-									}
-								}else{
-									Ext.Msg.alert('温馨提示','修改失败,请联系管理员！！');
-									scope.parent.close();
-								}
+									
 							});
 						}else if(this._type=='add'){
 	    					var ptpInfo = scope.getPtpInfoData();
-							PtpManageAction.addPtpInfo(ptpInfo,scope._devTable, function(_data) {
-								if (_data != null) {
-									if(Ext.isEmpty(_data.ERROR)){
+							PtpManageAction.addPtpInfo(ptpInfo,scope._devTable, function() {
+							
 										Ext.Msg.alert('温馨提示','添加成功');
-										scope._returnJson = _data;
 										scope.parent.close();
-									}else{
-										Ext.Msg.alert('温馨提示',_data.ERROR);
-									}
-								}else{
-									Ext.Msg.alert('温馨提示','添加失败,请联系管理员！！');
-									scope.parent.close();
-								}
 							});
 						}
 					}

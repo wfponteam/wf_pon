@@ -4,8 +4,6 @@ NETWORK.project = Ext.extend(Ext.Panel, {
 	border : false,
 	autoScroll : true,
 	username : '',
-	prjcode  : '',
-	parentprjcode : '',
 	initComponent : function() {
 		this._initItems();
 		NETWORK.project.superclass.initComponent.call(this);
@@ -42,7 +40,7 @@ NETWORK.project = Ext.extend(Ext.Panel, {
 	   			 		xtype : 'textfield',
 	   			 		editable : false,
 	   			 		fieldLabel : '<font style="color:red;">工程编号*</font>',
-	   			 		value:this.prjcode}]
+	   			 		value:''}]
 				},{
 					columnWidth : .5,
 					layout : 'form',
@@ -94,7 +92,7 @@ NETWORK.project = Ext.extend(Ext.Panel, {
 						id : 'PARENT_PRJ_CODE',
 						name : 'PARENT_PRJ_CODE',
 						readOnly:true,
-						value:this.parentprjcode
+						value:''
 					}]
 				}
 			  ]

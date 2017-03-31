@@ -52,7 +52,7 @@
 			set prj_status = #prjStatus# ,
 				username = #userName# ,
 				LAST_MODIFY_TIME = sysdate
-		where p.prj_code = #prjCode# 
+		where p.cuid = #cuid# 
 	</update>
 	
 	<select id="queryProjectByCode" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
@@ -78,7 +78,7 @@
 				 USERNAME           ,
 				 PRJ_STATUS         ,
 				 LAST_MODIFY_TIME   
-			from T_WF_PROJECT where PRJ_CODE = #prjCode#
+			from T_WF_PROJECT where CUID = #cuid#
 	</select>
 	
 	<insert id="movePos" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
@@ -150,5 +150,89 @@
 			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
 		 )
 	</delete>
+	
+	<insert id="insertHanging" parameterClass="java.lang.String">
+	<![CDATA[ 
+		insert into T_WF_FTTX_GC
+			select 
+			seq_WF_FTTX_GC.Nextval,
+			 REGIONCODE       ,
+			  DEVICENAME       ,
+			  OLTFACTORY       ,
+			  DNSUBNECODE      ,
+			  DNPACKAGECODE    ,
+			  OLTSLOT          ,
+			  PORTNO           ,
+			  VILLAGE_NAME     ,
+			  VILLAGE_ID       ,
+			  PRJCODE          ,
+			  prjname          ,
+			  PARENTPRJCODE    ,
+			  OLTTELENETIPADDR ,
+			  OLTIDINEMS       ,
+			  UPBASIP          ,
+			  UPBASSLOT        ,
+			  UPBASPACKAGE     ,
+			  UPBASPORT        ,
+			  OLTSVLAN         ,
+			  OLTCVLAN         ,
+			  SPLITRATIO       ,
+			  SPLITLEVEL       ,
+			  PARENT_NAME      ,
+			  ptp.label_cn PARENT_OBDCODE   ,
+			  PASSWORD         ,
+			  DEVICE_TYPE      ,
+			  OPERATIONTYPE    ,
+			  OPERATIONTIME    ,
+			  RESULT           ,
+			  OPT_POWER        ,
+			  FAILDESC         ,
+			  CALL_RESULT      
+			  from v_fttx_gc vg ,t_attemp_ptp ptp
+			 where ptp.related_ne_cuid = vg.pos_cuid
+			 and vg.cuid = #cuid#
+			]]>
+	</insert>
+	
+	<select id="getIdByCode" resultClass="java.lang.String" parameterClass="com.boco.workflow.webservice.pojo.PrjStatus">
+		select cuid from t_wf_project where PRJ_CODE = #prjCode# 
+			<isEmpty property="parentPrjCode">
+			AND PARENT_PRJ_CODE IS NULL
+			</isEmpty>
+			<isNotEmpty property="parentPrjCode">
+			AND PARENT_PRJ_CODE = #parentPrjCode#
+			</isNotEmpty>
+	</select>
+	
+	<delete id="deleteProject" parameterClass="java.lang.String">
+		delete from t_wf_project where cuid = #id#
+	</delete>
+	
+	<update id="updateProject" parameterClass="com.boco.workflow.webservice.pojo.Project">
+		update t_wf_project
+			set 		  SETUP_NAME         = #setupName#         ,
+		  SETUP_CODE         = #setupCode#        ,
+		  SETUP_REQFILE_CODE = #setupReqFileCode# ,
+		  SETUP_REQER_NAME   = #setupReqerName#   ,
+		  SETUP_REQER_PHONE  = #setupReqerPhone#  ,  
+		  SETUP_REQ_DATE     = #setupReqDate#     ,
+		  PRJ_NAME           = #prjName#          ,
+		  PRJ_CODE           = #prjCode#          ,
+		  PRJ_CATEGORY       = #prjCategory#      ,
+		  PRJ_TYPE           = #prjType#          ,
+		  COST               = #cost#             ,
+		  LENGTH             = #length#           ,
+		  DOMAIN_NAME        = #domainName#       ,
+		  PRJ_DESC           = #prjDesc#          ,
+		  FTP_NAME           = #ftpName#          ,
+		  PARENT_PRJ_CODE    = #parentPrjCode#    ,
+		  LAST_MODIFY_TIME   = sysdate
+		where cuid = #cuid#
+	</update>
+	
+	<insert id="insertProjectStatusRecord" parameterClass="java.util.Map">
+		insert into T_WF_PRJ_STATUS_RECORD(prj_id,prj_status,update_time)
+			values(#id#,#status#,sysdate)
+	</insert>
 	
 </sqlMap>

@@ -39,11 +39,11 @@ public class ImportServlet extends HttpServlet {
 		
 		String fileType = ".xls";
 		
-		String prjcode = request.getParameter("prjcode");
+		String cuid = request.getParameter("cuid");
 		
 		try {
 			IbatisDAO dao = (IbatisDAO)SpringContextUtil.getBean("IbatisDAO");
-			List<Map> list = dao.querySql("select prj_status from t_wf_project where prj_code = '" +prjcode+ "'");
+			List<Map> list = dao.querySql("select prj_status from t_wf_project where cuid = '" + cuid + "'");
 			if(list == null || list.size() == 0){
 				response.getWriter().write("{'success':true,'showMessage':'工程信息缺失！'}");
 		    	return ;
@@ -67,7 +67,7 @@ public class ImportServlet extends HttpServlet {
 				//上传文件写到服务器上
 				File file = new File(upLoadFileName);
 				fileitem.write(file);
-				Map<String,ImportResultDO> map = ((ImportResService) SpringContextUtil.getBean("importResService")).resolveExcel(file,prjcode);
+				Map<String,ImportResultDO> map = ((ImportResService) SpringContextUtil.getBean("importResService")).resolveExcel(file,cuid);
 				
 			
 				
@@ -77,7 +77,7 @@ public class ImportServlet extends HttpServlet {
 				while(iterator.hasNext()){
 					Entry<String, ImportResultDO> entry = iterator.next();
 					if(entry != null){
-						showMessage.append(entry.getKey()+"<br>");
+						showMessage.append(entry.getKey()+":");
 						ImportResultDO importResultDO = entry.getValue();
 						if(importResultDO != null){
 							if(!importResultDO.isSuccess() && importResultDO.isShowFileUrl()){
@@ -85,7 +85,7 @@ public class ImportServlet extends HttpServlet {
 							}
 							List<String> infoList = importResultDO.getInfo();
 							for(String msg : infoList){
-								showMessage.append(msg+"<br>");
+								showMessage.append(msg+" ");
 							}
 						}
 					}

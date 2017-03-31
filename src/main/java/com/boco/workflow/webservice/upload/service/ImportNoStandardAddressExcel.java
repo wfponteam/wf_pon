@@ -12,16 +12,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
-import com.boco.core.utils.id.CUIDHexGenerator;
-import com.boco.workflow.webservice.space.bo.FullAddressBO;
+import com.boco.workflow.webservice.space.bo.NoStandardAddressManageBO;
 import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
-import com.boco.workflow.webservice.upload.constants.GetCh2Spell;
 import com.boco.workflow.webservice.upload.servlet.ImportResultDO;
+
 
 /**
  * 标准地址导入处理类
  */
-public class ImportAddressExcel {
+public class ImportNoStandardAddressExcel {
 	private static String[] dataColumns = { 
 			"CUID", 
 			"LABEL_CN", 
@@ -45,7 +44,7 @@ public class ImportAddressExcel {
 			"POSTCODE", 
 			"RELATED_COMMUNITY_CUID",
 			"REGIONTYPE1",
-			"REGIONTYPE2"
+			"REGIONTYPE2" 
 			};
 
 	private static String[] excelColumns = { 
@@ -71,7 +70,7 @@ public class ImportAddressExcel {
 			"邮政编码", 
 			"所属业务区",
 			"地域属性一级分类",
-			"地域属性二级分类"
+			"地域属性二级分类" 
 	};
 	private Map<String,String> regionType1Enum = new HashMap<String, String>(){
 		{
@@ -85,6 +84,7 @@ public class ImportAddressExcel {
 			put("非中心村","31");put("自然村","32");
 		}
 	};
+	
 	private String dataErrorMsg = "数据库中不存在，请检查！";
 	private String dataEmptyMsg = "信息为空，请检查！";
 	private String dataNumberMsg = "不是浮点数，请检查！";
@@ -94,18 +94,17 @@ public class ImportAddressExcel {
 	/**
 	 * 返回操作导入相应的BO
 	 */
-	private static FullAddressBO getFullAddressManageBO() {
-		return (FullAddressBO) SpringContextUtil.getBean("fullAddressBO");
+	private static NoStandardAddressManageBO getFullAddressManageBO() {
+		return (NoStandardAddressManageBO) SpringContextUtil.getBean("noStandardAddressManageBO");
 	}
 
-	public ImportResultDO importData(
-										Workbook writeWorkBook, Sheet writeSheet, String pathname,String excelName,String prjcode) 
+	public ImportResultDO importData(Workbook writeWorkBook, Sheet writeSheet, String pathname,String excelName ,String prjid) 
 												throws Exception {
 
 		Map<String, String> nameMaps = new HashMap<String, String>();
 		Map<String, String> districtMaps = new HashMap<String, String>();
 		Map<String, String> businessMaps = new HashMap<String, String>();
-		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+		List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
 		ImportResultDO importResultDO = new ImportResultDO(excelName);
 		try {
 			// 取得sheet
@@ -128,13 +127,12 @@ public class ImportAddressExcel {
 			for (int i = dataRowNum; i <= lastRows; i++) {
 				Row xRow = writeSheet.getRow(i);
 				if (xRow != null) {
-					Map<String, Object> dataMap = verificationCell(
+					Map<String, String> dataMap = verificationCell(
 							writeWorkBook, writeSheet, xRow, i, lastColumns,
 							nameMaps, districtMaps, businessMaps);
 					if (!ImportCommonMethod.isRowExistError(xRow, lastColumns)
-							&& dataMap.get("TYPE") != null
-							&& dataMap.get("CUID") != null) {
-						dataMap.put("RELATED_PROJECT_CUID", prjcode);
+							&& dataMap.get("TYPE") != null) {
+						dataMap.put("RELATED_PROJECT_CUID",prjid);
 						dataList.add(dataMap);
 					} else {
 						erroNum++;
@@ -147,7 +145,7 @@ public class ImportAddressExcel {
 				importResultDO.setInfo("有" + erroNum + "条错误数据,数据未进行导入。");
 			} else {
 				if (dataList != null && dataList.size() > 0) {
-					ImportCommonMethod.importAddressToDB(dataList, "标准地址",importResultDO);
+					importNoStandardAddressToDB(dataList, excelName,importResultDO);
 					importResultDO.setSuccess(true);
 				} else {
 					importResultDO.setSuccess(true);
@@ -156,18 +154,50 @@ public class ImportAddressExcel {
 			}
 			return importResultDO;
 		} catch (Exception e) {
-			LogHome.getLog().error("标准地址导入失败", e);
+			LogHome.getLog().error("非标准地址导入失败", e);
 			e.printStackTrace();
 			throw new Exception("导入失败请与管理员联系!" + e.getMessage());
 		}
 	}
-
-	public Map<String, Object> verificationCell(Workbook writeWorkBook,
+	/**
+	 * 批量添加和修改产品客户相关数据
+	 */
+	public static void importNoStandardAddressToDB (List<Map<String,String>> dataList,String excelName,ImportResultDO importResultDO) throws Exception{
+		
+		try {
+			int addWbsNum = 0;
+			int updateWbsNum = 0;
+			if(dataList!=null&&dataList.size()>0){
+				for(Map<String,String> map:dataList){
+					String res = getFullAddressManageBO().insertAndUpdateData(map);
+					if(!"".equals(res)){
+						addWbsNum++;		
+					}else{
+						updateWbsNum++;
+					}
+				}
+			}
+			if(addWbsNum>0){
+				importResultDO.setInfo("新增数据:" + addWbsNum + "条");
+			}
+			if(updateWbsNum>0){
+				importResultDO.setInfo("更新数据:" + updateWbsNum + "条");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			LogHome.getLog().error(excelName+"导入数据库入库失败",e);
+			throw new Exception(excelName+"导入数据库入库失败，请联系管理员！");
+		}
+		
+	}
+	
+	
+	public Map<String, String> verificationCell(Workbook writeWorkBook,
 			Sheet writeSheet, Row xRow, int i, int lastColumns,
 			Map<String, String> nameMaps, Map<String, String> districtMaps,
 			Map<String, String> businessMaps) throws Exception {
 		
-		LogHome.getLog().info("标准地址校验start====");
+		LogHome.getLog().info("非标准地址校验start====");
 		Map dataMap = new HashMap();
 		try {
 			int c = 1;
@@ -176,17 +206,8 @@ public class ImportAddressExcel {
 			if (!ImportCommonMethod.isEmpty(adrName)) {
 				Map tempObj = getFullAddressManageBO().selectAddressInfoByLabeCn(adrName);
 				if (tempObj != null) {
-					
-					String type = tempObj.get("TYPE").toString();
-					if("0".equals(type)){
-						
-						ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
-								c, lastColumns, "标准地址名称已归档！");
-					}else{
-						adrCuid = tempObj.get("CUID").toString();
-						dataMap.put(dataColumns[0], adrCuid);
-					}
-					
+					adrCuid = tempObj.get("CUID").toString();
+					dataMap.put(dataColumns[0], adrCuid);
 				}
 			}
 			c++;
@@ -314,6 +335,9 @@ public class ImportAddressExcel {
 			if (!ImportCommonMethod.isEmpty(community)) {
 				//adrGroupName = adrGroupName + "|" + community;
 				dataMap.put(dataColumns[c], community);
+			}else {
+				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
+						c, lastColumns, this.dataEmptyMsg);
 			}
 			c++;
 
@@ -321,9 +345,6 @@ public class ImportAddressExcel {
 			if (!ImportCommonMethod.isEmpty(road)) {
 				adrGroupName = adrGroupName + "|" + road;
 				dataMap.put(dataColumns[c], road);
-			}else {
-				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
-						c, lastColumns, this.dataEmptyMsg);
 			}
 			c++;
 
@@ -357,9 +378,6 @@ public class ImportAddressExcel {
 			if (!ImportCommonMethod.isEmpty(bullding)) {
 				adrGroupName = adrGroupName + "|" + bullding;
 				dataMap.put(dataColumns[c], bullding);
-			}else {
-				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
-						c, lastColumns, this.dataEmptyMsg);
 			}
 			c++;
 
@@ -367,9 +385,6 @@ public class ImportAddressExcel {
 			if (!ImportCommonMethod.isEmpty(unitno)) {
 				adrGroupName = adrGroupName + "|" + unitno;
 				dataMap.put(dataColumns[c], unitno);
-			}else {
-				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
-						c, lastColumns, this.dataEmptyMsg);
 			}
 			c++;
 
@@ -377,9 +392,6 @@ public class ImportAddressExcel {
 			if (!ImportCommonMethod.isEmpty(floorno)) {
 				adrGroupName = adrGroupName + "|" + floorno;
 				dataMap.put(dataColumns[c], floorno);
-			}else {
-				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
-						c, lastColumns, this.dataEmptyMsg);
 			}
 			c++;
 
@@ -403,7 +415,7 @@ public class ImportAddressExcel {
 					if (getFullAddressManageBO().isExistAddressInfoByLabeCn(
 							adrGroupName, adrCuid)) {
 						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook,
-								writeSheet, i, 1, lastColumns, "标准地址["
+								writeSheet, i, 1, lastColumns, "非标准地址["
 										+ adrGroupName + "],"
 										+ this.dataExistMsg);
 					} else {
@@ -411,7 +423,7 @@ public class ImportAddressExcel {
 						if (!ImportCommonMethod.isEmpty(adrCuid)) {
 							dataMap.put("TYPE", "UPDATE");
 						} else {
-							dataMap.put(dataColumns[0], CUIDHexGenerator.getInstance().generate("T_ROFH_FULL_ADDRESS"));
+						//	dataMap.put(dataColumns[0],CUIDHexGenerator.getInstance().generate("NO_T_ROFH_FULL_ADDRESS"));
 							dataMap.put("TYPE", "INSERT");
 						}
 					}
@@ -455,10 +467,8 @@ public class ImportAddressExcel {
 			String pinyin = ImportCommonMethod.getCellValue(xRow.getCell(c));
 			if (!ImportCommonMethod.isEmpty(pinyin)) {
 				dataMap.put(dataColumns[c], pinyin);
-			}else{
-				dataMap.put("PINYIN", GetCh2Spell.getBeginCharacter(adrGroupName));
 			}
-			dataMap.put("PINYIN", GetCh2Spell.getBeginCharacter(adrGroupName));
+
 			c++;
 
 			String postcode = ImportCommonMethod.getCellValue(xRow.getCell(c));
@@ -484,7 +494,7 @@ public class ImportAddressExcel {
 								this.dataErrorMsg);
 					}
 				}
-			}else {
+			} else {
 				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
 						c, lastColumns, this.dataEmptyMsg);
 			}
@@ -498,7 +508,8 @@ public class ImportAddressExcel {
 					ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet,i,c,lastColumns,dataEnumMsg);
 			    }
 			}else {
-				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,c, lastColumns, this.dataEmptyMsg);
+				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
+						c, lastColumns, this.dataEmptyMsg);
 			}
 			c++;
 
@@ -531,10 +542,10 @@ public class ImportAddressExcel {
 				ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,c, lastColumns, this.dataEmptyMsg);
 			}
 			dataMap.put("LAST_MODIFY_TIME",new Timestamp(System.currentTimeMillis()));
-			LogHome.getLog().info("标准地址校验end====");
+			LogHome.getLog().info("非标准地址校验end====");
 		} catch (Exception e) {
-			LogHome.getLog().error("标准地址出错", e);
-			throw new Exception("标准地址出错：" + e.getMessage());
+			LogHome.getLog().error("非标准地址出错", e);
+			throw new Exception("非标准地址出错：" + e.getMessage());
 		}
 		return dataMap;
 	}
@@ -559,13 +570,7 @@ public class ImportAddressExcel {
 				errorlist.add("该模板的第" + (i + 1) + "列名称为空或跟模板EXCEL中对应列名称不一致!");
 			}
 		}
-		/*Row xRowData = sheet.getRow(4);
-		if (xRowData == null
-				|| xRowData.getCell(0) == null
-				|| !"从此开始填写>>".equals(xRowData.getCell(0)
-						.getRichStringCellValue().toString())) {
-			errorlist.add("该模板文件已被修改，请检查!");
-		}*/
+
 		return headingMap;
 	}
 
@@ -578,6 +583,4 @@ public class ImportAddressExcel {
 		return (ImportBasicDataBO) SpringContextUtil
 				.getBean("importBasicDataBO");
 	}
-	
-		
 }

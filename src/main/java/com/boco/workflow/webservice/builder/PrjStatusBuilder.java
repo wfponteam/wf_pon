@@ -14,6 +14,12 @@ public class PrjStatusBuilder extends AbstractBuilder<PrjStatus> implements IBui
 		super(new PrjStatus());
 	}
 	
+	public PrjStatusBuilder addCuid(String cuid){
+		
+		pojo.setCuid(cuid);
+		return this;
+	} 
+	
 	/**
 	 * 	工程编号（大项和子任务）
 	 */

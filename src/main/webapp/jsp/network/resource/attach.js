@@ -16,7 +16,15 @@ NETWORK.attach = Ext.extend(Ext.Panel, {
             text: "下载附件",
             minWidth: 80,
             handler: function() {
-                Ext.Msg.alert('we');
+            /*	Ext.Ajax.request({
+			        url: ctx+'/webServiceAction/downloadAttach.do',
+			        method: 'GET',
+			        params: {
+			        	fileName: Ext.getCmp("FTP_NAME").value
+			        }
+			});*/
+            	var url = UrlHelper.replaceUrlArguments("$(WEBAN_SERVER)/webServiceAction/downloadAttach.do?fileName="+Ext.getCmp("FTP_NAME").value, "");
+        		window.open(url);
             }
         });
 		 

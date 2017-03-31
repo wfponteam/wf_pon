@@ -43,23 +43,7 @@ public class PonTemplateGirdBo extends AbstractTemplateBO
   @Autowired
   protected IbatisDAO IbatisDAO;
 
-  protected ResConfigurer getResConfigurer()
-  {
-    return this.ResConfigurer;
-  }
 
-  public void setResConfigurer(ResConfigurer resConfigurer) {
-    this.ResConfigurer = resConfigurer;
-  }
-
-  public IbatisDAO getIbatisDAO()
-  {
-    return this.IbatisDAO;
-  }
-
-  public void setIbatisDAO(IbatisDAO ibatisDAO) {
-    this.IbatisDAO = ibatisDAO;
-  }
 
   public GridMeta getGridMeta(GridCfg param) {
     String name = getTemplateId(param);
@@ -123,8 +107,8 @@ public class PonTemplateGirdBo extends AbstractTemplateBO
     }
     PageResult page = null;
 
-    String prjcode = param.getQueryParams().get("RELATED_PROJECT_CUID").getValue();
-    List<Map> list = this.IbatisDAO.querySql("select prj_status from t_wf_project where prj_code = '" +prjcode+ "'");
+    String cuid = param.getQueryParams().get("RELATED_PROJECT_CUID").getValue();
+    List<Map> list = this.IbatisDAO.querySql("select prj_status from t_wf_project where cuid = '" + cuid + "'");
     String status = list.get(0).get("PRJ_STATUS").toString();
     
     if("归档".equals(status) || "作废".equals(status)){

@@ -24,8 +24,13 @@ public class ProjectAction {
 	 * @param request
 	 * @param cuid 
 	 */
-	 public Map<String,Object> queryProjectByCode(HttpServletRequest request, String prjcode)throws Exception {
+	 public Map<String,Object> queryProjectByCode(HttpServletRequest request, String cuid)throws Exception {
 		 
-			return getProjectBO().queryProjectByCode(prjcode);
+			return getProjectBO().queryProjectByCode(cuid);
+	 }
+	 
+	 public String queryIdByCode(HttpServletRequest request, String prjCode,String parentPrjCode) throws Exception{
+		 
+		 	return getProjectBO().queryIdByCode(prjCode,parentPrjCode);
 	 }
 }

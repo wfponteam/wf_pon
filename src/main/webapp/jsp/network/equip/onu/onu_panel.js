@@ -518,7 +518,10 @@ NETWORK.onu_panel = Ext.extend(Ext.Panel, {
 			fieldLabel	: '所属工程',
 			name 		: 'RELATED_PROJECT_CUID',
 			anchor		: '90%',
-			disabled	: this._disabled
+			disabled	: this._disabled,
+			readOnly	: true,
+			hidden 		: true,
+			value		: Ext.getCmp('NETWORK.resource').cuid
 		});
 		
 		this.remark = new Ext.form.TextArea( {

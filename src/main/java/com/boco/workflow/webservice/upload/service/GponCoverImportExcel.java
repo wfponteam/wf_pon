@@ -95,7 +95,7 @@ public class GponCoverImportExcel {
 					ImportCommonMethod.importGponCoverToDB(dataList,"覆盖范围",importResultDO);
 					importResultDO.setSuccess(true);
 				}else{
-					importResultDO.setSuccess(false);
+					importResultDO.setSuccess(true);
 					importResultDO.setInfo("有0条数据,数据未进行导入。");
 				}
 			}
