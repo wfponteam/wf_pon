@@ -690,18 +690,7 @@
 			         WHERE RELATED_LIGHT_CUID = A.CUID) || ']' AS USER_COUNT
 			  FROM AN_POS A WHERE CUID=#CUID#
 	</select>
-	<select id="getPosPortCount" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		 SELECT AP.CUID AS RELATED_NE_CUID,
-		       AP.LABEL_CN,
-		       (SELECT COUNT(1) FROM PTP P WHERE P.RELATED_NE_CUID = AP.CUID) AS PTPNUM,
-		       (SELECT COUNT(1)
-		          FROM PTP P
-		         WHERE P.PORT_SUB_TYPE = 12
-		           AND P.RELATED_NE_CUID = AP.CUID) AS UPPTPNUM,
-		       AP.RATION 
-		  FROM AN_POS AP
-		 WHERE AP.CUID IN ($neCuidStr$)
-    </select>
+
      <select id="queryPortNameByOltCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
               SELECT T.CUID, T.LABEL_CN, T.RELATED_NE_CUID
                   FROM PTP T
