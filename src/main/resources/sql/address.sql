@@ -30,9 +30,9 @@ create table t_attemp_T_ROFH_FULL_ADDRESS
   spellabbreviation        VARCHAR2(100),
   flag                     NUMBER(2) default 0,
   address_level            VARCHAR2(255),
-  object_id                NUMBER(12) not null,
   regiontype2              VARCHAR2(255),
   regiontype1              VARCHAR2(255),
+  object_id                NUMBER(12) not null,
   related_project_cuid     varchar2(100)
 );
 -- Create/Recreate indexes 
@@ -79,9 +79,9 @@ create table t_his_T_ROFH_FULL_ADDRESS
   spellabbreviation        VARCHAR2(100),
   flag                     NUMBER(2) default 0,
   address_level            VARCHAR2(255),
-  object_id                NUMBER(12) not null,
   regiontype2              VARCHAR2(255),
   regiontype1              VARCHAR2(255),
+  object_id                NUMBER(12) not null,
   related_project_cuid     varchar2(100)
 );
 -- Create/Recreate indexes 

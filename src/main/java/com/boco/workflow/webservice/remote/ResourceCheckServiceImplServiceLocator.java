@@ -7,6 +7,8 @@
 
 package com.boco.workflow.webservice.remote;
 
+import com.boco.core.spring.SysProperty;
+
 public class ResourceCheckServiceImplServiceLocator extends org.apache.axis.client.Service implements ResourceCheckServiceImplService {
 
     public ResourceCheckServiceImplServiceLocator() {
@@ -22,7 +24,7 @@ public class ResourceCheckServiceImplServiceLocator extends org.apache.axis.clie
     }
 
     // Use to get a proxy class for ResourceCheckServiceImplPort
-    private java.lang.String ResourceCheckServiceImplPort_address = "http://10.221.139.68:9082/smartpipe/resourceCheck";
+    private java.lang.String ResourceCheckServiceImplPort_address =  SysProperty.getInstance().getValue("RESOURCE_CHECK_URL");
 
     public java.lang.String getResourceCheckServiceImplPortAddress() {
         return ResourceCheckServiceImplPort_address;

@@ -36,7 +36,26 @@ create table t_attemp_BUSINESS_COMMUNITY
   build_type               VARCHAR2(255),
   access_mode              VARCHAR2(255),
   service_type             VARCHAR2(255),
-  related_project_cuid     varchar2(100)
+  east_longitude           NUMBER(38,6),
+  east_latitude            NUMBER(38,6),
+  south_longitude          NUMBER(38,6),
+  south_latitude           NUMBER(38,6),
+  west_longitude           NUMBER(38,6),
+  west_latitude            NUMBER(38,6),
+  north_longitude          NUMBER(38,6),
+  north_latitude           NUMBER(38,6),
+  maint_dept               VARCHAR2(255),
+  transfeer_date           VARCHAR2(255),
+  project_code             VARCHAR2(255),
+  mark_position            VARCHAR2(255),
+  alias                    VARCHAR2(255),
+  zone_type                VARCHAR2(255),
+  cover_type               VARCHAR2(255),
+  state                    VARCHAR2(255),
+  ownership                VARCHAR2(255),
+  is_standard_cell         VARCHAR2(255),
+  is_network               VARCHAR2(255),
+  related_project_cuid     VARCHAR2(100)
 );
 -- Create/Recreate indexes 
 create index attemp_BUSINESS_COMMUNITY_02 on t_attemp_BUSINESS_COMMUNITY (LABEL_CN);
@@ -83,7 +102,26 @@ create table t_his_BUSINESS_COMMUNITY
   build_type               VARCHAR2(255),
   access_mode              VARCHAR2(255),
   service_type             VARCHAR2(255),
-  related_project_cuid     varchar2(100)
+  east_longitude           NUMBER(38,6),
+  east_latitude            NUMBER(38,6),
+  south_longitude          NUMBER(38,6),
+  south_latitude           NUMBER(38,6),
+  west_longitude           NUMBER(38,6),
+  west_latitude            NUMBER(38,6),
+  north_longitude          NUMBER(38,6),
+  north_latitude           NUMBER(38,6),
+  maint_dept               VARCHAR2(255),
+  transfeer_date           VARCHAR2(255),
+  project_code             VARCHAR2(255),
+  mark_position            VARCHAR2(255),
+  alias                    VARCHAR2(255),
+  zone_type                VARCHAR2(255),
+  cover_type               VARCHAR2(255),
+  state                    VARCHAR2(255),
+  ownership                VARCHAR2(255),
+  is_standard_cell         VARCHAR2(255),
+  is_network               VARCHAR2(255),
+  related_project_cuid     VARCHAR2(100)
 );
 -- Create/Recreate indexes 
 create index his_BUSINESS_COMMUNITY_02 on t_his_BUSINESS_COMMUNITY (LABEL_CN);
@@ -91,5 +129,3 @@ create index his_BUSINESS_COMMUNITY_02 on t_his_BUSINESS_COMMUNITY (LABEL_CN);
 alter table t_his_BUSINESS_COMMUNITY
   add constraint his_PK_1BUSINESS_COMMUNITY primary key (CUID)
   using index ;
-
-
