@@ -110,6 +110,27 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 			var _data = new record(data);
 			Ext.getCmp("customPanel").getForm().loadRecord(_data);
 			Ext.getCmp("attachPanel").getForm().loadRecord(_data);
+			if("施工" != _data.get('PRJ_STATUS')){
+				Ext.getCmp('OnuTBar.add').hide();
+				Ext.getCmp('OnuTBar.modify').hide();
+				Ext.getCmp('OnuTBar.delete').hide();
+				Ext.getCmp('pos_tbar.add').hide();
+				Ext.getCmp('pos_tbar.modify').hide();
+				Ext.getCmp('pos_tbar.delete').hide();
+				Ext.getCmp('FullAddressGridTBar.add').hide();
+				Ext.getCmp('FullAddressGridTBar.modify').hide();
+				Ext.getCmp('FullAddressGridTBar.delete').hide();
+				Ext.getCmp('village_tbar.add').hide();
+				Ext.getCmp('village_tbar.modify').hide();
+				Ext.getCmp('village_tbar.delete').hide();
+				Ext.getCmp('cover_tbar.add').hide();
+				Ext.getCmp('cover_tbar.modify').hide();
+				Ext.getCmp('cover_tbar.delete').hide();
+				Ext.getCmp('onuAnPtp.add').hide();
+				Ext.getCmp('onuAnPtp.modify').hide();
+				Ext.getCmp('onuAnPtp.delete').hide();
+			
+			}
 		});
 		DWREngine.setAsync(true);
 	},

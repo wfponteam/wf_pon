@@ -71,14 +71,14 @@
 				 LENGTH             ,
 				 DOMAIN_NAME        ,
 				 PRJ_DESC           ,
-				 FTP_NAME           ,
+				 nvl(FTP_NAME, (select FTP_NAME from T_WF_PROJECT tt where t.PARENT_PRJ_CODE = tt.PRJ_CODE))    FTP_NAME       ,
 				 PARENT_PRJ_CODE    ,
 				 CUID               ,
 				 CREATE_TIME        ,
 				 USERNAME           ,
 				 PRJ_STATUS         ,
 				 LAST_MODIFY_TIME   
-			from T_WF_PROJECT where CUID = #cuid#
+			from T_WF_PROJECT t where CUID = #cuid#
 	</select>
 	
 	<insert id="movePos" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">

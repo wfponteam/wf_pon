@@ -96,6 +96,28 @@ NETWORK.project = Ext.extend(Ext.Panel, {
 					}]
 				}
 			  ]
+			},
+			{
+				layout : 'column',
+				hideBorders : true,
+				items : [{
+					columnWidth : .5,
+					layout : 'form',
+					labelWidth : labelWidth,
+					width:600,
+					defaults : {
+						anchor : '-20'
+					},
+					items : [{
+						xtype : 'textfield',
+						fieldLabel : '工程状态',
+						name : 'PRJ_STATUS',
+						id:'PRJ_STATUS',
+						readOnly:true,
+						value:''
+					}]
+				}
+			  ]
 			}
 			]
 		
