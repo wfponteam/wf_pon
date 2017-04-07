@@ -194,7 +194,7 @@ public class AnPosManageBO {
 			oltCuid = map.get("RELATED_OLT_CUID").toString();
 			String sql = "SELECT RELATED_EMS_CUID,FDN AS OLT_FDN,1 AS DEV_TYPE FROM TRANS_ELEMENT WHERE CUID='"
 					+ oltCuid
-					+ "' AND SIGNAL_TYPE=9 AND CONFIG_TYPE=1 UNION ALL SELECT T.RELATED_EMS_CUID,(SELECT FDN FROM TRANS_ELEMENT WHERE CUID=T.RELATED_OLT_CUID)AS OLT_FDN,3 AS DEV_TYPE FROM AN_POS T WHERE T.CUID='"
+					+ "' AND SIGNAL_TYPE=9 AND CONFIG_TYPE=1 UNION ALL SELECT T.RELATED_EMS_CUID,(SELECT FDN FROM TRANS_ELEMENT WHERE CUID=T.RELATED_OLT_CUID)AS OLT_FDN,3 AS DEV_TYPE FROM T_ATTEMP_AN_POS T WHERE T.CUID='"
 					+ oltCuid + "' ";
 			List<Map> list = this.IbatisDAO.querySql(sql);
 			if (list != null && list.size() > 0) {
@@ -343,11 +343,11 @@ public class AnPosManageBO {
 				
 				//释放旧端口
 				if(StringUtils.isNotBlank(oldPort)){
-					String updatePtpState = "UPDATE PTP SET PORT_STATE = 1 WHERE CUID = '"+oldPort+"'";
+					String updatePtpState = "UPDATE T_ATTEMP_PTP SET PORT_STATE = 1 WHERE CUID = '"+oldPort+"'";
 					  this.IbatisDAO.updateSql(updatePtpState);
 				}
 				//占用新端口
-				String updatePtpState = "UPDATE PTP SET PORT_STATE = 2 WHERE CUID = '"+newPort+"'";
+				String updatePtpState = "UPDATE T_ATTEMP_PTP SET PORT_STATE = 2 WHERE CUID = '"+newPort+"'";
 				  this.IbatisDAO.updateSql(updatePtpState);
 			}
 			this.IbatisDAO.getSqlMapClientTemplate().update(EQUIP_SQL_MAP + ".updatePosInfo", map);
@@ -356,12 +356,12 @@ public class AnPosManageBO {
 			createCardInfo(neCuid, neFdn, "POS", 3);
 			
 			///更新板卡和端口的名称
-			this.IbatisDAO.updateSql("update card c set c.label_cn = ( " 
+			this.IbatisDAO.updateSql("update t_attemp_card c set c.label_cn = ( " 
 					+ "(select labeL_cn from an_pos ap where ap.cuid=c.related_device_cuid)||'-'||" 
 					+ "substr(fdn,instr(fdn,'slot=')+5,instr(fdn,':Equipment=1')-instr(fdn,'slot=')-5)||'-'||"
 					+ "nvl(trim(c.component_name),'VBoard')"
 					+ ") where c.related_device_cuid = '"+ posCuid +"'");
-			this.IbatisDAO.updateSql("update ptp p " +
+			this.IbatisDAO.updateSql("update t_attemp_ptp p " +
 			       " set p.label_cn = ((select labeL_cn "+
 			               "              from an_pos ap"+
 			                "            where ap.cuid = p.related_ne_cuid) || '-' ||"+
@@ -515,8 +515,6 @@ public class AnPosManageBO {
 			String devType = "";
 			if(neCuid != null && neCuid.length()>1){
 				String sql = "SELECT("
-						+ " SELECT FDN FROM TRANS_ELEMENT T WHERE T.CUID = '"+neCuid+"'"+
-						" UNION ALL "
 						+ "  SELECT FDN FROM AN_POS T WHERE T.CUID = '"+neCuid+"'"+
 						" UNION ALL "
 						+ " SELECT FDN FROM AN_ONU T WHERE T.CUID = '"+neCuid+"') AS FDN "
@@ -536,9 +534,9 @@ public class AnPosManageBO {
 		 */
 		public List getCardByFdnAndNeCuid(String cardFdn,String neCuid){
 			if(cardFdn!=null&&cardFdn.length()>0){
-				return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE FDN='"+cardFdn+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+				return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM T_ATTEMP_CARD WHERE FDN='"+cardFdn+"'  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 			}else{
-				return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM CARD WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
+				return this.IbatisDAO.querySql("SELECT CUID,LABEL_CN FROM T_ATTEMP_CARD WHERE  1 =1  AND RELATED_DEVICE_CUID='"+neCuid+"' ");
 			}
 		}
 		public static  String getCuidByClassName(String className) {
@@ -550,8 +548,8 @@ public class AnPosManageBO {
 		 */
 		public List getPtpByAndNeCuid(String neCuid){
 			if(neCuid != null && neCuid.length()>1){
-				String sql = "SELECT P.CUID,P.PORT_NO FROM PTP P WHERE  RELATED_NE_CUID='"+neCuid+"'"
-						+ " AND NOT EXISTS (SELECT 1 FROM CARD C WHERE C.CUID = P.RELATED_CARD_CUID) ";
+				String sql = "SELECT P.CUID,P.PORT_NO FROM T_ATTEMP_PTP P WHERE  RELATED_NE_CUID='"+neCuid+"'"
+						+ " AND NOT EXISTS (SELECT 1 FROM T_ATTEMP_CARD C WHERE C.CUID = P.RELATED_CARD_CUID) ";
 				return this.IbatisDAO.querySql(sql);
 			}else{
 				return null;
@@ -664,7 +662,7 @@ public class AnPosManageBO {
 					map.put("LABEL_CN",labelCn);
 					map.put("ADDRESS", locationArray[0]+locationArray[1]+locationArray[2]+locationArray[3]+locationArray[4]);
 					map.put("CUID", cuid);
-					String isExistSql = "SELECT CUID FROM BUSINESS_COMMUNITY WHERE LABEL_CN='"+labelCn+"'";
+					String isExistSql = "SELECT CUID FROM T_ATTEMP_BUSINESS_COMMUNITY WHERE LABEL_CN='"+labelCn+"'";
 					List communityList = this.IbatisDAO.querySql(isExistSql);
 					if(!communityList.isEmpty()){
 						cuid = ((Map)communityList.get(0)).get("CUID").toString();
