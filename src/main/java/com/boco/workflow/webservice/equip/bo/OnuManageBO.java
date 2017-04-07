@@ -217,20 +217,18 @@ public class OnuManageBO {
 						cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
 						this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updateCardInfoByNe", cardmap);
 						
-						//更新ONU端口或POS端口所属板卡和FDN
-
-						this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updatePtpInfoByCard", neCuid);
-							
-						
 					}
+					//更新ONU端口或POS端口所属板卡和FDN
+
+					this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updatePtpInfoByCard", neCuid);
 				}else{
 					Map<String,Object> cardmap=new HashMap<String,Object>();
 					cardCuid = CUIDHexGenerator.getInstance().generate("CARD");
 					cardmap.put("CUID", cardCuid);
-					cardmap.put("LABEL_CN", labelCn + "-1-VBoard");
+					cardmap.put("LABEL_CN", labelCn + "-2-VBoard");
 					cardmap.put("RELATED_DEVICE_CUID", neCuid);
-					cardmap.put("FDN", neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1");
-					cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
+					cardmap.put("FDN", neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2:Equipment=1");
+					cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2");
 					cardmap.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
 					cardmap.put("GT_VERSION", 0);
 					cardmap.put("ISDELETE", 0);
@@ -256,11 +254,11 @@ public class OnuManageBO {
 						for(int portNum = 1 ; portNum <= num ; portNum ++ ){
 							
 							mapPort = new HashMap<String,Object>();
-							mapPort.put("LABEL_CN",labelCn + "-1-VBoard-" + String.format("%02d", portNum));
+							mapPort.put("LABEL_CN",labelCn + "-2-VBoard-" + String.format("%02d", portNum));
 							mapPort.put("PORT_NO", portNum);
 							mapPort.put("RELATED_NE_CUID", neCuid);
 							mapPort.put("RATION", ration);
-							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=1/port=" + portNum);
+							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=2/port=" + portNum);
 							mapPort.put("SYS_NO", "1-1-1-"+portNum);
 							mapPort.put("DEV_TYPE", devType);
 							mapPort.put("RELATED_CARD_CUID", cardCuid);
@@ -311,10 +309,10 @@ public class OnuManageBO {
 						cardmap=new HashMap<String,Object>();
 						cardCuid = CUIDHexGenerator.getInstance().generate("CARD");
 						cardmap.put("CUID", cardCuid);
-						cardmap.put("LABEL_CN", labelCn + "-2-VBoard");
+						cardmap.put("LABEL_CN", labelCn + "-1-VBoard");
 						cardmap.put("RELATED_DEVICE_CUID", neCuid);
-						cardmap.put("FDN", neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2:Equipment=1");
-						cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2");
+						cardmap.put("FDN", neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1");
+						cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
 						cardmap.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
 						cardmap.put("GT_VERSION", 0);
 						cardmap.put("ISDELETE", 0);
@@ -333,11 +331,11 @@ public class OnuManageBO {
 					//	if(!"0".equals(ration)){
 							
 							mapPort = new HashMap<String,Object>();
-							mapPort.put("LABEL_CN",labelCn + "-2-VBoard-01");
+							mapPort.put("LABEL_CN",labelCn + "-1-VBoard-01");
 							mapPort.put("PORT_NO", "01");
 							mapPort.put("RELATED_NE_CUID", neCuid);
 							mapPort.put("RATION", ration);
-							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=2/port=01");
+							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=1/port=01");
 							mapPort.put("SYS_NO", "1-1-1-01");
 							mapPort.put("DEV_TYPE", devType);
 							mapPort.put("RELATED_CARD_CUID", cardCuid);
