@@ -87,23 +87,7 @@ public class FullAddressManageAction {
 		}
 		return msg;
 	}
-	/**
-	 * 数据导出
-	 */
-	public ExportInfo exportGridData(HttpServletRequest request,
-			HttpServletResponse reponse, List<String> cuidList) throws Exception {
-		long startTime = System.currentTimeMillis();
-		List<ExportFile> files = fullAddressManageBO.exportDataByModel(request, cuidList);
-		ExportInfo info = new ExportInfo();
-		info.setFiles(files);
-		info.setSeconds(System.currentTimeMillis() - startTime);
-		int total = 0;
-		for (ExportFile f : files) {
-			total += f.getNum();
-		}
-		info.setTotal(total);
-		return info;
-	}
+	
 	/**
 	 * 批量更新标准地址所属业务区
 	 */
