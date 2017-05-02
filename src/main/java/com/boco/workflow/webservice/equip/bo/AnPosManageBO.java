@@ -356,21 +356,20 @@ public class AnPosManageBO {
 			createCardInfo(neCuid, neFdn, "POS", 3);
 			
 			///更新板卡和端口的名称
-			this.IbatisDAO.updateSql("update t_attemp_card c set c.label_cn = ( " 
-					+ "(select labeL_cn from an_pos ap where ap.cuid=c.related_device_cuid)||'-'||" 
-					+ "substr(fdn,instr(fdn,'slot=')+5,instr(fdn,':Equipment=1')-instr(fdn,'slot=')-5)||'-'||"
-					+ "nvl(trim(c.component_name),'VBoard')"
-					+ ") where c.related_device_cuid = '"+ posCuid +"'");
-			this.IbatisDAO.updateSql("update t_attemp_ptp p " +
-			       " set p.label_cn = ((select labeL_cn "+
-			               "              from an_pos ap"+
-			                "            where ap.cuid = p.related_ne_cuid) || '-' ||"+
-			                "         substr(fdn,"+
-			                "                 instr(fdn, 'slot=') + 5,"+
-			                "                 instr(fdn, ':Equipment=1') -"+
-			                "                 instr(fdn, 'slot=') - 5) || '-' ||"+
-			                "         'VBoard' || '-' || lpad(port_no, 2, 0))"+
-			"	where p.related_ne_cuid = '" + posCuid +"'" );
+			this.IbatisDAO.updateSql("update card c  "+
+                         " set c.label_cn = (select ap.labeL_cn|| '-' ||"+
+                         "  substr(c.fdn,"+
+                         " instr(c.fdn, 'slot=') + 5,"+
+                         " instr(c.fdn, ':Equipment=1') - instr(c.fdn, 'slot=') - 5) || '-' ||"+
+                         " nvl(trim(c.component_name), 'VBoard')"+
+                         " from an_pos ap"+
+                         " where ap.cuid = c.related_device_cuid) "+
+                         " where c.related_device_cuid = '"+ posCuid +"'");
+			this.IbatisDAO.updateSql("update ptp p " +
+			       " set p.label_cn = ( select ap.label_cn ||'-'|| lpad(port_no, 2, 0)"+
+			       "              from card ap"+
+			       "            where ap.cuid = p.related_card_cuid) "+
+			       "	where p.related_ne_cuid = '" + posCuid +"'" );
 			
             return "R"+posCuid;
 		}

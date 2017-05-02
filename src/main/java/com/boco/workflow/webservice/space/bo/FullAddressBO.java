@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.boco.core.ibatis.dao.IbatisDAO;
+import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.workflow.webservice.constants.NetWorkConstant;
 import com.boco.workflow.webservice.upload.service.ImportCommonMethod;
 
@@ -49,7 +50,7 @@ public class FullAddressBO {
 	/**
 	 * 判断标准地址是否已经存在
 	 */
-	public boolean isExistAddressInfoByLabeCn(String labelCn,String cuid) throws Exception{
+	public Map<String,Object> isExistAddressInfoByLabeCn(String labelCn,String cuid) throws Exception{
 		Map<String,Object> tempObj = selectAddressInfoByLabeCn(labelCn);
 		if(tempObj!=null){
 //			if(!ImportCommonMethod.isEmpty(cuid)){
@@ -62,10 +63,11 @@ public class FullAddressBO {
 //			}else{
 //				return true;
 //			}
-			return true;
-		}else{
-			return false;
+			return tempObj;
+			
 		}
+			return null;
+		
 	}
 	
 	/**

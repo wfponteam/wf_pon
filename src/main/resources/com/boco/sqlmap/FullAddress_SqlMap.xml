@@ -186,7 +186,7 @@
          WHERE g.STANDARD_ADDR = #cuid#
          UNION
          SELECT COUNT(1) RELATED_NUM 
-         FROM T_attemp_T_SF_ROFH_PRODUCT g
+         FROM T_SF_ROFH_PRODUCT g
          WHERE g.RELATED_COVERAGE_ADDR_CUID = #cuid#
          )
 	</select>

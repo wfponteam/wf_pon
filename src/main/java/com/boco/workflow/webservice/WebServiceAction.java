@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.core.spring.SysProperty;
-import com.boco.core.utils.filezip.ZipCompressUtil;
 import com.boco.workflow.webservice.builder.PrjStatusBuilder;
 import com.boco.workflow.webservice.builder.ValidationBuilder;
 import com.boco.workflow.webservice.builder.factory.PojoBuilderFactory;
@@ -28,6 +27,7 @@ import com.boco.workflow.webservice.pojo.PrjStatus;
 import com.boco.workflow.webservice.project.bo.ProjectBO;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplService;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplServiceLocator;
+import com.boco.workflow.webservice.utils.ZipUtil;
 
 @Controller
 @RequestMapping(value="/webServiceAction")
@@ -129,10 +129,10 @@ public class WebServiceAction {
         File zipFile = new File(path + fileName + ".zip");
         if(!zipFile.exists()){
         	
-        	ZipCompressUtil zipUtils = new ZipCompressUtil();
+        	ZipUtil.zip(orgFile.getAbsolutePath(),zipFile.getAbsolutePath());
         	
         	//工具bug
-        	zipUtils.compress(orgFile.getAbsolutePath().replaceAll("\\\\", "/"),zipFile.getAbsolutePath().replaceAll("\\\\", "/"));
+    //    	zipUtils.compress(orgFile.getAbsolutePath().replaceAll("\\\\", "/"),zipFile.getAbsolutePath().replaceAll("\\\\", "/"));
         	
         	orgFile.listFiles(new FileFilter() {
 				

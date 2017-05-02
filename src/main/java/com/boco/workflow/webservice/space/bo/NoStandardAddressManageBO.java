@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.boco.core.ibatis.dao.IbatisDAO;
+import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.workflow.webservice.upload.constants.GetCh2Spell;
 import com.boco.workflow.webservice.upload.service.ImportCommonMethod;
@@ -35,7 +36,7 @@ public class NoStandardAddressManageBO {
 	
 	public String insertAddressInfo(Map<String,String> map) throws Exception{
 		String labelCn = map.get("LABEL_CN")==null?"":map.get("LABEL_CN");
-		if(isExistAddressInfoByLabeCn(labelCn, null)){
+		if(null != isExistAddressInfoByLabeCn(labelCn, null)){
 			return "E该标准地址已存在！";
 		}else{
 			String cuid = CUIDHexGenerator.getInstance().generate("NO_T_ROFH_FULL_ADDRESS");
@@ -97,13 +98,14 @@ public class NoStandardAddressManageBO {
 	/**
 	 * 判断标准地址是否已经存在
 	 */
-	public boolean isExistAddressInfoByLabeCn(String labelCn,String cuid) throws Exception{
+	public Map<String,Object> isExistAddressInfoByLabeCn(String labelCn,String cuid) throws Exception{
 		Map<String,Object> tempObj = selectAddressInfoByLabeCn(labelCn);
 		if(tempObj!=null){
-			return true;
-		}else{
-			return false;
+
+			return tempObj;
 		}
+			return null;
+		
 	}
 	
 	/**

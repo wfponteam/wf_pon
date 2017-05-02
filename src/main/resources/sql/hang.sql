@@ -14,7 +14,7 @@ create table T_WF_FTTX_GC
   village_id       VARCHAR2(255),
   prjcode          VARCHAR2(255),
   prjname          VARCHAR2(255),
-  parntprjcode     VARCHAR2(255),
+  parentprjcode     VARCHAR2(255),
   olttelenetipaddr VARCHAR2(255),
   oltidinems       VARCHAR2(255),
   upbasip          VARCHAR2(255),
@@ -34,7 +34,8 @@ create table T_WF_FTTX_GC
   result           NUMBER(2),
   opt_power        VARCHAR2(60),
   faildesc         VARCHAR2(255),
-  call_result      NUMBER(2)
+  call_result      NUMBER(2),
+  ponportname      VARCHAR2(255)
 );
 -- Add comments to the columns 
 comment on column T_WF_FTTX_GC.regioncode
@@ -59,7 +60,7 @@ comment on column T_WF_FTTX_GC.prjcode
   is '设备所属工程编码';
 comment on column T_WF_FTTX_GC.prjname
 is '设备所属主工程名称';
-comment on column T_WF_FTTX_GC.parntprjcode
+comment on column T_WF_FTTX_GC.parentprjcode
   is '设备所属父工程编码';
 comment on column T_WF_FTTX_GC.olttelenetipaddr
   is '所属OLT的TELENETIP地址';
@@ -109,12 +110,14 @@ comment on column T_WF_FTTX_GC.faildesc
   is '异常原因';
 comment on column T_WF_FTTX_GC.call_result
   is '拨号结果1：成功 2：失败';
+comment on column T_WF_FTTX_GC.ponportname
+  is 'pon口名称'; 
 -- Create/Recreate primary, unique and foreign key constraints 
 alter table T_WF_FTTX_GC
   add primary key (ID)
   using index ;
 -- Grant/Revoke object privileges 
-grant select, update on T_WF_FTTX_GC to GCTEST;
+grant select, update on nm_irms352_0913.T_WF_FTTX_GC to wangyou;
 
   
   
@@ -199,7 +202,8 @@ select olt.related_district_cuid as REGIONCODE,
          '' as FAILDESC,
          '' call_result,
          wp.cuid cuid,
-         pos.cuid   pos_cuid
+         pos.cuid   pos_cuid,
+         (select label_cn from ptp where cuid = pos.related_port_cuid) ponportname
   from
   trans_element   olt,
          card            c,

@@ -187,7 +187,8 @@
 			  RESULT           ,
 			  OPT_POWER        ,
 			  FAILDESC         ,
-			  CALL_RESULT      
+			  CALL_RESULT      ,
+			  ponportname      
 			  from v_fttx_gc vg ,t_attemp_ptp ptp
 			 where ptp.related_ne_cuid = vg.pos_cuid
 			 and vg.cuid = #cuid#

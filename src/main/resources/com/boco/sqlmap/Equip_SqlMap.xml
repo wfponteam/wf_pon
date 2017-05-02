@@ -196,10 +196,10 @@
 	<!-- 修改onu的板卡信息 -->
 	<update id="updateCardNameByOnu">
 		update t_attemp_card c
-		   set c.label_cn = ((select labeL_cn|| '-' ||
-			                    substr(fdn,
-			                            instr(fdn, 'slot=') + 5,
-			                            instr(fdn, ':Equipment=1') - instr(fdn, 'slot=') - 5) || '-' ||
+		   set c.label_cn = ((select ap.labeL_cn|| '-' ||
+			                    substr(c.fdn,
+			                            instr(c.fdn, 'slot=') + 5,
+			                            instr(c.fdn, ':Equipment=1') - instr(c.fdn, 'slot=') - 5) || '-' ||
 			                    nvl(trim(c.component_name), 'VBoard')
 		                        from t_attemp_an_onu ap
 		                       where ap.cuid = c.related_device_cuid) )
@@ -209,7 +209,7 @@
 	<!-- 修改onu的端口名称 -->
 	<update id="updatePtpNameByOnu">
 		update t_attemp_ptp p
-		   set p.label_cn = ((select labeL_cn|| '-' || lpad(p.port_no, 2, 0)
+		   set p.label_cn = ((select c.labeL_cn|| '-' || lpad(p.port_no, 2, 0)
 		                        from t_attemp_card c
 		                       where c.cuid = p.related_card_cuid) )
 		 where p.related_ne_cuid = #CUID#

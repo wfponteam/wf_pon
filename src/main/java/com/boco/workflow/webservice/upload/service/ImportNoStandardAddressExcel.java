@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
+import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.workflow.webservice.space.bo.NoStandardAddressManageBO;
 import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
 import com.boco.workflow.webservice.upload.servlet.ImportResultDO;
@@ -205,9 +206,19 @@ public class ImportNoStandardAddressExcel {
 			String adrCuid = "";
 			if (!ImportCommonMethod.isEmpty(adrName)) {
 				Map tempObj = getFullAddressManageBO().selectAddressInfoByLabeCn(adrName);
+				
 				if (tempObj != null) {
-					adrCuid = tempObj.get("CUID").toString();
-					dataMap.put(dataColumns[0], adrCuid);
+					
+					String type = tempObj.get("TYPE").toString();
+					if("0".equals(type)){
+						
+						ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
+								c, lastColumns, "非标准地址名称已归档！");
+					}else{
+						adrCuid = tempObj.get("CUID").toString();
+						dataMap.put(dataColumns[0], adrCuid);
+					}
+					
 				}
 			}
 			c++;
@@ -412,21 +423,28 @@ public class ImportNoStandardAddressExcel {
 									+ "地址" + this.dataRepeatMsg);
 				} else {
 					nameMaps.put(adrGroupName, "第" + (i + 1) + "行");
-					if (getFullAddressManageBO().isExistAddressInfoByLabeCn(
-							adrGroupName, adrCuid)) {
-						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook,
+					Map<String,Object> map = getFullAddressManageBO().isExistAddressInfoByLabeCn(
+							adrGroupName, adrCuid);
+					if(map != null){
+						
+						if("0".equals(IbatisDAOHelper.getStringValue(map, "TYPE"))){
+							ImportCommonMethod.printOnlyErrorInfo(writeWorkBook,
 								writeSheet, i, 1, lastColumns, "非标准地址["
 										+ adrGroupName + "],"
 										+ this.dataExistMsg);
-					} else {
+						}else{
+							adrCuid = IbatisDAOHelper.getStringValue(map, "CUID");
+						}
+					} 
 						dataMap.put(dataColumns[1], adrGroupName);
 						if (!ImportCommonMethod.isEmpty(adrCuid)) {
 							dataMap.put("TYPE", "UPDATE");
+							dataMap.put(dataColumns[0], adrCuid);
 						} else {
 						//	dataMap.put(dataColumns[0],CUIDHexGenerator.getInstance().generate("NO_T_ROFH_FULL_ADDRESS"));
 							dataMap.put("TYPE", "INSERT");
 						}
-					}
+					
 				}
 			}
 
