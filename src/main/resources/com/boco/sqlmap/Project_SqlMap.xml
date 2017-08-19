@@ -235,5 +235,18 @@
 		insert into T_WF_PRJ_STATUS_RECORD(prj_id,prj_status,update_time)
 			values(#id#,#status#,sysdate)
 	</insert>
+	<select id="queryActiveByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	SELECT 
+      CUID, 
+      LABEL_DEV,
+      DEVICENAME,
+      substr(fdn,5,instr(fdn,':',1)-5) as OLTEMS,
+      PONPORTNAME,
+      PASSWORD,
+      OLTSVLAN,
+      OLTCVLAN,
+      OLTFACTORY
+      FROM V_FTTX_GC WHERE CUID =#CUID#
+	</select>
 	
 </sqlMap>

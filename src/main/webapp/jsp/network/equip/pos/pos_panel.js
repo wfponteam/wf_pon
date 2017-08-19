@@ -117,6 +117,7 @@ NETWORK.pos_panel = Ext.extend(Ext.Panel, {
 			emptyText 	: '请选所属上联设备',
 			anchor 		: '90%',
 			allowBlank  : false,
+			editable    : true,
 			disabled	: this._disabled,
 			comboxCfg  : {	
 				boName : 'XmlTemplateComboxBO',

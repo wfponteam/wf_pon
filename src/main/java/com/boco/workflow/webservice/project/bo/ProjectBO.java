@@ -47,5 +47,10 @@ public class ProjectBO {
 		return projectDAO.getIdByCode(prjStatus);
 	}
 	
-	
+	public List<Map<String, String>> queryActiveByCuid(String cuid) throws SQLException {
+		
+		@SuppressWarnings("unchecked")
+		List<Map<String, String>> list = IbatisDAO.getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryActiveByCuid",cuid);
+		return list;
+	}
 }

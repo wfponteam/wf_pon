@@ -75,7 +75,7 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 						   	 		 {
 						   	 		 	mk.show(); //显示  
 										Ext.Ajax.request({
-										        url: ctx+'/webServiceAction/syncHangingResult1.do',
+										        url: ctx+'/webServiceAction/syncHangingResult.do',
 										        method: 'POST',
 										        params: {
 										        	cuid: scope.cuid

@@ -27,6 +27,7 @@ import com.boco.workflow.webservice.pojo.PrjStatus;
 import com.boco.workflow.webservice.project.bo.ProjectBO;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplService;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplServiceLocator;
+import com.boco.workflow.webservice.service.impl.ActiveService;
 import com.boco.workflow.webservice.utils.ZipUtil;
 
 @Controller
@@ -40,6 +41,10 @@ public class WebServiceAction {
 	
 	@Autowired
 	private ProjectBO projectBO;
+	
+	@Autowired
+	private ActiveService activeService;
+	
 	
 	@RequestMapping("/syncHangingResult")
 	public @ResponseBody String syncHangingResult(String cuid){
@@ -56,11 +61,15 @@ public class WebServiceAction {
 			}
 			
 			projectBO.insertHanging(cuid);
+			
+			
+			activeService.doActive(cuid);
 			////将状态改为挂测
 			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addCuid(cuid).addPrjStatus("挂测")
 				.build();
-		
+		    
 			projectDAO.updateProjectStatus(prjStatus);
+			activeService.doDeActive(cuid);
 			
 			
 		} catch (Exception e) {

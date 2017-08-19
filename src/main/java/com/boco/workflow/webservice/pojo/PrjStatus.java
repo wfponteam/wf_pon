@@ -2,6 +2,10 @@ package com.boco.workflow.webservice.pojo;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.boco.workflow.webservice.builder.PrjStatusBuilder;
+import com.boco.workflow.webservice.builder.factory.PojoBuilderFactory;
+import com.boco.workflow.webservice.service.factory.WebServiceFactory;
+import com.boco.workflow.webservice.utils.XStreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -77,5 +81,19 @@ public class PrjStatus {
 		
 		return ToStringBuilder.reflectionToString(this);
 	}
+	
+/*	public static void main(String[] args) {
+		
+		String aa = "<info>" +
+  "<prjcode>3432</prjcode>" +
+  "<parentprjcode>324</parentprjcode>" +
+	"<username>3rewrw</username>" +
+  "<prjstatus>3432</prjstatus>" +
+  "<cuid>32432</cuid>"  +
+  " </info>";
+		PrjStatus pp = XStreamUtil.fromXml(PrjStatus.class, aa);
+		
+		System.out.println(pp);
+	}*/
 
 }
