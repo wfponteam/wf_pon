@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="TripartWebServiceService" targetNamespace="http://ws.com/" xmlns:ns1="http://cxf.apache.org/bindings/xformat" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://ws.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://ws.com/" xmlns:tns="http://ws.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:element name="active" type="tns:active"/>
+<xsd:complexType name="active">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="arg0" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:element name="activeResponse" type="tns:activeResponse"/>
+<xsd:complexType name="activeResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="return" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+
+  </wsdl:types>
+  <wsdl:message name="active">
+    <wsdl:part element="tns:active" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="activeResponse">
+    <wsdl:part element="tns:activeResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="TripartWebService">
+    <wsdl:operation name="active">
+      <wsdl:input message="tns:active" name="active">
+    </wsdl:input>
+      <wsdl:output message="tns:activeResponse" name="activeResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TripartWebServiceServiceSoapBinding" type="tns:TripartWebService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="active">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="active">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="activeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TripartWebServiceService">
+    <wsdl:port binding="tns:TripartWebServiceServiceSoapBinding" name="TripartWebServicePort">
+      <soap:address location="http://10.221.139.9:8091/Halt/GreetingService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
