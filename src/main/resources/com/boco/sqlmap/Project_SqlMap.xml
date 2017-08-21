@@ -194,6 +194,16 @@
 			 and vg.cuid = #cuid#
 			]]>
 	</insert>
+	<delete id="deleteHanging" parameterClass="java.lang.String">
+		delete from  T_WF_FTTX_GC where PRJCODE = #PRJCODE#
+	</delete>
+	
+	<update id="updateHanging" parameterClass="java.util.Map">
+		update T_WF_FTTX_GC p
+		   set password = #password#,
+			   FAILDESC = #reason#
+		 where ponportname = #ponPort#
+	</update>
 	
 	<select id="getIdByCode" resultClass="java.lang.String" parameterClass="com.boco.workflow.webservice.pojo.PrjStatus">
 		select cuid from t_wf_project where PRJ_CODE = #prjCode# 
@@ -231,22 +241,28 @@
 		where cuid = #cuid#
 	</update>
 	
-	<insert id="insertProjectStatusRecord" parameterClass="java.util.Map">
-		insert into T_WF_PRJ_STATUS_RECORD(prj_id,prj_status,update_time)
-			values(#id#,#status#,sysdate)
-	</insert>
-	<select id="queryActiveByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
-	SELECT 
-      CUID, 
-      LABEL_DEV,
-      DEVICENAME,
-      substr(fdn,5,instr(fdn,':',1)-5) as OLTEMS,
-      PONPORTNAME,
-      PASSWORD,
-      OLTSVLAN,
-      OLTCVLAN,
-      OLTFACTORY
-      FROM V_FTTX_GC WHERE CUID =#CUID#
+	<select id="queryActiveByCuidAndStatus" parameterClass="java.util.Map" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		select cuid from t_wf_project where cuid = #cuid# and prjStatus= #prjStatus#
 	</select>
-	
+	<select id="queryActiveByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+		select distinct wp.cuid,
+                olt.label_dev,
+                olt.label_cn as DEVICENAME,
+                substr(olt.fdn, 5, instr(olt.fdn, ':', 1) - 5) as OLTEMS,
+                p.label_cn as PONPORTNAME,
+                substr(cast(dbms_random.value as varchar2(38)), 3, 8) PASSWORD,
+                p.svlan OLTSVLAN,
+                '200' OLTCVLAN,
+                (select label_cn
+                   from device_vendor
+                  where device_vendor.cuid = olt.related_vendor_cuid) OLTFACTORY
+	  from trans_element olt, ptp p, t_attemp_an_pos pos, t_wf_project wp
+	 where olt.cuid = pos.related_olt_cuid
+	   and p.cuid = pos.related_port_cuid
+	   and pos.related_project_cuid = wp.cuid
+	   and wp.cuid =#CUID#
+	</select>
+	<select id="queryActiveByPrjcode" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select  wp.cuid from  t_wf_project wp where wp.PRJ_CODE =#PRJCODE#
+	</select>
 </sqlMap>

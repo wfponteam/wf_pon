@@ -20,6 +20,8 @@ public class ActiveResp {
     	
     	private String ponPort;
     	
+    	private String password;
+    	
     	private String isSucess;
     	
     	private String reason;
@@ -30,6 +32,14 @@ public class ActiveResp {
 
 		public void setPonPort(String ponPort) {
 			this.ponPort = ponPort;
+		}
+		
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 		public String getIsSucess() {
@@ -56,38 +66,31 @@ public class ActiveResp {
     }
 
 	public String getType() {
-		
 		return type;
 	}
 
 	public void setType(String type) {
-		
 		this.type = type;
 	}
 
 	public String getProductId() {
-		
 		return productId;
 	}
 
 	public void setProductId(String productId) {
-		
 		this.productId = productId;
 	}
 
 	public List<Active> getActiveList() {
-		
 		return activeList;
 	}
 
 	public void setActiveList(List<Active> activeList) {
-		
 		this.activeList = activeList;
 	}
     
 	@Override
 	public String toString() {
-		
 		return ToStringBuilder.reflectionToString(this);
 	}
 }

@@ -59,7 +59,6 @@ public class XStreamUtil {
 			if(!xstreamMap.containsKey(cls)){
 			
 				xstream = new XStream(new XppDriver(new NoNameCoder()) {
-		
 					@Override
 					public HierarchicalStreamWriter createWriter(Writer out) {
 						return new PrettyPrintWriter(out) {
@@ -73,7 +72,6 @@ public class XStreamUtil {
 							//令其支持CDATA标签
 							@Override
 							protected void writeText(QuickWriter writer, String text) {
-								
 								if (text.startsWith(WebServiceConstant.PREFIX_CDATA) && text.endsWith(WebServiceConstant.SUFFIX_CDATA)) {  
 	                                writer.write(text);  
 	                            } else {  

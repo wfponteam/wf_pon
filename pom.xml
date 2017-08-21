@@ -53,13 +53,13 @@
            <groupId>org.apache.tomcat.maven</groupId>
            <artifactId>tomcat7-maven-plugin</artifactId>
            <configuration>
-               <port>8080</port>
+               <port>8888</port>
                <path>/wf_pon</path>
                <uriEncoding>UTF-8</uriEncoding>
                <finalName>wf_pon</finalName>
                <server>tomcat7</server>
                <systemProperties>
-               	<IRMS_SERVER_HOME>D:\\Program Files\\apache-tomcat-8.0.35\\conf\\env2</IRMS_SERVER_HOME>
+               	<IRMS_SERVER_HOME>D:\\apache-tomcat-8.0.35\\conf\\env</IRMS_SERVER_HOME>
                </systemProperties>
            </configuration>
          </plugin>

@@ -36,11 +36,14 @@ public class ProjectBO {
 	}
 	
 	public void insertHanging(String cuid) throws SQLException{
-		
 		IbatisDAO.getSqlMapClient().insert(NetWorkConstant.PROJECT_SQL_MAP + ".insertHanging", cuid);
-		
 	}
-
+	public void deleteHanging(String PRJCODE) throws SQLException{
+		IbatisDAO.getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".deleteHanging", PRJCODE);
+	}
+	public void updateHanging(Map map) throws SQLException{
+		IbatisDAO.getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateHanging", map);
+	}
 	public String queryIdByCode(String prjCode, String parentPrjCode) throws SQLException {
 		
 		PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addPrjCode(prjCode).addParentPrjCode(parentPrjCode).build();
@@ -48,9 +51,9 @@ public class ProjectBO {
 	}
 	
 	public List<Map<String, String>> queryActiveByCuid(String cuid) throws SQLException {
-		
 		@SuppressWarnings("unchecked")
 		List<Map<String, String>> list = IbatisDAO.getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryActiveByCuid",cuid);
 		return list;
 	}
+	
 }
