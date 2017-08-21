@@ -10,41 +10,31 @@ import com.boco.workflow.webservice.pojo.Validation;
 public class ValidationBuilder extends AbstractBuilder<Validation> implements IBuilder<Validation>{
 
 	public ValidationBuilder() {
-		
 		super(new Validation());
-		
 	}
 	
 	public ValidationBuilder(Validation v) {
-		
 		super(v);
-		
 	}
 	
 	public ValidationBuilder addPrjCode(String prjCode){
-		
 		pojo.setPrjCode(prjCode);
 		return this;
 	}
 	
 	public ValidationBuilder addParentPrjCode(String parentPrjCode){
-		
 		pojo.setParentPrjCode(parentPrjCode);
 		return this;
 	}
 
 	public ValidationBuilder addteststatus(String testStatus){
-	
 		pojo.setTestStatus(testStatus);
 		return this;
 	}
 
 	public ValidationBuilder addtestinfo(String testInfo){
-	
 		pojo.setTestInfo(testInfo);
 		return this;
 	}
 
-
-	
 }

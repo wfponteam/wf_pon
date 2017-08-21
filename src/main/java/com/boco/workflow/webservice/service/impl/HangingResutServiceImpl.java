@@ -26,7 +26,8 @@ import com.boco.workflow.webservice.service.IService;
 public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,Validation> implements IService{
 
 	private static final Logger logger = Logger.getLogger(HangingResutServiceImpl.class);
-
+	@Autowired
+	private ActiveService activeService;
 	@Autowired
 	private ProjectDAO projectDAO;
 	@Override
@@ -34,7 +35,9 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 		
 		logger.info("HangingResutServiceImpl.doBusiness");
 		//存储结果？
-		
+		String PRJCODE = e.getPrjCode();
+		String cuid= projectDAO.queryActiveByPrjcode(PRJCODE);
+		activeService.doDeActive(cuid);
 		//向管线发消息
 		String xml = e.getBuilder().toXml();
 		logger.info("挂测结果：" + xml);
@@ -55,7 +58,6 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 			projectDAO.updateProjectStatus(prjStatus);
 			
 			throw new Exception(res.getErrorInfo());
-			
 		}
 		
 		

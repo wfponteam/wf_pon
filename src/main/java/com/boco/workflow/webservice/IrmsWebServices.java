@@ -41,7 +41,6 @@ public class IrmsWebServices {
 	 * @return
 	 */
 	public String syncHangingResult(String xml){
-		
 		IService service = WebServiceFactory.getService(HangingResutServiceImpl.class);
 		return service.execute(xml);
 	}

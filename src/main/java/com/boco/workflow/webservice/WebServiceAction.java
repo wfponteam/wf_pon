@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,8 @@ import com.boco.workflow.webservice.builder.PrjStatusBuilder;
 import com.boco.workflow.webservice.builder.ValidationBuilder;
 import com.boco.workflow.webservice.builder.factory.PojoBuilderFactory;
 import com.boco.workflow.webservice.dao.ProjectDAO;
+import com.boco.workflow.webservice.pojo.ActiveResp;
+import com.boco.workflow.webservice.pojo.ActiveResp.Active;
 import com.boco.workflow.webservice.pojo.PrjStatus;
 import com.boco.workflow.webservice.project.bo.ProjectBO;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplService;
@@ -45,41 +48,39 @@ public class WebServiceAction {
 	@Autowired
 	private ActiveService activeService;
 	
-	
 	@RequestMapping("/syncHangingResult")
 	public @ResponseBody String syncHangingResult(String cuid){
-		
 		
 		logger.info("将" + cuid + "状态改为挂测");
 		try {
 			//查询当前工程状态
 			Map<String,Object> map = projectBO.queryProjectByCode(cuid);
 			String status = IbatisDAOHelper.getStringValue(map, "PRJ_STATUS");
+			String PRJCODE = IbatisDAOHelper.getStringValue(map, "PRJ_CODE");
+			
 			if(!"施工".equals(status)){
-				
 				return "{\"success\":true,\"msg\":\"工程状态为:" + status + ",不能进行挂测！\"}";
 			}
-			
+			projectBO.deleteHanging(PRJCODE);
 			projectBO.insertHanging(cuid);
-			
-			
-			activeService.doActive(cuid);
+
+			ActiveResp res= activeService.doActive(cuid);
+			for(Active active : res.getActiveList()){
+				Map<String, String> paremeterMap = new HashMap();
+				paremeterMap.put("password", active.getPassword());
+				paremeterMap.put("ponPort", active.getPonPort());
+				paremeterMap.put("reason", active.getReason());
+				projectBO.updateHanging(paremeterMap);
+			}
 			////将状态改为挂测
-			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addCuid(cuid).addPrjStatus("挂测")
-				.build();
-		    
+			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addCuid(cuid).addPrjStatus("挂测").build();
 			projectDAO.updateProjectStatus(prjStatus);
-			activeService.doDeActive(cuid);
-			
 			
 		} catch (Exception e) {
-			
 			logger.error("挂测失败！",e);
 			return "{\"success\":true,\"msg\":\"" + e.getMessage() + "\"}"; 
 		}
-		
 		return "{\"success\":true,\"msg\":\"挂测成功！\"}";
-		
 	}
 	
 	/**
@@ -89,8 +90,6 @@ public class WebServiceAction {
 	 */
 	@RequestMapping("/syncHangingResult1")
 	public @ResponseBody String syncHangingResult1(String cuid){
-		
-		
 		logger.info("将" + cuid + "状态改为挂测");
 		try {
 			//查询当前工程状态

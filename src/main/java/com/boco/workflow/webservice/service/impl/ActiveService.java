@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,6 @@ import com.boco.workflow.webservice.project.bo.ProjectBO;
 import com.ws.TripartWebServiceServiceLocator;
 import com.ws.TripartWebServiceServiceSoapBindingStub;
 
-
-
 @Service
 public class ActiveService{
 
@@ -26,39 +25,40 @@ public class ActiveService{
     @Autowired
 	private ProjectBO projectBO;
     
-	public  void doActive(String cuid) throws Exception{
-		
-		ActiveResp result = active(cuid,"1");
-		List<com.boco.workflow.webservice.pojo.ActiveResp.Active> acList = result.getActiveList();
+	public  ActiveResp doActive(String cuid) throws Exception{
+		return active(cuid,"1");
 	}
-    public void  doDeActive(String cuid ) throws Exception{
 	
-	   ActiveResp result = active(cuid,"2");
-   }
-   
+    public ActiveResp  doDeActive(String cuid ) throws Exception{
+	  return active(cuid,"2");
+    }
    
      private ActiveResp active (String cuid ,String type) throws Exception{
-
 	    List<Map<String, String>> list = projectBO.queryActiveByCuid(cuid);
 	    Device device = null;
 	    ActiveBuilder builder = PojoBuilderFactory.getBuilder(ActiveBuilder.class).addType(type).addProductId(cuid);
 	    if (list != null && list.size() > 0){
 	    	
 	    	for(int i = 0; i < list.size(); i++){
-	    		
 	    		device = new Device();
 	    		Map<String,String> map = list.get(i);
+	    		assert(StringUtils.isNotBlank(map.get("LABEL_DEV"))):"LABEL_DEV为空null";
 	    		device.setLabelDev(map.get("LABEL_DEV"));
+	    		assert(StringUtils.isNotBlank(map.get("OLTCVLAN"))):"CVLAN为空null";
 	    		device.setCvlan(map.get("OLTCVLAN"));
+	    		assert(StringUtils.isNotBlank(map.get("OLTEMS"))):"EMS为空null";
 	    		device.setEms(map.get("OLTEMS"));
 	    		device.setFactory(map.get("OLTFACTORY"));
+	    		assert(StringUtils.isNotBlank(map.get("DEVICENAME"))):"设备名称为空null";
 	    		device.setOltName(map.get("DEVICENAME"));
+	    		assert(StringUtils.isNotBlank(map.get("OLTSVLAN"))):"SVLAN为空null";
 	    		device.setSvlan(map.get("OLTSVLAN"));
+	    		assert(StringUtils.isNotBlank(map.get("PASSWORD"))):"密码为空null";
 	    		device.setPassword(map.get("PASSWORD"));
+	    		assert(StringUtils.isNotBlank(map.get("PONPORTNAME"))):"端口名称为空null";
 	    		device.setPonPort(map.get("PONPORTNAME"));
 	    		builder.addDevice(device);
 	    	}
-	    	
 	    }
 		String activeStr =builder.toXml();
 		logger.info(activeStr);
