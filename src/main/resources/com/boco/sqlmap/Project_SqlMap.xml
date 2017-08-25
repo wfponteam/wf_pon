@@ -266,7 +266,7 @@
 		select  wp.cuid from  t_wf_project wp where wp.PRJ_CODE =#PRJCODE#
 	</select>
 	<insert id="insertProjectStatusRecord" parameterClass="java.util.Map">
-insert into T_WF_PRJ_STATUS_RECORD(prj_id,prj_status,update_time)
-values(#id#,#status#,sysdate)
-</insert>
+		insert into T_WF_PRJ_STATUS_RECORD(prj_id,prj_status,update_time)
+		values(#id#,#status#,sysdate)
+    </insert>
 </sqlMap>
