@@ -411,6 +411,30 @@ NETWORK.pos_panel = Ext.extend(Ext.Panel, {
 			disabled	: this._disabled,
 			name 		: 'REMARK'
 		});
+		this.relatedaccesspoint = new IRMS.combo.AsynCombox({
+			fieldLabel : '接入点' ,
+			name       : 'RELATED_ACCESS_POINT',
+			anchor 	   : '90%',
+			triggerAll : true,
+			hideTrigger1 : false,
+			allowBlank : true,
+			blurMatch : 'both',
+			triggerAll : true,
+			editable : true,
+			comboxCfg  : {	
+				boName : 'XmlTemplateComboxBO',
+				cfgParams : {  
+					code : 'RELATED_ACCESS_POINT'   
+				},
+				queryParams : {
+					LABEL_CN : {
+						key : 'LABEL_CN',
+						value : '',
+						relation : 'like'
+					}
+				}
+			}
+		});
 		// 设备属性
 		this.showEquipmentInfoPanel = new Ext.FormPanel( {
 			region		: 'center',
@@ -469,7 +493,11 @@ NETWORK.pos_panel = Ext.extend(Ext.Panel, {
 					columnWidth : .5,
 					layout : 'form',
 					items:[this.vendorCombo]
-				},
+				},{
+					columnWidth : .5,
+					layout : 'form',
+					items:[this.relatedaccesspoint]
+				}
 				
 				]
 			}]				
@@ -707,6 +735,7 @@ NETWORK.pos_panel = Ext.extend(Ext.Panel, {
     	var PRESERVER = this.showEquipmentInfoPanel.getForm().findField('PRESERVER').getValue();
     	var SEQNO = this.showEquipmentInfoPanel.getForm().findField('SEQNO').getValue();
     	var RELATED_CAB_CUID = this.showEquipmentInfoPanel.getForm().findField('RELATED_CAB_CUID').getValue();
+    	var RELATED_ACCESS_POINT = this.showEquipmentInfoPanel.getForm().findField('RELATED_ACCESS_POINT').getValue();
     	// var ACCESS_TYPE = this.showEquipmentInfoPanel.getForm().findField('ACCESS_TYPE').getValue();
     	
     	var CUID = this.showManagementInfoPanel.getForm().findField('CUID').getValue();
@@ -739,6 +768,7 @@ NETWORK.pos_panel = Ext.extend(Ext.Panel, {
 				PRESERVER			  : PRESERVER,
 				SEQNO 				  : SEQNO,
 				RELATED_CAB_CUID  : RELATED_CAB_CUID,
+				RELATED_ACCESS_POINT  : RELATED_ACCESS_POINT,
 				CUID	 			  : CUID,
 				OWNERSHIP			  : OWNERSHIP,
 				OWNERSHIP_MAN		  : OWNERSHIP_MAN,

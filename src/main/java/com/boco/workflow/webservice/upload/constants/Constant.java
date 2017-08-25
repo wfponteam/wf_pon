@@ -277,7 +277,7 @@ public class Constant {
 	/**
 	 * cardport:Excel中的字段--------Oun资源的安装位置
 	 */
-	public static final String RELATEDACCESSPOINT  ="安装位置";
+	public static final String RELATEDACCESSPOINT  ="接入点";
 	/**
 	 * cardport:Excel中的字段--------所属OLT设备
 	 */
@@ -286,12 +286,13 @@ public class Constant {
 	 * cardport:Excel中的字段--------所属上联设备
 	 */
 	public static final String RELATEDUNIONCUID  ="所属上联设备";
+	
+	
 	public static final String RELATEDPORTCUID  ="所属上联端口";
 	/**
 	 * cardport:Excel中的字段--------所属厂商
 	 */
 	public static final String VENDORCUID  ="所属厂商";
-	
 	/**
 	 * cardport:Excel中的字段--------分光比
 	 */

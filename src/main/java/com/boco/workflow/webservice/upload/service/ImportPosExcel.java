@@ -57,7 +57,9 @@ public class ImportPosExcel {
 		/* 18 */	"所属工程",
 		/* 19 */	"一线数据维护人",
 		/* 20 */	"移动公司数据质量责任人",
-		/* 21 */    "上联设备备用端口"
+		/* 21 */    "上联设备备用端口",
+		/* 22  */   "接入点"
+
 		};
 	private String relatedvendorcuid;
 	/**
@@ -186,6 +188,8 @@ public class ImportPosExcel {
 		// 21.上联设备备用端口
 		int RELATED_PORT2_CUID = Integer.parseInt(headingMap.get("上联设备备用端口").toString());
 
+		 // 22.接入点
+		int RELATED_ACCESS_POINT = Integer.parseInt(headingMap.get("接入点").toString());
 		try {
 			// 1."分光器名称"校验
 			ImportCommonMethod.verificationEmpty(writeWorkBook, writeSheet, labelCn, i, lastColumns,Constant.POS_LABELCN);
@@ -394,6 +398,8 @@ public class ImportPosExcel {
 		int DATA_QUALITY_PERSON = Integer.parseInt(headingMap.get("移动公司数据质量责任人").toString());
 		// 21.上联设备备用端口
 		int RELATED_PORT2_CUID = Integer.parseInt(headingMap.get("上联设备备用端口").toString());
+		 // 22.接入点
+		int RELATED_ACCESS_POINT = Integer.parseInt(headingMap.get(Constant.RELATEDACCESSPOINT).toString());
 
 		Map map = new HashMap();
 		try {
@@ -600,7 +606,10 @@ public class ImportPosExcel {
 					map.put("RELATED_PORT2_CUID",CUID);
 				}
 			}
-			
+			//22.接入点
+			if(xRow.getCell(RELATED_ACCESS_POINT)!= null && !"".equals(xRow.getCell(RELATED_ACCESS_POINT).toString())){
+				map.put("RELATED_ACCESS_POINT",xRow.getCell(RELATED_ACCESS_POINT).toString());
+			}
 			
 			String cuid="";
 			if(!ImportCommonMethod.isEmpty(posCuid)){

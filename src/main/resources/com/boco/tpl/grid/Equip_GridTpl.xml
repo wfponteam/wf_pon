@@ -159,6 +159,7 @@
 			  <column dataIndex="CREATE_TIME">建设日期</column>
 			  <column dataIndex="SEQNO">SN码</column>
 			  <column dataIndex="RELATED_PROJECT_CUID">所属工程</column>
+			  <column dataIndex="RELATED_ACCESS_POINT">接入点</column>
 		</columns>
 		<cm>
 		{	

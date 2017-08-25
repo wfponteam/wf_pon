@@ -101,6 +101,7 @@
                                T.MAINT_MODE,
                                to_char(T.CREATE_TIME, 'yyyy-mm-dd hh24:mm:ss') AS CREATE_TIME,
                                T.SEQNO,
+                               T.related_access_point,
            T.RELATED_PROJECT_CUID
       FROM $ns$AN_POS T
        WHERE T.RELATED_DISTRICT_CUID LIKE '{userDistrict}%'
