@@ -40,7 +40,7 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 		prjStatus.setCuid(cuid);
 		
 		String status = prjStatus.getPrjStatus();
-		if("归档".equals(status)){
+		if("初验".equals(status)){
 			//归档
 			
 			ProjectNameSpace ns = new ProjectNameSpace();
