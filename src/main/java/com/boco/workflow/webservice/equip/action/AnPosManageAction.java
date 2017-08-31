@@ -1,7 +1,6 @@
 package com.boco.workflow.webservice.equip.action;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,9 +12,8 @@ import org.apache.log4j.Logger;
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
 import com.boco.core.spring.SysProperty;
-import com.boco.core.utils.exception.UserException;
-import com.boco.workflow.webservice.equip.bo.CheckRelationBO;
 import com.boco.workflow.webservice.equip.bo.AnPosManageBO;
+import com.boco.workflow.webservice.equip.bo.CheckRelationBO;
 
 public class AnPosManageAction {
 	
@@ -27,7 +25,7 @@ private static final Logger logger = Logger.getLogger(OnuManageAction.class);
 	}
 	
 	private AnPosManageBO getAnPosManageBO() {
-		return (AnPosManageBO)SpringContextUtil.getBean("posManageBO");
+		return (AnPosManageBO)SpringContextUtil.getBean("anPosManageBO");
 	}
 	/**
 	 * 删除POS信息

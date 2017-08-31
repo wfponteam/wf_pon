@@ -203,10 +203,16 @@ public class OnuManageBO {
 				String neFdn = IbatisDAOHelper.getStringValue(map, "FDN");
 				String labelCn = IbatisDAOHelper.getStringValue(map, "LABEL_CN");
 				String ration = IbatisDAOHelper.getStringValue(map, "RATION");
+				String district =  IbatisDAOHelper.getStringValue(map, "RELATED_DISTRICT_CUID");
+				String relatedEmsCuid = IbatisDAOHelper.getStringValue(map, "RELATED_EMS_CUID");
 				
 			//	String cardFdn = neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1";
 				List<Map> cardList = getCardByNeCuid(neCuid);
 				String cardCuid = "";
+				
+				List<Map<String,Object>> insertPtpList = new ArrayList<Map<String,Object>>();
+				Map<String,Object> mapPort = null;
+				
 				if(cardList != null && cardList.size() > 0){
 					for(Map cardMap : cardList){
 						cardCuid = ObjectUtils.toString(cardMap.get("CUID"));
@@ -216,6 +222,74 @@ public class OnuManageBO {
 						cardmap.put("FDN", fdn.contains("slot=1") ? neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1" : neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=2:Equipment=1");
 						cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
 						this.IbatisDAO.getSqlMapClient().update(NetWorkConstant.EQUIP_SQL_MAP + ".updateCardInfoByNe", cardmap);
+						
+						if(fdn.contains("slot=2")){
+							
+							//扩展下联口
+							if(!"0".equals(ration)){
+								
+								int num = Integer.parseInt(ration.substring(ration.indexOf(":") + 1, ration.length()));
+								
+								//max portnum
+								int maxNo = (Integer)this.IbatisDAO.getSqlMapClient().queryForObject(NetWorkConstant.EQUIP_SQL_MAP + ".getMaxPortNoByNeCuid", neCuid);
+								if(maxNo < num){
+									
+									for( maxNo++; maxNo <= num ; maxNo ++ ){
+										
+										mapPort = new HashMap<String,Object>();
+										mapPort.put("LABEL_CN",labelCn + "-2-VBoard-" + String.format("%02d", maxNo));
+										mapPort.put("PORT_NO", maxNo);
+										mapPort.put("RELATED_NE_CUID", neCuid);
+										mapPort.put("RATION", ration);
+										mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=2/port=" + maxNo);
+										mapPort.put("SYS_NO", "1-1-1-"+maxNo);
+										mapPort.put("DEV_TYPE", devType);
+										mapPort.put("RELATED_CARD_CUID", cardCuid);
+										mapPort.put("PORT_SUB_TYPE",13);
+										mapPort.put("PORT_TYPE",2);
+										mapPort.put("RELATED_DISTRICT_CUID",district);
+										mapPort.put("PORT_STATE",1);
+										mapPort.put("RELATED_EMS_CUID",relatedEmsCuid);
+										String cuidPort = CUIDHexGenerator.getInstance().generate("PTP");
+										mapPort.put("CUID", cuidPort);
+										mapPort.put("GT_VERSION", 0);
+										mapPort.put("ISDELETE", 0);
+										mapPort.put("PROJECT_STATE", 0);
+										mapPort.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
+										mapPort.put("IS_CHANNEL", 0);
+										mapPort.put("TERMINATION_MODE", 1);
+										mapPort.put("DIRECTIONALITY", 2);
+										mapPort.put("MSTP_NANFCMODE", 1);
+										mapPort.put("MSTP_PORT_TYPE", 1);
+										mapPort.put("IS_PERMIT_SYS_DEL", 0);
+										mapPort.put("MSTP_FLOWCTRL", 1);
+										mapPort.put("MSTP_ANFCMODE", 1);
+										mapPort.put("MSTP_LCAS_FLAG", 1);
+										mapPort.put("MSTP_PPTENABLE", 1);
+										mapPort.put("MSTP_EDETECT", 1);
+										mapPort.put("MSTP_TAG_FLAG", 1);
+										mapPort.put("MSTP_ENCAPFORMAT", 1);
+										mapPort.put("MSTP_ENCAPPROTOCOL", 1);
+										mapPort.put("MSTP_CFLEN", 1);
+										mapPort.put("MSTP_BMSGSUPPRESS", 1);
+										mapPort.put("MSTP_FCSCALSEQ", 1);
+										mapPort.put("LOOP_STATE", 1);
+										mapPort.put("MSTP_PORTENABLE", 1);
+										mapPort.put("DOMAIN", 0);
+										mapPort.put("MSTP_WORKMODE", 1);
+										mapPort.put("MSTP_PORT_SERVICETYPE", 1);
+										mapPort.put("MSTP_SCRAMBEL", 1);
+										mapPort.put("LINE_BRANCH_TYPE", 1);
+										mapPort.put("OBJECT_TYPE_CODE", 15013);
+										mapPort.put("MSTP_EXTENDEADER", 1);
+										mapPort.put("LIVE_CYCLE",2);
+										mapPort.put("USE_STATE", 1);
+										mapPort.put("LAST_MODIFY_TIME", new Timestamp(System.currentTimeMillis()));
+										insertPtpList.add(mapPort);
+									}
+								}
+							}
+						}
 						
 					}
 					//更新ONU端口或POS端口所属板卡和FDN
@@ -244,8 +318,6 @@ public class OnuManageBO {
 					cardmap.put("DEV_TYPE", devType);
 					this.IbatisDAO.getSqlMapClient().insert(NetWorkConstant.EQUIP_SQL_MAP + ".insertCardInfo", cardmap);
 					
-					List<Map<String,Object>> insertPtpList = new ArrayList<Map<String,Object>>();
-					Map<String,Object> mapPort = null;
 					//新增下联口
 					if(!"0".equals(ration)){
 						
@@ -256,6 +328,8 @@ public class OnuManageBO {
 							mapPort = new HashMap<String,Object>();
 							mapPort.put("LABEL_CN",labelCn + "-2-VBoard-" + String.format("%02d", portNum));
 							mapPort.put("PORT_NO", portNum);
+							mapPort.put("RELATED_EMS_CUID",relatedEmsCuid);
+							mapPort.put("RELATED_DISTRICT_CUID",district);
 							mapPort.put("RELATED_NE_CUID", neCuid);
 							mapPort.put("RATION", ration);
 							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=2/port=" + portNum);
@@ -333,6 +407,8 @@ public class OnuManageBO {
 							mapPort = new HashMap<String,Object>();
 							mapPort.put("LABEL_CN",labelCn + "-1-VBoard-01");
 							mapPort.put("PORT_NO", "01");
+							mapPort.put("RELATED_EMS_CUID",relatedEmsCuid);
+							mapPort.put("RELATED_DISTRICT_CUID",district);
 							mapPort.put("RELATED_NE_CUID", neCuid);
 							mapPort.put("RATION", ration);
 							mapPort.put("FDN", neFdn+":PTP=/rack=1/shelf=1/slot=1/port=01");
@@ -398,9 +474,9 @@ public class OnuManageBO {
 	public Map<String,Object> getDevByCuid(String neCuid){
 	
 		if(StringUtils.isNotEmpty(neCuid)){
-			String sql = "select * from(  SELECT FDN ,label_cn ,ration FROM t_attemp_AN_POS T WHERE T.CUID = '"+neCuid+"'"+
+			String sql = "select * from(  SELECT FDN ,label_cn ,ration,related_district_cuid,related_ems_cuid FROM t_attemp_AN_POS T WHERE T.CUID = '"+neCuid+"'"+
 					" UNION ALL "
-					+ " SELECT FDN,label_cn ,'0' ration FROM t_attemp_AN_ONU T WHERE T.CUID = '"+neCuid+"' )";
+					+ " SELECT FDN,label_cn ,'0' ration,related_district_cuid,related_ems_cuid FROM t_attemp_AN_ONU T WHERE T.CUID = '"+neCuid+"' )";
 			List<Map<String,Object>> resList =  this.IbatisDAO.querySql(sql);
 			if(resList!=null&&resList.size()>0){
 				

@@ -883,5 +883,11 @@ UNION all
 			]]>
 		</sql>
 	</combo>
+	
+	<combo name="RELATED_ACCESS_POINT">
+		<sql dao="IbatisResDAO">
+			SELECT CUID,LABEL_CN FROM accesspoint  WHERE  DISTRICT_CUID LIKE '{USERDISTRICT}%'
+		</sql>
+	</combo>
 
 </tpl>

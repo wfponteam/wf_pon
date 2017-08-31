@@ -446,6 +446,7 @@ public class ImportPosExcel {
 					String upDevType = (String)temp.get("UP_DEV_TYPE");
 					String LABEL_CN = (String)temp.get("LABEL_CN");
 					map.put("UP_DEV_TYPE",upDevType);
+					map.put("RELATED_EMS_CUID",(String)temp.get("RELATED_EMS_CUID"));
 					
 					if(upDevType.toUpperCase().equals("POS")){
 						map.put("RELATED_UPNE_CUID",neCuid);

@@ -13,16 +13,16 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
 import com.boco.core.ibatis.dao.IbatisDAO;
 import com.boco.core.ibatis.dao.IbatisDAOHelper;
+import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.workflow.webservice.dao.utils.BoUtil;
 @Service
 public class AnPosManageBO {
 	@Autowired
-	protected static IbatisDAO IbatisDAO;
+	protected IbatisDAO IbatisDAO;
 	private static final String EQUIP_SQL_MAP = "EQUIP";
 
 
@@ -143,13 +143,11 @@ public class AnPosManageBO {
 			}
 		}
 		setPosFdnAndEms(map);
-		String canallocatetouser = map.get("CAN_ALLOCATE_TO_USER").toString();
-		String districtCuid = map.get("RELATED_DISTRICT_CUID")+"";
-		if(districtCuid == null || districtCuid.length()<1){
-				String cabCuid = map.get("RELATED_CAB_CUID").toString();
-				String relatedDistrictCuid = getRelatedDistrictCuidByCabCuid(cabCuid);
-				map.put("RELATED_DISTRICT_CUID", relatedDistrictCuid);
-		}
+
+		String cabCuid = map.get("RELATED_CAB_CUID").toString();
+		String relatedDistrictCuid = getRelatedDistrictCuidByCabCuid(cabCuid);
+		map.put("RELATED_DISTRICT_CUID", relatedDistrictCuid);
+		
         String upNeCuid = map.get("RELATED_UPNE_CUID")+"";
         if(upNeCuid != null && upNeCuid.length()>1){
         	String posType = getPosTypeByUpDevCuid(upNeCuid);
@@ -162,7 +160,7 @@ public class AnPosManageBO {
       this.IbatisDAO.updateSql(updatePtpState);
 		this.IbatisDAO.getSqlMapClientTemplate().insert(EQUIP_SQL_MAP + ".insertPosInfo", map);
 		String neFdn = ObjectUtils.toString(map.get("FDN"));
-		createCardInfo(cuid, neFdn, "POS", 3);
+		((OnuManageBO)SpringContextUtil.getBean("onuManageBO")).createCardInfo(cuid, 3);
 		return "R"+cuid;
 	}
 	private String getPosTypeByUpDevCuid(String upNeCuid){
@@ -353,7 +351,7 @@ public class AnPosManageBO {
 			this.IbatisDAO.getSqlMapClientTemplate().update(EQUIP_SQL_MAP + ".updatePosInfo", map);
 			String neFdn = ObjectUtils.toString(map.get("FDN"));
 			String neCuid = ObjectUtils.toString(map.get("CUID"));
-			createCardInfo(neCuid, neFdn, "POS", 3);
+			((OnuManageBO)SpringContextUtil.getBean("onuManageBO")).createCardInfo(neCuid, 3);
 			
 			///更新板卡和端口的名称
 			this.IbatisDAO.updateSql("update card c  "+
@@ -442,74 +440,7 @@ public class AnPosManageBO {
 			return this.IbatisDAO.getSqlMapClientTemplate().queryForList(
 					EQUIP_SQL_MAP + ".queryRelatedDistrictCuidByCabCuid", name).get(0).toString();
 		}
-		/**
-		 * POS或ONU，初始化板卡 
-		 */
-		public Map createCardInfo(String neCuid,String neFdn,String _devType,int devType){
-			Map res = null;
-			try {
-				if(neCuid != null && neCuid.length()>1 && _devType != null && _devType.length()>1){
-					if(neFdn != null && neFdn.length()>1){
-						neFdn = getDevFdnByCuid(neCuid);
-					}
-					res = new HashMap<String,Object>();
-					String cardFdn = neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1:Equipment=1";
-					List<Map> cardList = getCardByFdnAndNeCuid(cardFdn, neCuid);
-					String cardCuid = "";
-					if(cardList!=null&&cardList.size()>0){
-						Map cardMap = cardList.get(0);
-						cardCuid = ObjectUtils.toString(cardMap.get("CUID"));
-						res.put("CUID", cardCuid);
-						res.put("LABEL_CN", _devType.toUpperCase()+"无板卡");
-						res.put("FDN", cardFdn);
-						res.put("DEV_TYPE", devType);
-						res.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
-						this.IbatisDAO.getSqlMapClientTemplate().update(EQUIP_SQL_MAP + ".updateCardInfoByNe", res);
-					}else{
-						Map<String,Object> cardmap=new HashMap<String,Object>();
-						cardCuid = getCuidByClassName("CARD");
-						cardmap.put("CUID", cardCuid);
-						res.put("CUID", cardCuid);
-						res.put("FDN", cardFdn);
-						cardmap.put("LABEL_CN", _devType.toUpperCase()+"无板卡");
-						cardmap.put("RELATED_DEVICE_CUID", neCuid);
-						cardmap.put("FDN", cardFdn);
-						cardmap.put("RELATED_UPPER_COMPONENT_CUID", "EQUIPMENT_HOLDER-"+neFdn+":EquipmentHolder=/rack=1/shelf=1/slot=1");
-						cardmap.put("CREATE_TIME", new Timestamp(System.currentTimeMillis()));
-						cardmap.put("GT_VERSION", 0);
-						cardmap.put("ISDELETE", 0);
-						cardmap.put("LAST_MODIFY_TIME", new Timestamp(System.currentTimeMillis()));
-						cardmap.put("PROJECT_STATE", 0);
-						cardmap.put("IS_PERMIT_SYS_DEL", 0);
-						cardmap.put("SERVICE_STATE", 1);
-						cardmap.put("USE_TYPE", 1);
-						cardmap.put("OBJECT_TYPE_CODE", "5000");
-						cardmap.put("LIVE_CYCLE", 1);
-						cardmap.put("USE_STATE", 1);
-						cardmap.put("PHOTOELECTRICITY", 1);
-						cardmap.put("DEV_TYPE", devType);
-						this.IbatisDAO.getSqlMapClientTemplate().insert(EQUIP_SQL_MAP + ".insertCardInfo", cardmap);
-					}
-					//更新ONU端口或POS端口所属板卡和FDN
-					List<Map> ptpList = getPtpByAndNeCuid(neCuid);
-					if(ptpList!=null&&ptpList.size()>0){
-						for(Map m:ptpList){
-							String portNo = ObjectUtils.toString(m.get("PORT_NO"));
-							Map<String,Object> paramPtp=new HashMap<String,Object>();
-							paramPtp.put("CUID", m.get("CUID"));
-							paramPtp.put("RELATED_CARD_CUID",cardCuid);
-							paramPtp.put("FND", neFdn+":PTP=/rack=1/shelf=1/slot=1/port="+portNo);
-							paramPtp.put("SYS_NO", "1-1-1-"+portNo);
-							paramPtp.put("DEV_TYPE", devType);
-							this.IbatisDAO.getSqlMapClientTemplate().update(EQUIP_SQL_MAP + ".updatePtpInfoByCard", paramPtp);
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return res;
-		}
+		
 		public String getDevFdnByCuid(String neCuid){
 			String devType = "";
 			if(neCuid != null && neCuid.length()>1){

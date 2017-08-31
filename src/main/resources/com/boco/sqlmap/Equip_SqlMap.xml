@@ -408,16 +408,16 @@
 	</select>
 	
 	<select id="getPosUpDevByName" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT CUID, UP_DEV_TYPE,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID
-		  FROM (SELECT AP.CUID, 'POS' AS UP_DEV_TYPE ,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID
+		SELECT CUID, UP_DEV_TYPE,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID,RELATED_EMS_CUID
+		  FROM (SELECT AP.CUID, 'POS' AS UP_DEV_TYPE ,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID,RELATED_EMS_CUID
 		          FROM AN_POS AP
 		         WHERE AP.LABEL_CN = #LABEL_CN#
 		         UNION ALL
-		         SELECT TP.CUID, 'POS' AS UP_DEV_TYPE ,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID
+		         SELECT TP.CUID, 'POS' AS UP_DEV_TYPE ,LABEL_CN,RELATED_OLT_CUID,RELATED_PORT_CUID,RELATED_EMS_CUID
 		          FROM T_ATTEMP_AN_POS TP
 		         WHERE TP.LABEL_CN = #LABEL_CN#
 		        UNION ALL
-		        SELECT TE.CUID, 'OLT' AS UP_DEV_TYPE,LABEL_CN,'' AS RELATED_OLT_CUID,'' AS RELATED_PORT_CUID
+		        SELECT TE.CUID, 'OLT' AS UP_DEV_TYPE,LABEL_CN,'' AS RELATED_OLT_CUID,'' AS RELATED_PORT_CUID,RELATED_EMS_CUID
 		          FROM TRANS_ELEMENT TE
 		         WHERE TE.LABEL_CN = #LABEL_CN#)
 	</select>
@@ -943,4 +943,8 @@ CUID
 	          FROM DUAL)
 	 WHERE LABEL_CN =#labelCn#
 	 </select>
+	 
+	 <select id="getMaxPortNoByNeCuid" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+     select max(port_no) from t_attemp_ptp where related_ne_cuid = #cuid#
+    </select>
 </sqlMap>
