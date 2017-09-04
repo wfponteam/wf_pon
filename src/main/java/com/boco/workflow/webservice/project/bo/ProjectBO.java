@@ -38,8 +38,8 @@ public class ProjectBO {
 	public void insertHanging(String cuid) throws SQLException{
 		IbatisDAO.getSqlMapClient().insert(NetWorkConstant.PROJECT_SQL_MAP + ".insertHanging", cuid);
 	}
-	public void deleteHanging(String PRJCODE) throws SQLException{
-		IbatisDAO.getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".deleteHanging", PRJCODE);
+	public void deleteHanging(Map map) throws SQLException{
+		IbatisDAO.getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".deleteHanging", map);
 	}
 	public void updateHanging(Map map) throws SQLException{
 		IbatisDAO.getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateHanging", map);

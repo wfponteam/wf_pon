@@ -47,9 +47,9 @@ public class ProjectDAO extends AbstractDAO{
 	public void updateProjectStatus(PrjStatus prjStatus) throws SQLException {
 		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateProjectStatus", prjStatus);
 	}
-	public String queryActiveByPrjcode(String PRJCODE) throws SQLException {
+	public String queryActiveByPrjcode(Map map) throws SQLException {
 		@SuppressWarnings("unchecked")
-		List<String> list = this.getBaseDAO().getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryActiveByPrjcode",PRJCODE);
+		List<String> list = this.getBaseDAO().getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryActiveByPrjcode",map);
 		if(list != null && list.size() > 0){
 			return list.get(0);
 		}

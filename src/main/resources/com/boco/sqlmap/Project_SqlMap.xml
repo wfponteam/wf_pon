@@ -194,8 +194,9 @@
 			 and vg.cuid = #cuid#
 			]]>
 	</insert>
-	<delete id="deleteHanging" parameterClass="java.lang.String">
-		delete from  T_WF_FTTX_GC where PRJCODE = #PRJCODE#
+	<delete id="deleteHanging" parameterClass="java.util.Map">
+		delete from  T_WF_FTTX_GC where PRJCODE = #PRJ_CODE#
+		 and PARENTPRJCODE = #PARENT_PRJ_CODE#
 	</delete>
 	
 	<update id="updateHanging" parameterClass="java.util.Map">
@@ -262,8 +263,8 @@
 	   and pos.related_project_cuid = wp.cuid
 	   and wp.cuid =#CUID#
 	</select>
-	<select id="queryActiveByPrjcode" parameterClass="java.lang.String" resultClass="java.lang.String">
-		select  wp.cuid from  t_wf_project wp where wp.PRJ_CODE =#PRJCODE#
+	<select id="queryActiveByPrjcode" parameterClass="java.util.Map" resultClass="java.lang.String">
+		select  wp.cuid from  t_wf_project wp where wp.PRJ_CODE =#code# and PARENT_PRJ_CODE = #pcode#
 	</select>
 	<insert id="insertProjectStatusRecord" parameterClass="java.util.Map">
 		insert into T_WF_PRJ_STATUS_RECORD(prj_id,prj_status,update_time)

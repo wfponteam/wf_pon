@@ -56,12 +56,12 @@ public class WebServiceAction {
 			//查询当前工程状态
 			Map<String,Object> map = projectBO.queryProjectByCode(cuid);
 			String status = IbatisDAOHelper.getStringValue(map, "PRJ_STATUS");
-			String PRJCODE = IbatisDAOHelper.getStringValue(map, "PRJ_CODE");
+			
 			
 			if(!"施工".equals(status)){
 				return "{\"success\":true,\"msg\":\"工程状态为:" + status + ",不能进行挂测！\"}";
 			}
-			projectBO.deleteHanging(PRJCODE);
+			projectBO.deleteHanging(map);
 			projectBO.insertHanging(cuid);
 
 			ActiveResp res= activeService.doActive(cuid);

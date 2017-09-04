@@ -454,15 +454,10 @@ public class OnuManageBO {
 							mapPort.put("USE_STATE", 1);
 							mapPort.put("LAST_MODIFY_TIME", new Timestamp(System.currentTimeMillis()));
 							insertPtpList.add(mapPort);
-					//	}
 						
-						
-						((ImportBasicDataBO)(SpringContextUtil.getBean("importBasicDataBO"))).importPtpBatchInsert(insertPtpList,
-								"自动生成pos端口");
-					
-					
-					
 				}
+				((ImportBasicDataBO)(SpringContextUtil.getBean("importBasicDataBO"))).importPtpBatchInsert(insertPtpList,
+						"自动生成pos端口");
 				
 			}
 		} catch (Exception e) {

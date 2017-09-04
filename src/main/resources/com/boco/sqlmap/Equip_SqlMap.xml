@@ -27,6 +27,10 @@
 		DELETE FROM t_attemp_CARD WHERE RELATED_DEVICE_CUID = #CUID#
 	</delete>
 	
+	<delete id="deleteGponCoverbyNeCuid" parameterClass="java.lang.String">
+		DELETE FROM t_attemp_GPON_COVER WHERE RELATED_NE_CUID = #CUID#
+	</delete>
+	
 	<!-- 释放onu上联端口 -->
 	<update id="updateOnuPtpFree" parameterClass="java.lang.String">
 		update ptp p
@@ -424,6 +428,8 @@
 	
 	<select id="getPosByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		SELECT related_port_cuid  FROM an_pos  WHERE cuid = #CUID#
+		union all
+		SELECT related_port_cuid  FROM t_attemp_an_pos  WHERE cuid = #CUID#
 	</select>
 	
     
@@ -483,7 +489,7 @@
 	 <!--删除POS信息-->
 	 	<delete id="deletePosInfoByCuid" parameterClass="java.lang.String">
 		DELETE FROM
-		AN_POS
+		t_attemp_AN_POS
 		WHERE CUID = #CUID#
 	</delete>
     <!-- 更新POS端口状态 -->
@@ -491,7 +497,7 @@
 		 update ptp p
            set p.port_state = '1'
          where p.cuid = (select ap.related_upne_port_cuid
-                           from an_pos ap
+                           from t_attemp_AN_POS ap
                           where ap.cuid = #cuid#)
 	</update>
 	<select id="queryPosByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
@@ -583,7 +589,7 @@
 		       A.STANDARD_NAME,
 		       A.ACCESS_TYPE,
 		       A.LABEL_DEV
-		  FROM AN_POS A WHERE CUID = #CUID#
+		  FROM t_attemp_AN_POS A WHERE CUID = #CUID#
 	</select>
 		
 	

@@ -1,5 +1,8 @@
 package com.boco.workflow.webservice.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +38,10 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 		
 		logger.info("HangingResutServiceImpl.doBusiness");
 		//存储结果？
-		String PRJCODE = e.getPrjCode();
-		String cuid= projectDAO.queryActiveByPrjcode(PRJCODE);
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("code", e.getPrjCode());
+		map.put("pcode", e.getParentPrjCode());
+		String cuid= projectDAO.queryActiveByPrjcode(map);
 		activeService.doDeActive(cuid);
 		//向管线发消息
 		String xml = e.getBuilder().toXml();
