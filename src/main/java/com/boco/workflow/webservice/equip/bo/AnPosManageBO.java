@@ -40,9 +40,9 @@ public class AnPosManageBO {
 				for (String cuid : cuidSet) {
 					cuidList.add(cuid);
 				}
-				List list = this.IbatisDAO.getSqlMapClientTemplate().queryForList(EQUIP_SQL_MAP+".queryPtpByRelatedNeCuid",cuidList);
+				List list = this.IbatisDAO.getSqlMapClientTemplate().queryForList(EQUIP_SQL_MAP+".queryRelatedNeCuid",cuidList);
 				if(!list.isEmpty()){
-					showMessage = "该POS设备下存在端口，不允许删除!";
+					showMessage = "该POS设备下存设备，不允许删除!";
 				}
 				if(showMessage.isEmpty()){
 						deletePosinfo(cuidList);
@@ -86,6 +86,8 @@ public class AnPosManageBO {
 				BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),EQUIP_SQL_MAP + ".deleteGponCoverbyNeCuid", cuidList);
 				//释放上联端口状态
 				BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),EQUIP_SQL_MAP + ".updatePosPtpFree", cuidList);
+				//删除端口
+				BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),EQUIP_SQL_MAP + ".deleteDevPtp", cuidList);
 				//删除POS网元信息
 				BoUtil.batchDelete(this.IbatisDAO.getSqlMapClient(),EQUIP_SQL_MAP + ".deletePosInfoByCuid", cuidList);
 		} catch (Exception e) {

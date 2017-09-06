@@ -10,6 +10,14 @@
        </iterate>
 	</select>
 	
+	<!-- 查询设备下是否有端口 -->
+	<select id="queryRelatedNeCuid" parameterClass="java.util.ArrayList" resultClass="java.lang.Integer">
+		select 1 from t_attemp_an_pos ap where ap.related_upne_cuid in
+		<iterate conjunction="," open="(" close=")">
+            #ptpsList[]#
+       </iterate>
+	</select>
+	
 	<!-- 查询onu名称是否存在 -->
 	<select id="queryOnuByLabelcn" parameterClass="java.lang.String" resultClass="java.lang.String">
 		SELECT '0' cuid FROM AN_ONU  WHERE LABEL_CN = #LABEL_CN#
@@ -491,6 +499,11 @@
 		DELETE FROM
 		t_attemp_AN_POS
 		WHERE CUID = #CUID#
+	</delete>
+		<delete id="deleteDevPtp" parameterClass="java.lang.String">
+		DELETE FROM
+			t_attemp_ptp
+		WHERE related_ne_cuid = #CUID#
 	</delete>
     <!-- 更新POS端口状态 -->
 	<update id="updatePosPtpFree" parameterClass="java.lang.String">

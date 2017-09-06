@@ -35,7 +35,7 @@ NETWORK.pos= Ext.extend(Ext.Panel,{
 			view : new Ext.grid.GridView({
 				forceFit : true
 			}),
-			pageSize : 20,
+			pageSize : 50,
 			loadData : false
 		});
 		

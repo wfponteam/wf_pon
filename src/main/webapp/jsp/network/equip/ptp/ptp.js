@@ -209,7 +209,7 @@ NETWORK.ptp = Ext.extend(Ext.Panel, {
 			hasBbar	 			: true,
 			enableContextMenu : true,
 			enableGeneralQuery: false,
-			pageSize : 20,
+			pageSize : 50,
 			gridCfg 			: {
 				boName 	  			: 'ponTemplateGirdBo',
 //				exportBoName        : 'EquipGridExportBO',
