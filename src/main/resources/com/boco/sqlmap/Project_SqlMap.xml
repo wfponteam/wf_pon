@@ -191,6 +191,7 @@
 			  ponportname      
 			  from v_fttx_gc vg ,t_attemp_ptp ptp
 			 where ptp.related_ne_cuid = vg.pos_cuid
+			 and ptp.port_sub_type = 13
 			 and vg.cuid = #cuid#
 			]]>
 	</insert>
