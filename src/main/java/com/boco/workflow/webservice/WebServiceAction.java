@@ -72,6 +72,7 @@ public class WebServiceAction {
 				paremeterMap.put("reason", active.getReason());
 				projectBO.updateHanging(paremeterMap);
 			}
+			projectBO.updateResultStatus(map);
 			////将状态改为挂测
 			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addCuid(cuid).addPrjStatus("挂测").build();
 			projectDAO.updateProjectStatus(prjStatus);

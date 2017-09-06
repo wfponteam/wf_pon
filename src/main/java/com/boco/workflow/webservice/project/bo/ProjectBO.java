@@ -44,6 +44,9 @@ public class ProjectBO {
 	public void updateHanging(Map map) throws SQLException{
 		IbatisDAO.getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateHanging", map);
 	}
+	public void updateResultStatus(Map map) throws SQLException{
+		IbatisDAO.getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateResultStatus", map);
+	}
 	public String queryIdByCode(String prjCode, String parentPrjCode) throws SQLException {
 		
 		PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addPrjCode(prjCode).addParentPrjCode(parentPrjCode).build();

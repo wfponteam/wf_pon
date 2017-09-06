@@ -74,10 +74,18 @@
                                 union all
                                 select label_cn
                                   from an_pos
+                                 where cuid = t.RELATED_UPNE_CUID and rownum=1
+                                 union all
+                                select label_cn
+                                  from t_attemp_an_pos
                                  where cuid = t.RELATED_UPNE_CUID and rownum=1) as N_RELATED_UPNE_CUID,
                                T.RELATED_UPNE_CUID,
                                (select label_cn
                                   from ptp
+                                 where cuid = T.RELATED_UPNE_PORT_CUID and rownum=1
+                                 union all 
+                                 select label_cn
+                                  from t_attemp_ptp
                                  where cuid = T.RELATED_UPNE_PORT_CUID and rownum=1) as N_RELATED_UPNE_PORT_CUID,
                                T.RELATED_UPNE_PORT_CUID,
                                (select label_cn

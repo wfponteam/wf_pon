@@ -202,8 +202,15 @@
 	<update id="updateHanging" parameterClass="java.util.Map">
 		update T_WF_FTTX_GC p
 		   set password = #password#,
-			   FAILDESC = #reason#
+			   jh_result = #reason#,
 		 where ponportname = #ponPort#
+	</update>
+	
+	<update id="updateResultStatus" parameterClass="java.util.Map">
+			update  T_WF_FTTX_GC
+				set result = 0
+			where PRJCODE = #PRJ_CODE#
+			     and PARENTPRJCODE = #PARENT_PRJ_CODE#
 	</update>
 	
 	<select id="getIdByCode" resultClass="java.lang.String" parameterClass="com.boco.workflow.webservice.pojo.PrjStatus">
