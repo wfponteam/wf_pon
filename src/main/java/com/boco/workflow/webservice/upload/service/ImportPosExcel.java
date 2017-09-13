@@ -633,20 +633,12 @@ public class ImportPosExcel {
 		 * by lichao
 		 */
 			
-			String	posFdn = "";
-			String posOLtCuid="" ;
 
-			if(map.get("UP_DEV_TYPE").equals("POS")){
-				posOLtCuid =  ObjectUtils.toString(map.get("RELATED_UPNE_CUID"));		 	
-				Map temp1=getImportAttributeQueryBO().getPosByLabelCuid(posOLtCuid) ; 
-				posFdn = temp1.get("FDN") + ":POS=" +  ObjectUtils.toString(map.get("LABEL_CN"));
-			}
-			else if(map.get("UP_DEV_TYPE").equals("OLT")){
-	        		posOLtCuid =  ObjectUtils.toString(map.get("RELATED_OLT_CUID"));		 	
-					Map temp1=getImportAttributeQueryBO().getOltByLabelCuid(posOLtCuid) ; 
-					posFdn = temp1.get("FDN") + ":POS=" +  ObjectUtils.toString(map.get("LABEL_CN"));
-	           }
-				map.put("FDN", posFdn);
+			String posOLtCuid =  ObjectUtils.toString(map.get("RELATED_OLT_CUID"));		 	
+			Map temp1=getImportAttributeQueryBO().getOltByLabelCuid(posOLtCuid) ; 
+			String posFdn = temp1.get("FDN") + ":POS=" +  ObjectUtils.toString(map.get("LABEL_CN"));
+	           
+			map.put("FDN", posFdn);
 				
 			posList.add(map);
 		} catch (Exception e) {
