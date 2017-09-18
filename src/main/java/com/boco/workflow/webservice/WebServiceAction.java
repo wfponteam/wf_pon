@@ -59,7 +59,7 @@ public class WebServiceAction {
 			
 			
 			if(!"施工".equals(status)){
-				return "{\"success\":true,\"msg\":\"工程状态为:" + status + ",不能进行挂测！\"}";
+				return "{\"success\":true,\"msg\":\"工程状态为:" + status + ",资管系统接口数据已推送到挂测系统,不能进行挂测！\"}";
 			}
 			projectBO.deleteHanging(map);
 			projectBO.insertHanging(cuid);
