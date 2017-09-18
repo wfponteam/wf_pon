@@ -3,6 +3,7 @@ package com.boco.workflow.webservice.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,14 +54,14 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 		logger.info(result);
 		
 		Result res = PojoBuilderFactory.getBuilder(ResultBuilder.class).fromXml(result);
-		if(!"成功".equals(res.getIsSuccess())){
+		if(!"成功".equals(e.getTestStatus())){
 			
 			//状态修改为施工
-			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addParentPrjCode(e.getParentPrjCode())
-				.addPrjCode(e.getPrjCode()).build();
-			String id = projectDAO.getIdByCode(prjStatus);
-			prjStatus.setCuid(id);
+			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addPrjStatus("施工").addCuid(cuid).build();
 			projectDAO.updateProjectStatus(prjStatus);
+			
+		}
+		if(StringUtils.isNotBlank(res.getErrorInfo())){
 			
 			throw new Exception(res.getErrorInfo());
 		}
