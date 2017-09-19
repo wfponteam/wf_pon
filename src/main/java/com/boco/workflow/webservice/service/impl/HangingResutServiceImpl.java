@@ -63,7 +63,7 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 		}
 		if(StringUtils.isNotBlank(res.getErrorInfo())){
 			
-			throw new Exception(res.getErrorInfo());
+			//throw new Exception(res.getErrorInfo());
 		}
 		
 		

@@ -90,9 +90,7 @@
              FROM t_attemp_BUSINESS_COMMUNITY T7
             WHERE T7.CUID=FA.RELATED_COMMUNITY_CUID AND ACCESS_MODE=2) AS N_RELATED_COMMUNITY_CUID
              FROM $ns$T_ROFH_FULL_ADDRESS FA
-          WHERE  FLAG=0 
-          AND 1=1
-       
+          WHERE   1=1
 		</sql>
 	</grid>
 	

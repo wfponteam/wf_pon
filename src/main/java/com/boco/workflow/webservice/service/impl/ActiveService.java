@@ -3,12 +3,14 @@ package com.boco.workflow.webservice.service.impl;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.boco.core.utils.exception.UserException;
 import com.boco.workflow.webservice.builder.ActiveBuilder;
 import com.boco.workflow.webservice.builder.ActiveRespBuilder;
 import com.boco.workflow.webservice.builder.factory.PojoBuilderFactory;
@@ -26,7 +28,15 @@ public class ActiveService{
 	private ProjectBO projectBO;
     
 	public  ActiveResp doActive(String cuid) throws Exception{
-		return active(cuid,"1");
+		
+		try {
+			return active(cuid,"1");
+			
+		} catch (Exception e) {
+			throw new UserException("激活失败！");
+		}
+		
+				
 	}
 	
     public ActiveResp  doDeActive(String cuid ) throws Exception{
@@ -53,8 +63,14 @@ public class ActiveService{
 	    		device.setOltName(map.get("DEVICENAME"));
 	    		assert(StringUtils.isNotBlank(map.get("OLTSVLAN"))):"SVLAN为空null";
 	    		device.setSvlan(map.get("OLTSVLAN"));
-	    		assert(StringUtils.isNotBlank(map.get("PASSWORD"))):"密码为空null";
-	    		device.setPassword(map.get("PASSWORD"));
+	    		//assert(StringUtils.isNotBlank(map.get("PASSWORD"))):"密码为空null";
+	    		
+	    		String password = map.get("PASSWORD");
+	    		if("1".equals(type)){
+	    			
+	    			password = getRandomPw(8);
+	    		}
+	    		device.setPassword(password);
 	    		assert(StringUtils.isNotBlank(map.get("PONPORTNAME"))):"端口名称为空null";
 	    		device.setPonPort(map.get("PONPORTNAME"));
 	    		builder.addDevice(device);
@@ -71,5 +87,18 @@ public class ActiveService{
 		logger.info(activeResp);
 		return activeResp;
    }
+     
+     public static String getRandomPw(int count) {
+			StringBuffer sb = new StringBuffer();
+
+			String str = "0123456789";
+			Random r = new Random();
+			for (int i = 0; i < count; i++) {
+				int num = r.nextInt(str.length());
+				sb.append(str.charAt(num));
+				str = str.replace((str.charAt(num) + ""), "");
+			}
+			return sb.toString();
+		}
 
 }
