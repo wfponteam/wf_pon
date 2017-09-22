@@ -1,6 +1,7 @@
 package com.boco.workflow.webservice.pojo;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -12,7 +13,7 @@ public class Active {
 	
 	private String productId;
 	
-	private List<Device> deviceList;
+	private Set<Device> deviceList;
 	
 	@XStreamAlias("device")
 	public static class Device{
@@ -88,6 +89,28 @@ public class Active {
 			
 			return ToStringBuilder.reflectionToString(this);
 		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			
+			if(!(obj instanceof Device)){
+				
+				return false;
+			}
+			Device device = (Device)obj;
+			if(device == this){
+				
+				return true;
+			}
+			return this.ponPort.equals(device.ponPort);
+		}
+		
+		@Override
+		public int hashCode() {
+			
+			return 31 + ((ponPort == null) ? 0 : ponPort.hashCode());
+		}
+		
 	}
 	
 	
@@ -105,10 +128,10 @@ public class Active {
 	}
 	
 	
-	public List<Device> getDeviceList() {
+	public Set<Device> getDeviceList() {
 		return deviceList;
 	}
-	public void setDeviceList(List<Device> deviceList) {
+	public void setDeviceList(Set<Device> deviceList) {
 		this.deviceList = deviceList;
 	}
 	@Override

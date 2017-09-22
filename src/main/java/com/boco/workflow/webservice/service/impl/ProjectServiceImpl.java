@@ -29,20 +29,20 @@ public class ProjectServiceImpl extends AbstractService<ProjectBuilder,Project> 
 		
 		logger.info("ProjectServiceImpl.doBusiness");
 		
-		if("新增".equals(project.getActionType())){
-			
-			dao.insertProject(project.getBuilder().addPrjStatus("施工").build());
-		}else if ("删除".equals(project.getActionType())){
+		if ("删除".equals(project.getActionType())){
 			
 			dao.deleteProject(project.getCuid());
 			
-		}else if ("修改".equals(project.getActionType())){
+		}else {
 			
-			dao.updateProject(project);
+			try {
+				dao.insertProject(project.getBuilder().addPrjStatus("施工").build());
+			} catch (Exception e) {
+				
+				logger.debug("是修改");
+				dao.updateProject(project);
+			}
 			
-		}else{
-			
-			throw new UserException("操作类型不存在！");
 		}
 		
 	}

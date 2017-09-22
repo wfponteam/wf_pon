@@ -1,11 +1,10 @@
 package com.boco.workflow.webservice.builder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.boco.workflow.webservice.pojo.Active;
 import com.boco.workflow.webservice.pojo.Active.Device;
-import com.boco.workflow.webservice.upload.constants.ElementEnum.relationCrossSDHRate;
 
 /**
  * 构建工程的结构
@@ -41,10 +40,10 @@ public class ActiveBuilder extends AbstractBuilder<Active> implements IBuilder<A
 		
 		if(pojo.getDeviceList() == null){
 			
-			pojo.setDeviceList(new ArrayList<Device>());
+			pojo.setDeviceList(new HashSet<Device>());
 		}
 		
-		List<Device> list = pojo.getDeviceList();
+		Set<Device> list = pojo.getDeviceList();
 		list.add(device);
 		return this;
 	}
