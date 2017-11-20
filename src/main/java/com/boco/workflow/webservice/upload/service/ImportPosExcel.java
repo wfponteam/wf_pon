@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
+import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.workflow.webservice.upload.bo.ImportAttributeQueryBO;
 import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
 import com.boco.workflow.webservice.upload.constants.AnmsConst;
@@ -105,7 +106,7 @@ public class ImportPosExcel {
 				if(xRow != null){
 					Object name=xRow.getCell(labelCn);
 					if(name != null && !"".equals(name.toString().trim())){
-						verificationPosCell( writeWorkBook,  writeSheet,xRow ,headingMap,i,lastColumns,lastRows,portNameList);
+						verificationPosCell( writeWorkBook,  writeSheet,xRow ,headingMap,i,lastColumns,lastRows,portNameList,prjcode);
 						if(ImportCommonMethod.isExistFalse(writeWorkBook, writeSheet, lastColumns,lastRows) == 0){
 							addPosModel(xRow , headingMap, i,prjcode);
 						}
@@ -144,7 +145,7 @@ public class ImportPosExcel {
 	/**
 	 * POS单元格校验
 	 */
-	private  void verificationPosCell(Workbook writeWorkBook, Sheet writeSheet,Row xRow ,Map headingMap , int i ,int lastColumns ,int lastRows,List portNameList ) throws Exception{
+	private  void verificationPosCell(Workbook writeWorkBook, Sheet writeSheet,Row xRow ,Map headingMap , int i ,int lastColumns ,int lastRows,List portNameList,String prjcode ) throws Exception{
 		// 01.PBOSS系统分光器名称
 		
 		// 02.分光器名称
@@ -201,9 +202,13 @@ public class ImportPosExcel {
 				if(temp!=null){
 					
 					String type = ObjectUtils.toString(temp.get("TYPE"));
+					String pCode = IbatisDAOHelper.getStringValue(temp, "RELATED_PROJECT_CUID");
 					if("0".equals(type)){
 						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, labelCn, lastColumns, "pos名称已经归档！");
-					}else{
+					}else if(!prjcode.equals(pCode)){
+						ImportCommonMethod.printOnlyErrorInfo(writeWorkBook, writeSheet, i, labelCn, lastColumns, "pos已在工程"+pCode+"中！");
+					}
+					else{
 						posCuid = ObjectUtils.toString(temp.get("CUID"));
 					}
 					

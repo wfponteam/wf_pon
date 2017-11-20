@@ -303,9 +303,9 @@
 	 </select>
 	 
 	<select id="queryPosBylabelcn" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
-		SELECT ap.*,'0' type FROM AN_POS ap WHERE LABEL_CN = #LABEL_CN#
+		SELECT ap.*,'0' type,related_project_cuid FROM AN_POS ap WHERE LABEL_CN = #LABEL_CN#
 		union all
-		SELECT tp.*,'1' type FROM t_attemp_AN_pos tp WHERE LABEL_CN = #LABEL_CN#
+		SELECT tp.*,'1' type,related_project_cuid FROM t_attemp_AN_pos tp WHERE LABEL_CN = #LABEL_CN#
 	</select>
 	
 	<select id="getPtpByNameAndNeCuid" parameterClass="java.util.HashMap" resultClass="com.boco.core.ibatis.vo.ResultMap">

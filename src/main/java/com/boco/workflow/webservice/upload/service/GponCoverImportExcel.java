@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
+import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.workflow.webservice.space.bo.CoverBO;
 import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
@@ -76,7 +77,7 @@ public class GponCoverImportExcel {
 			for (int i = dataRowNum; i <= lastRows; i++) {
 				Row xRow = writeSheet.getRow(i);
 				if(xRow!=null){
-					Map<String,Object> dataMap = verificationCell(writeWorkBook, writeSheet, xRow, i,lastColumns);	
+					Map<String,Object> dataMap = verificationCell(writeWorkBook, writeSheet, xRow, i,lastColumns,prjcode);	
 					if(!ImportCommonMethod.isRowExistError(xRow,lastColumns)
 							&&dataMap.get("TYPE")!=null&&dataMap.get("CUID")!=null){
 						dataMap.put("RELATED_PROJECT_CUID", prjcode);
@@ -106,7 +107,7 @@ public class GponCoverImportExcel {
 			throw new Exception("导入失败请与管理员联系!"+ e.getMessage());
 		}
 	}
-	public  Map<String,Object> verificationCell(Workbook writeWorkBook, Sheet writeSheet,Row xRow, int i ,int lastColumns)
+	public  Map<String,Object> verificationCell(Workbook writeWorkBook, Sheet writeSheet,Row xRow, int i ,int lastColumns,String prjcode)
 			throws Exception{
 		LogHome.getLog().info("覆盖范围校验start====");
 		Map<String,Object> dataMap = new HashMap<String,Object>();
@@ -140,8 +141,11 @@ public class GponCoverImportExcel {
 				    	Map<String, Object> resultMap = getGponCoverManageBO().selectGponCoverByNeAndAddress(neCuid,fullAddressCuid);
 				    	if(resultMap!=null&&resultMap.size()>0){
 				    		
+				    		String pCode = IbatisDAOHelper.getStringValue(resultMap, "RELATED_PROJECT_CUID");
 				    		if("0".equals(ObjectUtils.toString(resultMap.get("CUID")))){
 				    			ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet,i,c,lastColumns,"覆盖范围已归档！");
+				    		}else if(!prjcode.equals(pCode)){
+				    			ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet,i,c,lastColumns,"覆盖范围已在工程"+pCode+"中！");
 				    		}else{
 					    		dataMap.put("TYPE","UPDATE");
 					    		dataMap.put(dataColumns[0],ObjectUtils.toString(resultMap.get("CUID")));

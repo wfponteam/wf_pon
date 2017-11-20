@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.boco.common.util.debug.LogHome;
 import com.boco.core.bean.SpringContextUtil;
+import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.core.utils.id.CUIDHexGenerator;
 import com.boco.workflow.webservice.space.bo.VillageBO;
 import com.boco.workflow.webservice.upload.bo.ImportBasicDataBO;
@@ -70,7 +71,7 @@ public class BusinessCommunityImportExcel {
 			for (int i = dataRowNum; i <= lastRows; i++) {
 				Row xRow = writeSheet.getRow(i);
 				if(xRow!=null){
-					Map<String,Object> dataMap = verificationCell(writeWorkBook, writeSheet, xRow, i,lastColumns);	
+					Map<String,Object> dataMap = verificationCell(writeWorkBook, writeSheet, xRow, i,lastColumns,prjcode);	
 					if(!ImportCommonMethod.isRowExistError(xRow,lastColumns)
 							&&dataMap.get("TYPE")!=null&&dataMap.get("CUID")!=null){
 						dataMap.put("RELATED_PROJECT_CUID", prjcode);
@@ -100,7 +101,7 @@ public class BusinessCommunityImportExcel {
 			throw new Exception("导入失败请与管理员联系!"+ e.getMessage());
 		}
 	}
-	public  Map<String,Object> verificationCell(Workbook writeWorkBook, Sheet writeSheet,Row xRow, int i ,int lastColumns)
+	public  Map<String,Object> verificationCell(Workbook writeWorkBook, Sheet writeSheet,Row xRow, int i ,int lastColumns,String prjcode)
 			throws Exception{
 		LogHome.getLog().info("业务区校验start====");
 		Map<String,Object> dataMap = new HashMap<String,Object>();
@@ -130,9 +131,19 @@ public class BusinessCommunityImportExcel {
 				dataMap.put("LABEL_CN", label_cn);
 				Map<String,Object> tempObj = getBusinessCommunityManageBO().queryBCInfoByLabelCn(dataMap);
 				if(tempObj!=null&&tempObj.size()>0){
-					neCuid = ObjectUtils.toString(tempObj.get("CUID"));
-					dataMap.put(dataColumns[0],neCuid);
-					dataMap.put("TYPE","UPDATE");
+					String type = IbatisDAOHelper.getStringValue(tempObj, "TYPE");
+					String pCode = IbatisDAOHelper.getStringValue(tempObj, "RELATED_PROJECT_CUID");
+					if("0".equals(type)){
+						ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet,i,c-1,lastColumns,"业务区已归档！");
+					}else if(!prjcode.equals(pCode)){
+						ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet,i,c-1,lastColumns,"业务区已在工程"+pCode+"中！");
+					}else{
+						
+						neCuid = ObjectUtils.toString(tempObj.get("CUID"));
+						dataMap.put(dataColumns[0],neCuid);
+						dataMap.put("TYPE","UPDATE");
+					}
+					
 				}else{
 		    		dataMap.put(dataColumns[0],CUIDHexGenerator.getInstance().generate(BUSINESS_COMMUNITY));
 		    		dataMap.put("TYPE","INSERT");

@@ -131,7 +131,7 @@ public class ImportAddressExcel {
 				if (xRow != null) {
 					Map<String, Object> dataMap = verificationCell(
 							writeWorkBook, writeSheet, xRow, i, lastColumns,
-							nameMaps, districtMaps, businessMaps);
+							nameMaps, districtMaps, businessMaps,prjcode);
 					if (!ImportCommonMethod.isRowExistError(xRow, lastColumns)
 							&& dataMap.get("TYPE") != null
 							&& dataMap.get("CUID") != null) {
@@ -166,7 +166,7 @@ public class ImportAddressExcel {
 	public Map<String, Object> verificationCell(Workbook writeWorkBook,
 			Sheet writeSheet, Row xRow, int i, int lastColumns,
 			Map<String, String> nameMaps, Map<String, String> districtMaps,
-			Map<String, String> businessMaps) throws Exception {
+			Map<String, String> businessMaps,String prjcode) throws Exception {
 		
 		LogHome.getLog().info("标准地址校验start====");
 		Map dataMap = new HashMap();
@@ -179,10 +179,14 @@ public class ImportAddressExcel {
 				if (tempObj != null) {
 					
 					String type = tempObj.get("TYPE").toString();
+					String pCode = IbatisDAOHelper.getStringValue(tempObj, "RELATED_PROJECT_CUID");
 					if("0".equals(type)){
 						
 						ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
 								c, lastColumns, "标准地址名称已归档！");
+					}else if(!prjcode.equals(pCode)){
+						ImportCommonMethod.printErrorInfo(writeWorkBook, writeSheet, i,
+								c, lastColumns, "标准地址已在工程"+pCode+"中！");
 					}else{
 						adrCuid = tempObj.get("CUID").toString();
 						dataMap.put(dataColumns[0], adrCuid);

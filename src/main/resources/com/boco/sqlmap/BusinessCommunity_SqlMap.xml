@@ -152,8 +152,37 @@
                    SOUTH_LONGITUDE,
                    SOUTH_LATITUDE, 
                    NORTH_LONGITUDE,
-                   NORTH_LATITUDE  	 
+                   NORTH_LATITUDE ,
+                   '1' type,
+                   RELATED_PROJECT_CUID
 			FROM t_attemp_BUSINESS_COMMUNITY WHERE LABEL_CN=#LABEL_CN# AND CITY =#CITY# AND ACCESS_MODE=2
+			union all 
+			SELECT CUID,LABEL_CN	,
+			CITY	,
+			ADDRESS	,
+			BUILDINGS_NUM	,
+			UNITS_NUM	,
+			HOUSEHOLDS_NUM	,
+			MAINTAIN_PERSON	,
+			MAINTAIN_DEPT	,
+			WARNING_VALUE	,
+			CONTACT_NUMBER	,
+			CONSTRUCT_DEPT	,
+			IS_PRIORITY	,
+			IS_LIGHT_CHANGED	,
+			IS_OVERLAPP	,
+			BUILD_TYPE,
+			       EAST_LONGITUDE,
+		           EAST_LATITUDE,
+			       WEST_LONGITUDE, 
+                   WEST_LATITUDE,  
+                   SOUTH_LONGITUDE,
+                   SOUTH_LATITUDE, 
+                   NORTH_LONGITUDE,
+                   NORTH_LATITUDE ,
+                   '0' type,
+                   RELATED_PROJECT_CUID
+			FROM BUSINESS_COMMUNITY WHERE LABEL_CN=#LABEL_CN# AND CITY =#CITY# AND ACCESS_MODE=2
 	 </select>
 	 
 	 <select id="selectDistrictByLabeCn" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.lang.String">

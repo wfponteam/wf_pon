@@ -81,9 +81,9 @@
 	 </select>
 	 
 	 <select id="selectGponCoverByNeAndAddress" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="java.util.HashMap">
-	 	SELECT '0' CUID FROM GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
+	 	SELECT '0' CUID,related_project_cuid FROM GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
 	 	UNION ALL
-	 	SELECT CUID FROM t_attemp_GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
+	 	SELECT CUID,related_project_cuid FROM t_attemp_GPON_COVER A WHERE A.RELATED_NE_CUID=#RELATED_NE_CUID# AND STANDARD_ADDR = #STANDARD_ADDR#
 	 </select>
 	 
 </sqlMap>
