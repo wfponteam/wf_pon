@@ -16,6 +16,7 @@ import com.boco.workflow.webservice.dao.ProjectDAO;
 import com.boco.workflow.webservice.pojo.PrjStatus;
 import com.boco.workflow.webservice.pojo.Result;
 import com.boco.workflow.webservice.pojo.Validation;
+import com.boco.workflow.webservice.project.bo.ProjectBO;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplService;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplServiceLocator;
 import com.boco.workflow.webservice.service.AbstractService;
@@ -34,6 +35,8 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 	private ActiveService activeService;
 	@Autowired
 	private ProjectDAO projectDAO;
+	@Autowired
+	private ProjectBO projectBo;
 	@Override
 	protected void doBusiness(Validation e) throws Exception{
 		
@@ -43,7 +46,11 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 		map.put("code", e.getPrjCode());
 		map.put("pcode", e.getParentPrjCode());
 		String cuid= projectDAO.queryActiveByPrjcode(map);
-		activeService.doDeActive(cuid);
+		
+		if("1".equals(e.getReturnType()) || "失败".equals(e.getTestStatus())){
+			
+			activeService.doDeActive(cuid,null);
+		}
 		//向管线发消息
 		String xml = e.getBuilder().toXml();
 		logger.info("挂测结果：" + xml);
@@ -59,6 +66,10 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 			//状态修改为施工
 			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addPrjStatus("施工").addCuid(cuid).build();
 			projectDAO.updateProjectStatus(prjStatus);
+			Map<String,String> dMap = new HashMap<String,String>();
+			dMap.put("PRJ_CODE", e.getPrjCode());  
+			dMap.put("PARENT_PRJ_CODE", e.getParentPrjCode());
+			projectBo.deleteHanging(dMap);
 			
 		}
 		if(StringUtils.isNotBlank(res.getErrorInfo())){

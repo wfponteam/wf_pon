@@ -6,6 +6,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,22 +58,67 @@ public class WebServiceAction {
 			Map<String,Object> map = projectBO.queryProjectByCode(cuid);
 			String status = IbatisDAOHelper.getStringValue(map, "PRJ_STATUS");
 			
-			
+			if("挂测(修改)".equals(status)){
+				
+				return this.syncPosHanging(cuid);
+			}
 			if(!"施工".equals(status)){
 				return "{\"success\":true,\"msg\":\"工程状态为:" + status + ",资管系统接口数据已推送到挂测系统,不能进行挂测！\"}";
 			}
 			projectBO.deleteHanging(map);
 			projectBO.insertHanging(cuid);
 
-			ActiveResp res= activeService.doActive(cuid);
+			ActiveResp res= activeService.doActive(cuid,null);
 			for(Active active : res.getActiveList()){
 				Map<String, String> paremeterMap = new HashMap();
 				paremeterMap.put("password", active.getPassword());
 				paremeterMap.put("ponPort", active.getPonPort());
 				paremeterMap.put("reason", active.getReason());
+				paremeterMap.put("cuid", cuid);
 				projectBO.updateHanging(paremeterMap);
 			}
-			projectBO.updateResultStatus(map);
+			projectBO.updateResultStatus(cuid);
+			////将状态改为挂测
+			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addCuid(cuid).addPrjStatus("挂测").build();
+			projectDAO.updateProjectStatus(prjStatus);
+			
+		} catch (Exception e) {
+			logger.error("挂测失败！",e);
+			return "{\"success\":true,\"msg\":\"" + e.getMessage() + "\"}"; 
+		}
+		return "{\"success\":true,\"msg\":\"挂测成功！\"}";
+	}
+	
+	/**
+	 * 修改后挂测
+	 * @param cuid
+	 * @return
+	 */
+	@RequestMapping("/syncPosHanging")
+	public @ResponseBody String syncPosHanging(String cuid){
+		
+		logger.info( cuid + "修改后挂测");
+		try {
+
+			projectBO.insertHanging(cuid);
+
+			//获取修改了的pos数据
+			List<String> posNames = projectBO.queryHangingPos(cuid);
+			if(posNames != null && posNames.size() > 0){
+				
+				ActiveResp res= activeService.doActive(cuid,posNames);
+				for(Active active : res.getActiveList()){
+					Map<String, String> paremeterMap = new HashMap();
+					paremeterMap.put("password", active.getPassword());
+					paremeterMap.put("ponPort", active.getPonPort());
+					paremeterMap.put("reason", active.getReason());
+					paremeterMap.put("cuid", cuid);
+					projectBO.updateHanging(paremeterMap);
+				}
+			}
+			
+			projectBO.updateResultStatus(cuid);
+			
 			////将状态改为挂测
 			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addCuid(cuid).addPrjStatus("挂测").build();
 			projectDAO.updateProjectStatus(prjStatus);

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSONObject;
 import com.boco.core.bean.SpringContextUtil;
 import com.boco.workflow.webservice.project.bo.ProjectBO;
 
@@ -29,8 +30,10 @@ public class ProjectAction {
 			return getProjectBO().queryProjectByCode(cuid);
 	 }
 	 
-	 public String queryIdByCode(HttpServletRequest request, String prjCode,String parentPrjCode) throws Exception{
-		 
+	 public Map queryIdByCode(HttpServletRequest request, String prjCode,String parentPrjCode) throws Exception{
+
 		 	return getProjectBO().queryIdByCode(prjCode,parentPrjCode);
 	 }
+	 
+	 
 }

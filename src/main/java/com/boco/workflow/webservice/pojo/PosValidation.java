@@ -1,17 +1,20 @@
 package com.boco.workflow.webservice.pojo;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.boco.workflow.webservice.builder.ValidationBuilder;
+import com.boco.workflow.webservice.builder.PosValidationBuilder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * 资源录入校验信息
+ * pos观测结果（单条失败）
  * @author gaoyang 2017年3月8日
  *
  */
 @XStreamAlias("info")
-public class Validation {
+public class PosValidation {
 
 	/**
 	 * 工程编号（大项和子任务）
@@ -25,28 +28,29 @@ public class Validation {
 	@XStreamAlias("parentprjcode")
 	private String parentPrjCode;	
 	
-	/**
-	 * 挂测状态
-	 */
-	@XStreamAlias("teststatus")
-	private String testStatus;	
+	@XStreamAlias("posinfo")
+	private PosInfo posInfo;
 	
-	/**
-	 * 挂测结果信息
-	 */
-	@XStreamAlias("testinfo")
-	private String testInfo;
+	public static class PosInfo{
+		
+		@XStreamImplicit(itemFieldName="posname")
+		private List<String> posName;
+
+		public List<String> getPosName() {
+			return posName;
+		}
+
+		public void setPosName(List<String> posName) {
+			this.posName = posName;
+		}
+		@Override
+		public String toString() {
+			
+			return ToStringBuilder.reflectionToString(this);
+		}
+		
+	}
 	
-	@XStreamAlias("returntype")
-	private String returnType;
-
-	public String getReturnType() {
-		return returnType;
-	}
-
-	public void setReturnType(String returnType) {
-		this.returnType = returnType;
-	}
 
 	public String getPrjCode() {
 		return prjCode;
@@ -63,32 +67,25 @@ public class Validation {
 	public void setParentPrjCode(String parentPrjCode) {
 		this.parentPrjCode = parentPrjCode;
 	}
-
-	public String getTestStatus() {
-		return testStatus;
-	}
-
-	public void setTestStatus(String testStatus) {
-		this.testStatus = testStatus;
-	}
-
-	public String getTestInfo() {
-		return testInfo;
-	}
-
-	public void setTestInfo(String testInfo) {
-		this.testInfo = testInfo;
-	}
 	
+
+	public PosInfo getPosInfo() {
+		return posInfo;
+	}
+
+	public void setPosInfo(PosInfo posInfo) {
+		this.posInfo = posInfo;
+	}
+
 	@Override
 	public String toString() {
 		
 		return ToStringBuilder.reflectionToString(this);
 	}
 	
-	public ValidationBuilder getBuilder(){
+	public PosValidationBuilder getBuilder(){
 		
-		return new ValidationBuilder(this);
+		return new PosValidationBuilder(this);
 	}
 
 }

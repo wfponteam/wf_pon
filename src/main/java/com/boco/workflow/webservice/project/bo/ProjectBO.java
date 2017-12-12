@@ -44,19 +44,23 @@ public class ProjectBO {
 	public void updateHanging(Map map) throws SQLException{
 		IbatisDAO.getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateHanging", map);
 	}
-	public void updateResultStatus(Map map) throws SQLException{
-		IbatisDAO.getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateResultStatus", map);
+	public void updateResultStatus(String cuid) throws SQLException{
+		IbatisDAO.getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateResultStatus", cuid);
 	}
-	public String queryIdByCode(String prjCode, String parentPrjCode) throws SQLException {
+	public Map<String,String> queryIdByCode(String prjCode, String parentPrjCode) throws SQLException {
 		
 		PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addPrjCode(prjCode).addParentPrjCode(parentPrjCode).build();
 		return projectDAO.getIdByCode(prjStatus);
 	}
 	
-	public List<Map<String, String>> queryActiveByCuid(String cuid) throws SQLException {
+	public List<Map<String, String>> queryActiveByCuid(Map map) throws SQLException {
 		@SuppressWarnings("unchecked")
-		List<Map<String, String>> list = IbatisDAO.getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryActiveByCuid",cuid);
+		List<Map<String, String>> list = IbatisDAO.getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryActiveByCuid",map);
 		return list;
+	}
+	
+	public List<String> queryHangingPos(String cuid) throws SQLException{
+		return IbatisDAO.getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryHangingPos", cuid);
 	}
 	
 }

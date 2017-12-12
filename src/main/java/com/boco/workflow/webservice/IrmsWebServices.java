@@ -3,6 +3,7 @@ package com.boco.workflow.webservice;
 import com.boco.workflow.webservice.service.IService;
 import com.boco.workflow.webservice.service.factory.WebServiceFactory;
 import com.boco.workflow.webservice.service.impl.HangingResutServiceImpl;
+import com.boco.workflow.webservice.service.impl.PosResutServiceImpl;
 import com.boco.workflow.webservice.service.impl.ProjectServiceImpl;
 import com.boco.workflow.webservice.service.impl.SyncPrjStatusServiceImpl;
 
@@ -42,6 +43,16 @@ public class IrmsWebServices {
 	 */
 	public String syncHangingResult(String xml){
 		IService service = WebServiceFactory.getService(HangingResutServiceImpl.class);
+		return service.execute(xml);
+	}
+	
+	/**
+	 * 挂测结果(单个pos的)
+	 * @param xml
+	 * @return
+	 */
+	public String syncPosResult(String xml){
+		IService service = WebServiceFactory.getService(PosResutServiceImpl.class);
 		return service.execute(xml);
 	}
 }

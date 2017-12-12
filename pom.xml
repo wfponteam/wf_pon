@@ -59,7 +59,7 @@
                <finalName>wf_pon</finalName>
                <server>tomcat7</server>
                <systemProperties>
-               	<IRMS_SERVER_HOME>D:\\apache-tomcat-8.0.35\\conf\\env</IRMS_SERVER_HOME>
+               	<IRMS_SERVER_HOME>D:\\Program Files\\apache-tomcat-8.0.35\\conf\\env</IRMS_SERVER_HOME>
                </systemProperties>
            </configuration>
          </plugin>

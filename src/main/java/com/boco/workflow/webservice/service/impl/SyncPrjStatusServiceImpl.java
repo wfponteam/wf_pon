@@ -1,5 +1,8 @@
 package com.boco.workflow.webservice.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,8 +10,6 @@ import org.springframework.stereotype.Service;
 import com.boco.workflow.webservice.builder.PrjStatusBuilder;
 import com.boco.workflow.webservice.dao.ProjectDAO;
 import com.boco.workflow.webservice.pojo.PrjStatus;
-import com.boco.workflow.webservice.pojo.ProjectNameSpace;
-import com.boco.workflow.webservice.pojo.ProjectNameSpace.NameSpace;
 import com.boco.workflow.webservice.service.AbstractService;
 import com.boco.workflow.webservice.service.IService;
 
@@ -30,37 +31,41 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 		
 		logger.info("SyncPrjStatusServiceImpl.doBusiness");
 		
-		String cuid = dao.getIdByCode(prjStatus);
+		Map<String,String> map = dao.getIdByCode(prjStatus);
 		
-		if(null == cuid){
+		if(null == map || map.get("CUID") == null){
 			
 			throw new Exception("工程不存在！");
 		}
 		
+		String cuid = map.get("CUID");
 		prjStatus.setCuid(cuid);
 		
 		String status = prjStatus.getPrjStatus();
 		if("初验".equals(status)){
-			//归档
+			//归档  pos更新
+        			
+			this.dao.updatePos(cuid);
 			
-			ProjectNameSpace ns = new ProjectNameSpace();
-			ns.setPrjcode(cuid);
-			ns.setNs(NameSpace.NM.getName());
-			
-			this.dao.moveResourse(ns);
-			ns.setNs(NameSpace.HIS.getName());
-			this.dao.moveResourse(ns);
-			
-			this.dao.removeResourse(cuid);
+			this.dao.updateAddress(cuid);
+
 				
 		}else if("作废".equals(status)){
 			
-			//TODO:释放端口
+			//释放端口
+			this.dao.updatePtp(cuid);
+			//删除树形地址
+			List<String> list = this.dao.queryAddressIds(cuid);		
 			
-			ProjectNameSpace ns = new ProjectNameSpace();
-			ns.setPrjcode(cuid);
-			ns.setNs(NameSpace.HIS.getName());
-			this.dao.moveResourse(ns);		
+			if(list != null && list.size() > 0){
+				for(String id : list){
+					
+					this.dao.deleteAddressRelInfo(id);
+				}
+			}
+			
+			
+			this.dao.moveResourse(cuid);		
 			this.dao.removeResourse(cuid);
 		}
 		

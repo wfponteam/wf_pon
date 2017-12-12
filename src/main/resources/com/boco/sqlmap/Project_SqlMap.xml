@@ -81,73 +81,65 @@
 			from T_WF_PROJECT t where CUID = #cuid#
 	</select>
 	
-	<insert id="movePos" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
-		insert into $ns$an_pos select * from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+	<insert id="movePos" parameterClass="java.lang.String">
+		insert into t_his_an_pos select * from an_pos t where t.related_project_cuid = #prjcode#
 	</insert>
 	
-	<insert id="moveOnu" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
-		insert into $ns$an_onu select * from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
+	<insert id="moveOnu" parameterClass="java.lang.String">
+		insert into t_his_an_onu select * from an_onu t where t.related_project_cuid = #prjcode#
 	</insert>
 	
-	<insert id="moveCard" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
-		insert into $ns$card select * from t_attemp_card t where t.related_device_cuid in(
-		 	select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
-			union all
-			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+	<insert id="moveCard" parameterClass="java.lang.String">
+		insert into t_his_card select * from card t where t.related_device_cuid in(
+			select cuid from an_pos t where t.related_project_cuid = #prjcode#
 		 )
 	</insert>
 	
-	<insert id="moveAddress" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
-		insert into $ns$t_rofh_full_address select * from t_attemp_t_rofh_full_address t where t.related_project_cuid = #prjcode#
+	<insert id="moveAddress" parameterClass="java.lang.String">
+		insert into t_his_t_rofh_full_address select * from t_rofh_full_address t where t.related_project_cuid = #prjcode#
 	</insert>
 	
-	<insert id="moveCover" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
-		insert into $ns$gpon_cover select * from t_attemp_gpon_cover t where t.related_project_cuid = #prjcode#
+	<insert id="moveCover" parameterClass="java.lang.String">
+		insert into t_his_gpon_cover select * from gpon_cover t where t.related_project_cuid = #prjcode#
 	</insert>
-	<insert id="moveCommunity" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
-		insert into $ns$BUSINESS_COMMUNITY select * from t_attemp_BUSINESS_COMMUNITY t where t.related_project_cuid = #prjcode#
+	<insert id="moveCommunity" parameterClass="java.lang.String">
+		insert into t_his_BUSINESS_COMMUNITY select * from BUSINESS_COMMUNITY t where t.related_project_cuid = #prjcode#
 	</insert>
-	<insert id="movePtp" parameterClass="com.boco.workflow.webservice.pojo.ProjectNameSpace">
-		insert into $ns$ptp select * from t_attemp_ptp t where t.related_ne_cuid in(
-			select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
-			union all
-			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+	<insert id="movePtp" parameterClass="java.lang.String">
+		insert into t_his_ptp select * from ptp t where t.related_ne_cuid in(
+			select cuid from an_pos t where t.related_project_cuid = #prjcode#
 		)
 	</insert>
 	
 	<delete id="deleteAttempOnu" parameterClass="java.lang.String">
-		delete from  t_attemp_an_onu where related_project_cuid = #prjcode#
+		delete from an_onu where related_project_cuid = #prjcode#
 	</delete>
 	
 	<delete id="deleteAttempPos" parameterClass="java.lang.String">
-		delete from  t_attemp_an_pos where related_project_cuid = #prjcode#
+		delete from  an_pos where related_project_cuid = #prjcode#
 	</delete>
 	
 	<delete id="deleteAttempCover" parameterClass="java.lang.String">
-		delete from  t_attemp_gpon_cover where related_project_cuid = #prjcode#
+		delete from  gpon_cover where related_project_cuid = #prjcode#
 	</delete>
 	
 	<delete id="deleteAttempAddress" parameterClass="java.lang.String">
-		delete from  t_attemp_t_rofh_full_address where related_project_cuid = #prjcode#
+		delete from  t_rofh_full_address where related_project_cuid = #prjcode#
 	</delete>
 	
 	<delete id="deleteAttempCommunity" parameterClass="java.lang.String">
-		delete from  t_attemp_BUSINESS_COMMUNITY where related_project_cuid = #prjcode#
+		delete from  BUSINESS_COMMUNITY where related_project_cuid = #prjcode#
 	</delete>
 	
 	<delete id="deleteAttempPtp" parameterClass="java.lang.String">
-		delete from  t_attemp_ptp where related_ne_cuid in(
-			select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
-			union all
-			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+		delete from  ptp where related_ne_cuid in(
+			select cuid from an_pos t where t.related_project_cuid = #prjcode#
 		)
 	</delete>
 	
 	<delete id="deleteAttempCard" parameterClass="java.lang.String">
-		delete from  t_attemp_card where related_device_cuid in(
-		 	select cuid from t_attemp_an_onu t where t.related_project_cuid = #prjcode#
-			union all
-			select cuid from t_attemp_an_pos t where t.related_project_cuid = #prjcode#
+		delete from  card where related_device_cuid in(
+			select cuid from an_pos t where t.related_project_cuid = #prjcode#
 		 )
 	</delete>
 	
@@ -190,10 +182,11 @@
 			  CALL_RESULT      ,
 			  ponportname      ,
 			  ''
-			  from v_fttx_gc vg ,t_attemp_ptp ptp
+			  from v_fttx_gc vg ,ptp ptp
 			 where ptp.related_ne_cuid = vg.pos_cuid
 			 and ptp.port_sub_type = 13
 			 and vg.cuid = #cuid#
+			 and not exists(select 1 from T_WF_FTTX_GC gc where gc.parent_name  = vg.PARENT_NAME)
 			]]>
 	</insert>
 	<delete id="deleteHanging" parameterClass="java.util.Map">
@@ -202,21 +195,31 @@
 	</delete>
 	
 	<update id="updateHanging" parameterClass="java.util.Map">
-		update T_WF_FTTX_GC p
+		update T_WF_FTTX_GC gc
 		   set password = #password#,
 			   jh_result = #reason#
-		 where ponportname = #ponPort#
+		 where ponportname = #ponPort# and 
+		 exists(
+		      select 1 from t_wf_project wp
+		      where wp.cuid = #cuid#
+		      and wp.prj_code = gc.prjcode
+		      and wp.parent_prj_code = gc.parentprjcode
+		      )
 	</update>
 	
-	<update id="updateResultStatus" parameterClass="java.util.Map">
-			update  T_WF_FTTX_GC
+	<update id="updateResultStatus" parameterClass="java.lang.String">
+			update  T_WF_FTTX_GC gc
 				set result = 0
-			where PRJCODE = #PRJ_CODE#
-			     and PARENTPRJCODE = #PARENT_PRJ_CODE#
+			where exists(
+		      select 1 from t_wf_project wp
+		      where wp.cuid = #CUID#
+		      and wp.prj_code = gc.prjcode
+		      and wp.parent_prj_code = gc.parentprjcode
+		      )
 	</update>
 	
-	<select id="getIdByCode" resultClass="java.lang.String" parameterClass="com.boco.workflow.webservice.pojo.PrjStatus">
-		select cuid from t_wf_project where PRJ_CODE = #prjCode# 
+	<select id="getIdByCode" resultClass="com.boco.core.ibatis.vo.ResultMap" parameterClass="com.boco.workflow.webservice.pojo.PrjStatus">
+		select cuid,prj_status from t_wf_project where PRJ_CODE = #prjCode# 
 			<isEmpty property="parentPrjCode">
 			AND PARENT_PRJ_CODE IS NULL
 			</isEmpty>
@@ -254,23 +257,29 @@
 	<select id="queryActiveByCuidAndStatus" parameterClass="java.util.Map" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		select cuid from t_wf_project where cuid = #cuid# and prjStatus= #prjStatus#
 	</select>
-	<select id="queryActiveByCuid" parameterClass="java.lang.String" resultClass="com.boco.core.ibatis.vo.ResultMap">
+	<select id="queryActiveByCuid" parameterClass="java.util.Map" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		select distinct wp.cuid,
                 olt.label_dev,
                 olt.label_cn as DEVICENAME,
                 substr(olt.fdn, 5, instr(olt.fdn, ':', 1) - 5) as OLTEMS,
                 p.label_cn as PONPORTNAME,
-               (select distinct gc.password from t_wf_fttx_gc gc where gc.ponportname = p.label_cn and gc.prjcode = wp.prj_code and gc.parentprjcode = wp.parent_prj_code) PASSWORD,
+               (select gc.password from t_wf_fttx_gc gc where gc.ponportname = p.label_cn and rownum = 1
+               ) PASSWORD,
                 p.svlan OLTSVLAN,
                 '200' OLTCVLAN,
                 (select label_cn
                    from device_vendor
                   where device_vendor.cuid = olt.related_vendor_cuid) OLTFACTORY
-	  from trans_element olt, ptp p, t_attemp_an_pos pos, t_wf_project wp
+	  from trans_element olt, ptp p, an_pos pos, t_wf_project wp
 	 where olt.cuid = pos.related_olt_cuid
 	   and p.cuid = pos.related_port_cuid
 	   and pos.related_project_cuid = wp.cuid
 	   and wp.cuid =#CUID#
+	   <isNotEmpty property="POSNAMES">
+			<iterate prepend=" and pos.label_cn IN  " property="POSNAMES" conjunction="," open="(" close=")">
+				#POSNAMES[]#
+			</iterate>
+		</isNotEmpty>
 	</select>
 	<select id="queryActiveByPrjcode" parameterClass="java.util.Map" resultClass="java.lang.String">
 		select  wp.cuid from  t_wf_project wp where wp.PRJ_CODE =#code# and PARENT_PRJ_CODE = #pcode#
@@ -279,4 +288,56 @@
 		insert into T_WF_PRJ_STATUS_RECORD(prj_id,prj_status,update_time)
 		values(#id#,#status#,sysdate)
     </insert>
+    
+    <select id="queryHangingPos" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select distinct gc.parent_name from t_wf_fttx_gc gc,t_wf_project wp where gc.result = -9 and gc.prjcode = wp.prj_code
+  			and gc.parentprjcode = wp.parent_prj_code
+  			and wp.cuid=#cuid#
+	</select>
+	
+	
+	<update id="updatePos" parameterClass="java.lang.String">
+		update an_pos ap set live_cycle = 1 ,setup_time = sysdate where ap.related_project_cuid = #cuid#
+	</update>
+	
+	<update id="updateAddress" parameterClass="java.lang.String">
+		update t_rofh_full_address  fa
+			set COMMUNITY_TYPE = 2
+		where fa.related_project_cuid = #cuid# 
+	</update>
+	
+	<update id="updatePtp" parameterClass="java.lang.String">
+		update ptp
+		   set ptp.port_state = 1
+		 where exists (select 1
+		          from an_pos ap
+		         where ap.related_project_cuid = #cuid# 
+		           and ap.related_upne_port_cuid = ptp.cuid)
+	</update>
+	
+	<select id="queryAddressIds" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select  cuid from t_rofh_full_address fa where fa.related_project_cuid = #cuid#
+	</select>
+	
+	<delete id="deleteAddressRelInfo" parameterClass="java.lang.String">
+	 delete from t_rofh_addr_rel
+		 where id in (SELECT id
+                FROM t_rofh_addr_rel t
+                <![CDATA[
+                START WITH rel_full_addr_cuid =
+                          #CUID#
+              CONNECT BY PRIOR rel_id = ID
+                     and (select count(1)
+                            from t_rofh_addr_rel r
+                           where r.rel_id = t.id) < 2)
+                 ]]>
+     </delete>
+     
+     <delete id="deleteHangingPos" parameterClass="java.util.ArrayList">
+		 delete from t_wf_fttx_gc gc where gc.parent_name in
+		 <iterate  conjunction="," open="(" close=")">
+					              #names[]# 
+		 </iterate>
+     </delete>
+	
 </sqlMap>

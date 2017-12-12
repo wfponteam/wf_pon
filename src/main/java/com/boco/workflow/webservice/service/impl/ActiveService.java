@@ -1,6 +1,7 @@
 package com.boco.workflow.webservice.service.impl;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -10,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.boco.core.ibatis.dao.IbatisDAOHelper;
 import com.boco.core.utils.exception.UserException;
 import com.boco.workflow.webservice.builder.ActiveBuilder;
 import com.boco.workflow.webservice.builder.ActiveRespBuilder;
@@ -27,10 +29,13 @@ public class ActiveService{
     @Autowired
 	private ProjectBO projectBO;
     
-	public  ActiveResp doActive(String cuid) throws Exception{
+	public  ActiveResp doActive(String cuid,List<String> pos) throws Exception{
 		
 		try {
-			return active(cuid,"1");
+			Map<String,Object> map = new HashMap<String,Object>();
+	    	map.put("CUID", cuid);
+	    	map.put("POSNAMES", pos);
+			return active(map,"1");
 			
 		} catch (Exception e) {
 			throw new UserException("激活失败！");
@@ -39,14 +44,18 @@ public class ActiveService{
 				
 	}
 	
-    public ActiveResp  doDeActive(String cuid ) throws Exception{
-	  return active(cuid,"2");
+    public ActiveResp  doDeActive(String cuid ,List<String> pos) throws Exception{
+    	
+    	Map<String,Object> map = new HashMap<String,Object>();
+    	map.put("CUID", cuid);
+    	map.put("POSNAMES", pos);
+    	return active(map,"2");
     }
    
-     private ActiveResp active (String cuid ,String type) throws Exception{
-	    List<Map<String, String>> list = projectBO.queryActiveByCuid(cuid);
+     private ActiveResp active (Map<String,Object> activeMap ,String type) throws Exception{
+	    List<Map<String, String>> list = projectBO.queryActiveByCuid(activeMap);
 	    Device device = null;
-	    ActiveBuilder builder = PojoBuilderFactory.getBuilder(ActiveBuilder.class).addType(type).addProductId(cuid);
+	    ActiveBuilder builder = PojoBuilderFactory.getBuilder(ActiveBuilder.class).addType(type).addProductId(IbatisDAOHelper.getStringValue(activeMap, "CUID"));
 	    if (list != null && list.size() > 0){
 	    	
 	    	for(int i = 0; i < list.size(); i++){
@@ -64,9 +73,9 @@ public class ActiveService{
 	    		assert(StringUtils.isNotBlank(map.get("OLTSVLAN"))):"SVLAN为空null";
 	    		device.setSvlan(map.get("OLTSVLAN"));
 	    		//assert(StringUtils.isNotBlank(map.get("PASSWORD"))):"密码为空null";
-	    		
+	    	//prj_status	
 	    		String password = map.get("PASSWORD");
-	    		if("1".equals(type)){
+	    		if(StringUtils.isEmpty(password)){
 	    			
 	    			password = getRandomPw(8);
 	    		}

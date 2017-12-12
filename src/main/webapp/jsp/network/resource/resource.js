@@ -17,10 +17,11 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 	prjcode  : '',
 	parentprjcode : '',
 	cuid	:'',
+	status : '',
 	initComponent : function() {
 		NETWORK.resource.superclass.initComponent.call(this);
 		this._initItems();
-		this.initData();
+		this.initData()
 	},
 	_initItems : function() {
 		
@@ -28,8 +29,9 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 		var scope = this;
 		DWREngine.setAsync(false);
 		ProjectAction.queryIdByCode(this.prjcode,this.parentprjcode,
-				function(date) {			
-				scope.cuid = date;
+				function(data) {			
+				scope.cuid = data.CUID
+				scope.status = data.PRJ_STATUS
 			});
 		DWREngine.setAsync(true);
 		
@@ -44,6 +46,7 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 		
 		this.equip=new NETWORK.equip( {
 			cuid  : this.cuid,
+			status :this.status,
 			title: '资源信息'
 		});
 		
@@ -73,7 +76,8 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 		    					Ext.MessageBox.confirm('温馨提示', '确定进行挂测？',function(btn){
 				            		 if(btn=="yes")
 						   	 		 {
-						   	 		 	mk.show(); //显示  
+						   	 		 	
+				            			mk.show(); //显示  
 										Ext.Ajax.request({
 										        url: ctx+'/webServiceAction/syncHangingResult.do',
 										        method: 'POST',
@@ -110,27 +114,7 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 			var _data = new record(data);
 			Ext.getCmp("customPanel").getForm().loadRecord(_data);
 			Ext.getCmp("attachPanel").getForm().loadRecord(_data);
-			if("施工" != _data.get('PRJ_STATUS')){
-				Ext.getCmp('OnuTBar.add').hide();
-				Ext.getCmp('OnuTBar.modify').hide();
-				Ext.getCmp('OnuTBar.delete').hide();
-				Ext.getCmp('pos_tbar.add').hide();
-				Ext.getCmp('pos_tbar.modify').hide();
-				Ext.getCmp('pos_tbar.delete').hide();
-				Ext.getCmp('FullAddressGridTBar.add').hide();
-				Ext.getCmp('FullAddressGridTBar.modify').hide();
-				Ext.getCmp('FullAddressGridTBar.delete').hide();
-				Ext.getCmp('village_tbar.add').hide();
-				Ext.getCmp('village_tbar.modify').hide();
-				Ext.getCmp('village_tbar.delete').hide();
-				Ext.getCmp('cover_tbar.add').hide();
-				Ext.getCmp('cover_tbar.modify').hide();
-				Ext.getCmp('cover_tbar.delete').hide();
-				Ext.getCmp('onuAnPtp.add').hide();
-				Ext.getCmp('onuAnPtp.modify').hide();
-				Ext.getCmp('onuAnPtp.delete').hide();
 			
-			}
 		});
 		DWREngine.setAsync(true);
 	},
