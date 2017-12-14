@@ -3,15 +3,19 @@ package com.boco.workflow.webservice.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.boco.core.spring.SysProperty;
 import com.boco.workflow.webservice.builder.PrjStatusBuilder;
 import com.boco.workflow.webservice.dao.ProjectDAO;
 import com.boco.workflow.webservice.pojo.PrjStatus;
 import com.boco.workflow.webservice.service.AbstractService;
 import com.boco.workflow.webservice.service.IService;
+import com.boco.workflow.webservice.utils.HttpClientUtil;
 
 /**
  * 
@@ -25,6 +29,8 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 
 	@Autowired
 	private ProjectDAO dao;
+	
+    private String inspectedUrl =  SysProperty.getInstance().getValue("INSPECTED_URL");
 	
 	@Override
 	public void doBusiness(PrjStatus prjStatus) throws Exception {
@@ -68,6 +74,13 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 			this.dao.moveResourse(cuid);		
 			this.dao.removeResourse(cuid);
 		}
+			
+		NameValuePair[] nvps = {
+				new BasicNameValuePair("prjcode",prjStatus.getPrjCode()),
+				new BasicNameValuePair("parentprjcode",prjStatus.getParentPrjCode()),
+				new BasicNameValuePair("prjstatus",status)
+		};
+		HttpClientUtil.sendPostRequest(inspectedUrl, nvps, "UTF-8");
 		
 		dao.updateProjectStatus(prjStatus);
 		

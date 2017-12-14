@@ -72,9 +72,9 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 			projectBo.deleteHanging(dMap);
 			
 		}
-		if(StringUtils.isNotBlank(res.getErrorInfo())){
+		if("失败".equals(res.getIsSuccess())){
 			
-			//throw new Exception(res.getErrorInfo());
+			throw new Exception(res.getErrorInfo());
 		}
 		
 		
