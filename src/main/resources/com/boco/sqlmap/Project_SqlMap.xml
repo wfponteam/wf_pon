@@ -263,7 +263,7 @@
                 olt.label_cn as DEVICENAME,
                 substr(olt.fdn, 5, instr(olt.fdn, ':', 1) - 5) as OLTEMS,
                 p.label_cn as PONPORTNAME,
-               (select gc.password from t_wf_fttx_gc gc where gc.ponportname = p.label_cn and rownum = 1
+               (select gc.password from t_wf_fttx_gc gc where gc.password is not null and  gc.ponportname = p.label_cn and rownum = 1
                ) PASSWORD,
                 p.svlan OLTSVLAN,
                 '200' OLTCVLAN,

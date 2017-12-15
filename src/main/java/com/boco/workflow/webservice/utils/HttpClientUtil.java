@@ -1,7 +1,5 @@
 package com.boco.workflow.webservice.utils;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -12,12 +10,11 @@ import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 public class HttpClientUtil {
 	
-	private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
+	private static final Logger logger = Logger.getLogger(HttpClientUtil.class);
 
 	/** 
      * 发送HTTP_POST请求 
