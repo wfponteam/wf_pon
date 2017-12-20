@@ -344,8 +344,12 @@
 		 select label_cn
 			    from an_pos ap
 			   where ap.related_project_cuid = #cuid#
+			    and not exists(
+		             select 1 from an_pos t 
+		             where t.related_upne_cuid = ap.cuid
+		         )
 			     and not exists
-			   (select 1
+			  	 (select 1
 			            from t_wf_fttx_gc gc, t_wf_project wp
 			           where gc.parent_name = ap.label_cn
 			             and wp.cuid = #cuid#
