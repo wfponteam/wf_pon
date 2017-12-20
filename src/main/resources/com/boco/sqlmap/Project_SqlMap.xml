@@ -263,7 +263,7 @@
                 olt.label_cn as DEVICENAME,
                 substr(olt.fdn, 5, instr(olt.fdn, ':', 1) - 5) as OLTEMS,
                 p.label_cn as PONPORTNAME,
-               (select gc.password from t_wf_fttx_gc gc where gc.password is not null and  gc.ponportname = p.label_cn and rownum = 1
+               (select gc.password from t_wf_fttx_gc gc where gc.password is not null and  gc.ponportname = p.label_cn and gc.device_type =1 and rownum = 1
                ) PASSWORD,
                 p.svlan OLTSVLAN,
                 '200' OLTCVLAN,
@@ -339,5 +339,18 @@
 					              #names[]# 
 		 </iterate>
      </delete>
+     
+     <select id="queryNoHanging" parameterClass="java.lang.String" resultClass="java.lang.String">
+		 select label_cn
+			    from an_pos ap
+			   where ap.related_project_cuid = #cuid#
+			     and not exists
+			   (select 1
+			            from t_wf_fttx_gc gc, t_wf_project wp
+			           where gc.parent_name = ap.label_cn
+			             and wp.cuid = #cuid#
+			             and wp.prj_code = gc.prjcode
+			             and wp.parent_prj_code = gc.parentprjcode)
+	</select>
 	
 </sqlMap>

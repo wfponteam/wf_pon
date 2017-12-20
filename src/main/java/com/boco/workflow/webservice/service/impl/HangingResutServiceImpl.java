@@ -1,9 +1,9 @@
 package com.boco.workflow.webservice.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +46,14 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 		map.put("code", e.getPrjCode());
 		map.put("pcode", e.getParentPrjCode());
 		String cuid= projectDAO.queryActiveByPrjcode(map);
+		
+		if("成功".equals(e.getTestStatus())){
+			//判断是否存在未挂测的数据
+			List<String> list = projectDAO.queryNoHanging(cuid);
+			if(list != null && list.size() > 0){
+				throw new Exception("存在驳回未处理的数据:" + list);
+			}
+		}
 		
 		if("1".equals(e.getReturnType()) || "失败".equals(e.getTestStatus())){
 			

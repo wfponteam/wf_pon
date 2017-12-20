@@ -52,8 +52,8 @@ public class PosResutServiceImpl extends AbstractService<PosValidationBuilder,Po
 			List<String> names = info.getPosName();
 			if(names != null && names.size() > 0){
 				
-				projectDAO.deleteHangingPos(names);
 				activeService.doDeActive(cuid,names);
+				projectDAO.deleteHangingPos(names);
 			}
 		}
 		

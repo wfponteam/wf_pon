@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import com.boco.workflow.webservice.constants.NetWorkConstant;
 import com.boco.workflow.webservice.pojo.PrjStatus;
 import com.boco.workflow.webservice.pojo.Project;
-import com.boco.workflow.webservice.pojo.ProjectNameSpace;
 
 @Repository
 public class ProjectDAO extends AbstractDAO{
@@ -116,5 +115,10 @@ public class ProjectDAO extends AbstractDAO{
 	public void deleteHangingPos(List<String> names) throws SQLException  {
 		
 		this.getBaseDAO().getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".deleteHangingPos", names);
+	}
+
+	public List<String> queryNoHanging(String cuid) throws SQLException  {
+		
+		return this.getBaseDAO().getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryNoHanging", cuid);
 	}
 }
