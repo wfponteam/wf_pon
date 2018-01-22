@@ -36,5 +36,10 @@ public class ValidationBuilder extends AbstractBuilder<Validation> implements IB
 		pojo.setTestInfo(testInfo);
 		return this;
 	}
+	
+	public ValidationBuilder addReturnType (String returnType){
+		pojo.setReturnType(returnType);
+		return this;
+	}
 
 }

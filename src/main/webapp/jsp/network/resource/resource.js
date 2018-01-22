@@ -100,6 +100,47 @@ NETWORK.resource = Ext.extend(Ext.Panel,{
 							 	});
 						}
 					}
+				},{
+					xtype : 'button',
+					width : 80,
+					text : '跳过挂测',
+					id:'nohanging',
+					iconCls : 'c_accept',
+					hidden : this.status != '施工(驳回)',
+					listeners : {
+						click: function(btn, e, eOpts){
+	
+		       					var mk = new Ext.LoadMask(document.body, {  
+		    						msg: '提交中，请稍候！',  
+		    						removeMask: true //完成后移除  
+		    					});
+		    					Ext.MessageBox.confirm('温馨提示', '确定要跳过挂测？',function(btn){
+				            		 if(btn=="yes")
+						   	 		 {
+						   	 		 	
+				            			mk.show(); //显示  
+										Ext.Ajax.request({
+										        url: ctx+'/webServiceAction/noHangingResult.do',
+										        method: 'POST',
+										        params: {
+										        	cuid: scope.cuid
+										        },
+										        success: function(response) {
+										            var result = JSON.parse(response.responseText);
+										            mk.hide(); //关闭
+										            // 返回值
+										            Ext.Msg.alert('温馨提示', result.msg);
+										             
+										        }
+										});
+						   	 		 }else
+						   	 		 {
+						   	 		 	return false;
+						   	 		 }
+								    	
+							 	});
+						}
+					}
 				}]
   		})
 		this.add(this.commonInfoFieldSet);

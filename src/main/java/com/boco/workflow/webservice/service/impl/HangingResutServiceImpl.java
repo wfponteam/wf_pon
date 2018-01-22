@@ -21,6 +21,7 @@ import com.boco.workflow.webservice.remote.ResourceCheckServiceImplService;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplServiceLocator;
 import com.boco.workflow.webservice.service.AbstractService;
 import com.boco.workflow.webservice.service.IService;
+import com.boco.workflow.webservice.utils.SendMsgUtil;
 
 /**
  * 挂测结果处理
@@ -59,16 +60,8 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 			
 			activeService.doDeActive(cuid,null);
 		}
-		//向管线发消息
-		String xml = e.getBuilder().toXml();
-		logger.info("挂测结果：" + xml);
 		
-		ResourceCheckServiceImplService service = new ResourceCheckServiceImplServiceLocator();
 		
-		String result = service.getResourceCheckServiceImplPort().resourceCheck(xml);
-		logger.info(result);
-		
-		Result res = PojoBuilderFactory.getBuilder(ResultBuilder.class).fromXml(result);
 		if(!"成功".equals(e.getTestStatus())){
 			
 			//状态修改为施工
@@ -80,11 +73,11 @@ public class HangingResutServiceImpl extends AbstractService<ValidationBuilder,V
 			projectBo.deleteHanging(dMap);
 			
 		}
-		if("失败".equals(res.getIsSuccess())){
-			
-			throw new Exception(res.getErrorInfo());
-		}
 		
+		//向管线发消息
+		String xml = e.getBuilder().toXml();
+		
+		SendMsgUtil.getInstance().send2Gx(xml);
 		
 	}
 }

@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,7 @@ import com.boco.workflow.webservice.project.bo.ProjectBO;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplService;
 import com.boco.workflow.webservice.remote.ResourceCheckServiceImplServiceLocator;
 import com.boco.workflow.webservice.service.impl.ActiveService;
+import com.boco.workflow.webservice.utils.SendMsgUtil;
 import com.boco.workflow.webservice.utils.ZipUtil;
 
 @Controller
@@ -62,9 +65,20 @@ public class WebServiceAction {
 				
 				return this.syncPosHanging(cuid);
 			}
-			if(!"施工".equals(status)){
+			if(!"施工".equals(status) && !"施工(驳回)".equals(status)){
 				return "{\"success\":true,\"msg\":\"工程状态为:" + status + ",资管系统接口数据已推送到挂测系统,不能进行挂测！\"}";
 			}
+			
+			if("施工(驳回)".equals(status)){
+				NameValuePair[] nvps = {
+						new BasicNameValuePair("prjcode",IbatisDAOHelper.getStringValue(map, "PRJ_CODE")),
+						new BasicNameValuePair("parentprjcode",IbatisDAOHelper.getStringValue(map, "PARENT_PRJ_CODE")),
+						new BasicNameValuePair("prjstatus","回退"),
+						new BasicNameValuePair("desc","管线回退，综资重新发起")
+				};
+				SendMsgUtil.getInstance().send2Hang(nvps);
+			}
+			
 			projectBO.deleteHanging(map);
 			projectBO.insertHanging(cuid);
 
@@ -230,6 +244,34 @@ public class WebServiceAction {
          
     } 
 	
+	
+	@RequestMapping("/noHangingResult")
+	public @ResponseBody String noHangingResult(String cuid){
+		
+		logger.info("将" + cuid + "跳过挂测");
+		try {
+			//查询当前工程状态
+			Map<String,Object> map = projectBO.queryProjectByCode(cuid);
+			String status = IbatisDAOHelper.getStringValue(map, "PRJ_STATUS");
+
+			if(!"施工(驳回)".equals(status)){
+				return "{\"success\":true,\"msg\":\"工程状态为:" + status + ",不能跳过挂测！\"}";
+			}
+			
+			String xml = PojoBuilderFactory.getBuilder(ValidationBuilder.class).addParentPrjCode(IbatisDAOHelper.getStringValue(map, "PARENT_PRJ_CODE"))
+				.addPrjCode(IbatisDAOHelper.getStringValue(map, "PRJ_CODE")).addteststatus("成功").addReturnType("2").toXml();
+			
+			SendMsgUtil.getInstance().send2Gx(xml);
+			////将状态改为挂测跳过
+			PrjStatus prjStatus = PojoBuilderFactory.getBuilder(PrjStatusBuilder.class).addCuid(cuid).addPrjStatus("挂测跳过").build();
+			projectDAO.updateProjectStatus(prjStatus);
+			
+		} catch (Exception e) {
+			logger.error("跳过挂测失败！",e);
+			return "{\"success\":true,\"msg\":\"" + e.getMessage() + "\"}"; 
+		}
+		return "{\"success\":true,\"msg\":\"跳过挂测成功！\"}";
+	}
 	
 	
 }

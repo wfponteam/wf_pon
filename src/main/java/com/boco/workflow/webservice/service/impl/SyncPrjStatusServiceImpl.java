@@ -9,13 +9,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.boco.core.spring.SysProperty;
 import com.boco.workflow.webservice.builder.PrjStatusBuilder;
 import com.boco.workflow.webservice.dao.ProjectDAO;
 import com.boco.workflow.webservice.pojo.PrjStatus;
 import com.boco.workflow.webservice.service.AbstractService;
 import com.boco.workflow.webservice.service.IService;
-import com.boco.workflow.webservice.utils.HttpClientUtil;
+import com.boco.workflow.webservice.utils.SendMsgUtil;
 
 /**
  * 
@@ -29,8 +28,6 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 
 	@Autowired
 	private ProjectDAO dao;
-	
-    private String inspectedUrl =  SysProperty.getInstance().getValue("INSPECTED_URL");
 	
 	@Override
 	public void doBusiness(PrjStatus prjStatus) throws Exception {
@@ -80,7 +77,7 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 				new BasicNameValuePair("parentprjcode",prjStatus.getParentPrjCode()),
 				new BasicNameValuePair("prjstatus",status)
 		};
-		HttpClientUtil.sendPostRequest(inspectedUrl, nvps, "UTF-8");
+		SendMsgUtil.getInstance().send2Hang(nvps);
 		
 		dao.updateProjectStatus(prjStatus);
 		

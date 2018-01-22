@@ -1,7 +1,10 @@
 package com.boco.workflow.webservice.utils;
 
+import java.io.IOException;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -22,8 +25,10 @@ public class HttpClientUtil {
      * @param requestURL    请求地址(含参数) 
      * @param decodeCharset 解码字符集,解析响应数据时用之,其为null时默认采用UTF-8解码 
      * @return 远程主机响应正文 
+	 * @throws IOException 
+	 * @throws ClientProtocolException 
      */  
-    public static String sendPostRequest(String reqURL,NameValuePair[] nvps,String decodeCharset){  
+    public static String sendPostRequest(String reqURL,NameValuePair[] nvps,String decodeCharset) throws Exception{  
     	
         String responseContent = null; //响应内容  
         
@@ -40,9 +45,6 @@ public class HttpClientUtil {
             responseContent = EntityUtils.toString(entity, decodeCharset == null ? "UTF-8" : decodeCharset);  
 
             logger.debug("响应内容: " + responseContent);  
-        }catch(Exception e){  
-        	
-            logger.error("网络异常", e);  
         }finally{  
         	
         	HttpClientUtils.closeQuietly(response); //关闭连接,释放资源  
