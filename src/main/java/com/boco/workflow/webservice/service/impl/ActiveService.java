@@ -38,7 +38,7 @@ public class ActiveService{
 			return active(map,"1");
 			
 		} catch (Exception e) {
-			throw new UserException("激活失败！");
+			throw new UserException("激活失败！",e);
 		}
 		
 				

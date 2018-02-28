@@ -73,6 +73,7 @@ public abstract class AbstractService<T extends AbstractBuilder<E>, E> implement
 				result = this.buildResult(ResultEnum.SUCESS,"");
 			} catch (Exception e2) {
 				
+				logger.error("error", e2);
 				result = this.buildResult(ResultEnum.BUSINESSFAIL,e2.getMessage());
 			}
 			

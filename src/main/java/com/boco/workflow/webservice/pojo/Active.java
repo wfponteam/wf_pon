@@ -1,6 +1,5 @@
 package com.boco.workflow.webservice.pojo;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;

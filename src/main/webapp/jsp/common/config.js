@@ -7,6 +7,9 @@ var config={
 		case '施工':
 			_user = this.user[0]
 			break;
+		case '施工(驳回)':
+			_user = this.user[0]
+			break;
 		case '挂测(修改)':
 			_user = this.user[1]
 			break;
