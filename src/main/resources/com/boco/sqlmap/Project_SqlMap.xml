@@ -259,7 +259,7 @@
 	</select>
 	<select id="queryActiveByCuid" parameterClass="java.util.Map" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		select distinct wp.cuid,
-                olt.label_dev,
+                DECODE(olt.RELATED_VENDOR_CUID,'DEVICE_VENDOR-8a5a61821bb08a9b011bb0f16f323acb',olt.DEV_IP,olt.LABEL_DEV) label_dev,
                 olt.label_cn as DEVICENAME,
                 substr(olt.fdn, 5, instr(olt.fdn, ':', 1) - 5) as OLTEMS,
                 p.label_cn as PONPORTNAME,
