@@ -51,8 +51,12 @@ public class SyncPrjStatusServiceImpl extends AbstractService<PrjStatusBuilder,P
 			this.dao.updatePos(cuid);
 			
 			this.dao.updateAddress(cuid);
-
-				
+			
+			this.dao.updatePtpLiveCycle(cuid);
+			this.dao.updateCardLiveCycle(cuid);
+			this.dao.updateGponCoverLiveCycle(cuid);
+			this.dao.updateBusinessCommunityLiveCycle(cuid);
+			
 		}else if("作废".equals(status)){
 			
 			//释放端口

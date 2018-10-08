@@ -91,15 +91,15 @@ public class ProjectDAO extends AbstractDAO{
 	}
 
 	public void updatePos(String cuid) throws SQLException {
-		this.getBaseDAO().getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".updatePos",cuid);
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updatePos",cuid);
 	}
 
 	public void updateAddress(String cuid)throws SQLException {
-		this.getBaseDAO().getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".updateAddress",cuid);
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateAddress",cuid);
 	}
 
 	public void updatePtp(String cuid)throws SQLException {
-		this.getBaseDAO().getSqlMapClient().delete(NetWorkConstant.PROJECT_SQL_MAP + ".updatePtp",cuid);
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updatePtp",cuid);
 	}
 
 	public List<String> queryAddressIds(String cuid) throws SQLException {
@@ -120,5 +120,25 @@ public class ProjectDAO extends AbstractDAO{
 	public List<String> queryNoHanging(String cuid) throws SQLException  {
 		
 		return this.getBaseDAO().getSqlMapClient().queryForList(NetWorkConstant.PROJECT_SQL_MAP + ".queryNoHanging", cuid);
+	}
+
+	public void updatePtpLiveCycle(String cuid) throws SQLException   {
+		
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updatePtpLiveCycle", cuid);
+	}
+
+	public void updateCardLiveCycle(String cuid) throws SQLException  {
+		
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateCardLiveCycle", cuid);
+	}
+
+	public void updateGponCoverLiveCycle(String cuid) throws SQLException  {
+		
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateGponCoverLiveCycle", cuid);
+	}
+
+	public void updateBusinessCommunityLiveCycle(String cuid) throws SQLException  {
+		
+		this.getBaseDAO().getSqlMapClient().update(NetWorkConstant.PROJECT_SQL_MAP + ".updateBusinessCommunityLiveCycle", cuid);
 	}
 }

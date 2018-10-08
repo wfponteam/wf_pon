@@ -259,7 +259,7 @@
 	</select>
 	<select id="queryActiveByCuid" parameterClass="java.util.Map" resultClass="com.boco.core.ibatis.vo.ResultMap">
 		select distinct wp.cuid,
-                DECODE(olt.RELATED_VENDOR_CUID,'DEVICE_VENDOR-8a5a61821bb08a9b011bb0f16f323acb',olt.DEV_IP,olt.LABEL_DEV) label_dev,
+                olt.DEV_IP label_dev,
                 olt.label_cn as DEVICENAME,
                 substr(olt.fdn, 5, instr(olt.fdn, ':', 1) - 5) as OLTEMS,
                 p.label_cn as PONPORTNAME,
@@ -356,5 +356,35 @@
 			             and wp.prj_code = gc.prjcode
 			             and wp.parent_prj_code = gc.parentprjcode)
 	</select>
+	
+	<update id="updatePtpLiveCycle" parameterClass="java.lang.String">
+		update ptp p
+		   set p.live_cycle = 1
+		 where exists (select 1
+		          from an_pos ap
+		         where ap.cuid = p.related_ne_cuid
+		           and ap.related_project_cuid = #cuid#)
+	</update>
+	
+	<update id="updateCardLiveCycle" parameterClass="java.lang.String">
+		update card c
+		   set c.live_cycle = 1
+		 where exists (select 1
+		          from an_pos ap
+		         where ap.cuid = c.related_device_cuid
+		           and ap.related_project_cuid = #cuid#)
+	</update>
+	
+	<update id="updateGponCoverLiveCycle" parameterClass="java.lang.String">
+		update gpon_cover
+		   set live_cycle = 1
+		 where related_project_cuid = #cuid#
+	</update>
+	
+	<update id="updateBusinessCommunityLiveCycle" parameterClass="java.lang.String">
+		update business_community
+		   set live_cycle = 1
+		 where related_project_cuid = #cuid#
+	</update>
 	
 </sqlMap>

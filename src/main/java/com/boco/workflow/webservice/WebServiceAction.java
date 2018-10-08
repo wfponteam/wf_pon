@@ -87,7 +87,7 @@ public class WebServiceAction {
 				Map<String, String> paremeterMap = new HashMap();
 				paremeterMap.put("password", active.getPassword());
 				paremeterMap.put("ponPort", active.getPonPort());
-				paremeterMap.put("reason", active.getReason());
+				paremeterMap.put("reason", "0".equals(active.getIsSucess()) ? "成功" : active.getReason());
 				paremeterMap.put("cuid", cuid);
 				projectBO.updateHanging(paremeterMap);
 			}
